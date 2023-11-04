@@ -4,13 +4,17 @@ FROM node:16-alpine as build-stage
 WORKDIR /app
 
 # Copiez les fichiers de package.json et package-lock.json
-COPY frontend/package.json ./
+# COPY frontend/package.json ./
+COPY package.json ./
+
 
 # Installez les dépendances du projet
 RUN npm install
 
 # Copiez les fichiers du projet
-COPY frontend/ .
+# COPY frontend/ .
+COPY . .
+
 
 # Construisez l'application pour la production
 RUN npm run build
