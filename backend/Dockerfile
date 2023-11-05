@@ -13,6 +13,8 @@ WORKDIR /app
 COPY requirements.txt .
 # COPY requirements.txt /app/
 
+RUN pip install --upgrade pip
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copier le reste du code source dans le conteneur

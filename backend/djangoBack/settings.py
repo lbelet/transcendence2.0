@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Ajoutez ici les applications tierces
     # 'rest_framework', # Par exemple, si vous utilisez Django REST framework
-    # 'yourappname', # Votre application Django
+    'djangoBack', # Votre application Django
 ]
 
 # Middleware de Django
