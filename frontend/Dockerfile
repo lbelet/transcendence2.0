@@ -13,7 +13,9 @@ RUN npm install
 # Copiez le reste des fichiers du projet
 COPY ./ .
 
-# Exposez le port utilisé par Vite (3000 par défaut)
+RUN npm run build
+
+# Exposez le port utilisé par Vite (5173 par défaut)
 EXPOSE 5173
 
 # Lancez le serveur de développement Vite pour le hot-reloading

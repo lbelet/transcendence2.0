@@ -73,9 +73,9 @@ WSGI_APPLICATION = 'djangoBack.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'nom_de_votre_base_de_donnees'),
-        'USER': os.environ.get('POSTGRES_USER', 'utilisateur'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'mot_de_passe'),
+        'NAME': os.environ.get('POSTGRES_DB', 'your_database_name'),
+        'USER': os.environ.get('POSTGRES_USER', 'user'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password'),
         'HOST': 'db',  # Utilise le nom du service défini dans docker-compose.yml
         'PORT': '5432',
     }
