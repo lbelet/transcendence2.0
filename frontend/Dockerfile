@@ -1,32 +1,20 @@
-# Étape de construction
-FROM node:16-alpine as build-stage
+# Utilisez une image Node.js comme base
+FROM node:16-alpine
 
+# Définissez le répertoire de travail
 WORKDIR /app
 
-# Copiez les fichiers de package.json et package-lock.json
-# COPY frontend/package.json ./
-COPY package.json ./
+# Copiez les fichiers de dépendance du projet
+COPY ./package*.json ./
 
-
-# Installez les dépendances du projet
+# Installez les dépendances, y compris Vite pour le hot-reloading
 RUN npm install
 
-# Copiez les fichiers du projet
-# COPY frontend/ .
-COPY . .
+# Copiez le reste des fichiers du projet
+COPY ./ .
 
+# Exposez le port utilisé par Vite (3000 par défaut)
+EXPOSE 5173
 
-# Construisez l'application pour la production
-RUN npm run build
-
-# Étape de production
-FROM nginx:stable-alpine as production-stage
-
-# Copiez le dossier dist construit à l'étape de construction dans le dossier de serveur nginx
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-
-# Exposez le port 80
-EXPOSE 80
-
-# Lancer Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Lancez le serveur de développement Vite pour le hot-reloading
+CMD ["npm", "run", "dev"]

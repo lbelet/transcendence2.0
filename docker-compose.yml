@@ -14,7 +14,7 @@ services:
 
   backend:
     build: ./backend
-    command: gunicorn --bind 0.0.0.0:8000 django.wsgi:application
+    command: gunicorn --bind 0.0.0.0:8000 djangoBack.wsgi:application
     volumes:
       - ./backend:/app
     environment:
@@ -28,10 +28,14 @@ services:
 
   frontend:
     build: ./frontend
+    command: npm run dev -- --host
+    ports:
+      - "5173:5173"
     volumes:
-      - ./frontend:/usr/share/nginx/html
+      - ./frontend:/app
     depends_on:
       - backend
+
 
   nginx:
     image: nginx:latest

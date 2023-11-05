@@ -22,4 +22,4 @@ COPY . .
 EXPOSE 8000
 
 # Lancer le serveur Gunicorn avec le module WSGI
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "django.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "djangoBack.wsgi:application"]

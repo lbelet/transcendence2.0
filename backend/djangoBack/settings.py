@@ -66,7 +66,7 @@ TEMPLATES = [
 ]
 
 # Configuration WSGI
-WSGI_APPLICATION = 'django.wsgi.application'
+WSGI_APPLICATION = 'djangoBack.wsgi.application'
 
 # Configuration de la base de données
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
