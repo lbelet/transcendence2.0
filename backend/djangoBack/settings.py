@@ -16,7 +16,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-default-key')
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') != 'False'
 
 # Hôtes autorisés
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost 127.0.0.1 [::1]').split()
+ALLOWED_HOSTS = os.environ.get(
+    'DJANGO_ALLOWED_HOSTS', 'localhost 127.0.0.1 [::1]').split()
 
 # Application Django installée
 INSTALLED_APPS = [
@@ -29,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Ajoutez ici les applications tierces
     # 'rest_framework', # Par exemple, si vous utilisez Django REST framework
-    'djangoBack', # Votre application Django
+    'djangoBack',  # Votre application Django
 ]
 
 # Middleware de Django
@@ -45,13 +46,14 @@ MIDDLEWARE = [
 ]
 
 # Configuration de l'URL racine
-ROOT_URLCONF = 'django.urls'
+ROOT_URLCONF = 'djangoBack.urls'
 
 # Configuration des templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'], # Si vous avez un dossier de templates
+        # Si vous avez un dossier de templates
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -87,6 +89,10 @@ AUTH_PASSWORD_VALIDATORS = [
     # ...
 ]
 
+# Remplacez 'djangoBack' par le nom réel de votre application Django.
+# AUTH_USER_MODEL = 'djangoBack.User'
+
+
 # Internationalisation
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
@@ -96,7 +102,7 @@ USE_TZ = True
 
 # Configuration des fichiers statiques
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles' # Pour collecter les fichiers statiques
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Pour collecter les fichiers statiques
 
 # Configuration des médias
 # MEDIA_URL = '/media/'
