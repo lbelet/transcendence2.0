@@ -8,6 +8,7 @@ WORKDIR /app
 COPY ./package*.json ./
 
 # Installez les dépendances, y compris Vite pour le hot-reloading
+RUN npm install -g vite
 RUN npm install
 
 # Copiez le reste des fichiers du projet
