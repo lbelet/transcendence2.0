@@ -22,6 +22,7 @@ ALLOWED_HOSTS = os.environ.get(
 # Application Django installée
 INSTALLED_APPS = [
     # Applications par défaut de Django
+    'djangoBack',  # Votre application Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -30,7 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Ajoutez ici les applications tierces
     # 'rest_framework', # Par exemple, si vous utilisez Django REST framework
-    'djangoBack',  # Votre application Django
+    # 'djangoBack',  # Votre application Django
 ]
 
 # Middleware de Django
@@ -90,7 +91,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Remplacez 'djangoBack' par le nom réel de votre application Django.
-# AUTH_USER_MODEL = 'djangoBack.User'
+AUTH_USER_MODEL = 'djangoBack.User'
 
 
 # Internationalisation

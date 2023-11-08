@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
   <div class="container">
     <div class="row">
@@ -42,23 +44,41 @@
     </div>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // JavaScript pour gérer l'envoi du formulaire et la validation des mots de passe
-    document.getElementById('registerForm').addEventListener('submit', function(event) {
+  <script type="module">
+    // Importation d'Axios
+    import axios from 'axios';
+
+    document.getElementById('registerForm').addEventListener('submit', function (event) {
       event.preventDefault();
+      const username = document.getElementById('username').value;
+      const firstName = document.getElementById('firstname').value;
+      const lastName = document.getElementById('lastname').value;
+      const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       const retypePassword = document.getElementById('retypePassword').value;
 
       if (password === retypePassword) {
-        // Ici, vous pouvez traiter l'envoi du formulaire, par exemple via une requête AJAX
-        console.log('Form is ready to be submitted!');
-        // TODO: Ajoutez votre logique d'envoi de formulaire ici
+        axios.post('/api/register/', {
+          username: username,
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          password: password,
+          // Incluez d'autres champs si nécessaire, comme 'age' si vous l'avez ajouté à votre modèle
+        })
+          .then(function (response) {
+            console.log('Registered successfully:', response.data);
+            // Vous pouvez rediriger l'utilisateur ou afficher un message de succès ici
+          })
+          .catch(function (error) {
+            console.error('Registration error:', error);
+            // Affichez un message d'erreur à l'utilisateur ici
+          });
       } else {
         alert('Passwords do not match!');
       }
     });
   </script>
 </body>
+
 </html>
