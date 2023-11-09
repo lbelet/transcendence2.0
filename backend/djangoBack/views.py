@@ -1,20 +1,33 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import User
 import json
 
-@csrf_exempt  # Pour simplifier, désactivez la protection CSRF. En production, utilisez une approche sécurisée.
+from djangoBack.models import User
+
+
+@csrf_exempt
 def register(request):
     if request.method == 'POST':
-        body = json.loads(request.body.decode('utf-8')) 
-        username = body.get('username')
-        first_name = body.get('firstname')
-        last_name = body.get('lastname')
-        email = body.get('email')
-        password = body.get('password')
-        # age = request.body('age')  # Assurez-vous que l'âge est envoyé depuis le frontend
+        data = json.loads(request.body)
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        email = data.get('email')
+        username = data.get('username')
+        password = data.get('password')
 
-        # return JsonResponse({'status': 'success', 'message': email })
-        user = User.objects.create_user(email=email, password=password, username=username, first_name=first_name, last_name=last_name)
-        return JsonResponse({'status': 'success', 'message': 'User registered successfully'})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+        # Validate that none of the required fields are None
+        if not all([first_name, last_name, email, username, password]):
+            return JsonResponse({'error': 'All fields are required'}, status=400)
+
+        try:
+            # Attempt to create the user
+            User.objects.create_user(
+                email=email,
+                password=password,
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+            )
+            return JsonResponse({'success': 'User created successfully'}, status=201)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)

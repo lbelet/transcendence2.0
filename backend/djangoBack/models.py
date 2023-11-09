@@ -15,7 +15,6 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         # Ici, vous pouvez définir l'age directement si c'est passé dans extra_fields
         # ou vous pouvez le rendre obligatoire en l'ajoutant comme argument
-        user.age = extra_fields.get('age')  # Suppose que 'age' est optionnel
         user.save(using=self._db)
         return user
 
@@ -41,7 +40,6 @@ class User(AbstractBaseUser):
     last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100, unique=True)
     password = models.CharField(max_length=100)
-    age = models.IntegerField()
 
     # Ajoutez les champs supplémentaires ici si nécessaire
 
