@@ -1,4 +1,6 @@
+from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 import json
 
@@ -31,3 +33,30 @@ def register(request):
             return JsonResponse({'success': 'User created successfully'}, status=201)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
+
+def login_view(request):
+    return render(request, 'login.html')
+
+@csrf_exempt
+def api_login(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+
+        # Utilisez la fonction `authenticate` pour vérifier les identifiants
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            # Si les identifiants sont corrects, utilisez `login` pour connecter l'utilisateur
+            login(request, user)
+            return JsonResponse({'success': 'User logged in successfully'}, status=200)
+        else:
+            # Si les identifiants sont incorrects, renvoyez une erreur
+            return JsonResponse({'error': 'Invalid username or password'}, status=400)
+    else:
+        return JsonResponse({'error': 'Only POST method is accepted'}, status=405)
+
+
+def home_view(request):
+    return render(request, 'home.html')

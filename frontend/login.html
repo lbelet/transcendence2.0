@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <h2 class="text-center">Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+
+        import axios from 'axios';
+
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Préparez l'objet de données à envoyer
+            const loginData = {
+                username: username,
+                password: password
+            };
+
+            // Envoyez la requête POST avec axios
+            axios.post('/api/api_login/', loginData)
+                .then(function (response) {
+                    console.log(response);
+                    // Si la connexion est un succès, vous pouvez rediriger ou faire autre chose
+                    // Par exemple, sauvegarder le token de session et rediriger vers une page d'accueil
+                    window.location.href = '/home.html'; // Remplacez par l'URL de la page d'accueil
+                })
+                .catch(function (error) {
+                    console.error('Login error:', error);
+                    // Gérer l'affichage d'une erreur de connexion ici
+                });
+        });
+    </script>
+</body>
+
+</html>

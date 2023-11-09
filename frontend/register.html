@@ -69,6 +69,7 @@
           .then(function (response) {
             console.log('Registered successfully:', response.data);
             // Vous pouvez rediriger l'utilisateur ou afficher un message de succès ici
+            window.location.href = '/login.html'; // Mettez ici l'URL de votre page de connexion
           })
           .catch(function (error) {
             console.error('Registration error:', error);
