@@ -34,10 +34,6 @@ def register(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
-
-def login_view(request):
-    return render(request, 'login.html')
-
 @csrf_exempt
 def api_login(request):
     if request.method == 'POST':
@@ -57,6 +53,6 @@ def api_login(request):
     else:
         return JsonResponse({'error': 'Only POST method is accepted'}, status=405)
 
+def index(request):
+    return render(request, 'index.html')
 
-def home_view(request):
-    return render(request, 'home.html')

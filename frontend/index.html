@@ -1,44 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page d'accueil</title>
-    <!-- Bootstrap CSS -->
-    <!-- <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet"> -->
-    <!-- Custom CSS -->
-    <!-- <link href="css/main.css" rel="stylesheet"> -->
+    <title>Mon Site SPA</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 </head>
-<body>
 
+<body>
     <div class="container">
-        <div class="row justify-content-center align-items-center" style="height:100vh">
-            <div class="col-6 text-center">
-                <h1>Bienvenue sur notre site</h1>
-                <p>Commencez par créer un compte ou connectez-vous pour continuer.</p>
-                <!-- Boutons -->
-                <button class="btn btn-primary btn-lg m-2" id="signup">Créer un compte</button>
-                <button class="btn btn-secondary btn-lg m-2" id="login">Login</button>
-            </div>
+        <div id="home-section">
+            <h1>Bienvenue sur Mon Site</h1>
+            <button class="btn btn-primary" onclick="showLoginForm()">Login</button>
+            <button class="btn btn-secondary" onclick="showRegisterForm()">Créer un compte</button>
         </div>
+
+        <div id="login-section" class="hidden">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="login-username">Nom d'utilisateur</label>
+                    <input type="text" class="form-control" id="login-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Mot de passe</label>
+                    <input type="password" class="form-control" id="login-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Se connecter</button>
+            </form>
+        </div>
+
+
+        <div id="register-section" class="hidden">
+            <h2>Créer un compte</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" class="form-control" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="firstname">Prénom</label>
+                    <input type="text" class="form-control" id="firstname" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Nom</label>
+                    <input type="text" class="form-control" id="lastname" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="retypePassword">Retaper le mot de passe</label>
+                    <input type="password" class="form-control" id="retypePassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Créer</button>
+            </form>
+        </div>
+
+        <div id="welcome-section" class="hidden">
+            <h2>Bienvenue sur Mon Site</h2>
+            <p>Bienvenue, <span id="user-name"></span>!</p>
+            <button class="btn btn-primary" onclick="logout()">Déconnexion</button>
+            <button class="btn btn-primary" onclick="showGameForm()">Game</button>
+            <button class="btn btn-primary" onclick="edit()">Edit profile</button>
+        </div>
+
+        <div id="game-section" class="hidden">
+            <h2>Bienvenue sur la page de jeu</h2>
+            <p>Bienvenue, <span id="user-name"></span>!</p>
+        </div>
+
+
     </div>
 
-    <!-- Bootstrap Bundle with Popper -->
-    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script> -->
-    <!-- Main JavaScript File -->
-    <!-- <script src="js/main.js"></script> -->
-    
-    <script>
-        // Ecouteurs d'événements pour les boutons
-        document.getElementById('signup').addEventListener('click', function() {
-            window.location.href = '/register.html'; // Changez ceci selon votre routeur ou méthode de navigation
-        });
-
-        document.getElementById('login').addEventListener('click', function() {
-            window.location.href = '/login.html'; // Changez ceci selon votre routeur ou méthode de navigation
-        });
-    </script>
+    <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 </body>
-</html>
 
+</html>

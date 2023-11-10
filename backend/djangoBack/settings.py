@@ -23,6 +23,7 @@ ALLOWED_HOSTS = os.environ.get(
 INSTALLED_APPS = [
     # Applications par défaut de Django
     'djangoBack',  # Votre application Django
+    'channels',  # Ajoutez cette ligne
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -70,6 +71,9 @@ TEMPLATES = [
 
 # Configuration WSGI
 WSGI_APPLICATION = 'djangoBack.wsgi.application'
+
+ASGI_APPLICATION = 'djangoBack.asgi.application'
+
 
 # Configuration de la base de données
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
