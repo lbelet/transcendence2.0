@@ -1,27 +1,12 @@
 function showLoginForm() {
-    document.getElementById('home-section').classList.add('hidden');
-    document.getElementById('login-section').classList.remove('hidden');
-    document.getElementById('register-section').classList.add('hidden');
-    document.getElementById('welcome-section').classList.add('hidden');
-    document.getElementById('game-section').classList.add('hidden');
     navigateTo('login');
 }
 
 function showRegisterForm() {
-    document.getElementById('home-section').classList.add('hidden');
-    document.getElementById('register-section').classList.remove('hidden');
-    document.getElementById('welcome-section').classList.add('hidden');
-    document.getElementById('login-section').classList.add('hidden');
-    document.getElementById('game-section').classList.add('hidden');
     navigateTo('register');
 }
 
 function showGameForm() {
-    document.getElementById('home-section').classList.add('hidden');
-    document.getElementById('register-section').classList.add('hidden');
-    document.getElementById('welcome-section').classList.add('hidden');
-    document.getElementById('login-section').classList.add('hidden');
-    document.getElementById('game-section').classList.remove('hidden');
     navigateTo('game');
 }
 
@@ -35,7 +20,7 @@ function hideAllSections() {
 
 // Initialiser la page sur la section d'accueil
 window.onload = function () {
-    const path = window.location.hash.substring(1); // Retire le '#' de l'URL
+    const path = window.location.hash.substring(1);
     if (path) {
         navigateTo(path);
     } else {
@@ -44,12 +29,18 @@ window.onload = function () {
 };
 
 function navigateTo(sectionId) {
+    console.log("Navigating to:", sectionId);
     hideAllSections();
     document.getElementById(sectionId + '-section').classList.remove('hidden');
-    window.history.pushState({ section: sectionId }, '', `#${sectionId}`);
+
+    if (window.location.hash !== `#${sectionId}`) {
+        console.log("Already in the section:", sectionId);
+        window.history.pushState({ section: sectionId }, '', `#${sectionId}`);
+    }
 }
 
 window.onpopstate = function (event) {
+    console.log("Popstate event:", event.state);
     if (event.state && event.state.section) {
         navigateTo(event.state.section);
     } else {
@@ -57,7 +48,11 @@ window.onpopstate = function (event) {
     }
 };
 
-// import axios from 'axios';
+function showWelcome() {
+    const username = localStorage.getItem('username');
+    document.getElementById('user-name').textContent = username || 'Utilisateur';
+    navigateTo('welcome');
+}
 
 document.getElementById('registerForm').addEventListener('submit', function (event) {
     event.preventDefault();
@@ -75,16 +70,14 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
             last_name: lastName,
             email: email,
             password: password,
-            // Incluez d'autres champs si nécessaire, comme 'age' si vous l'avez ajouté à votre modèle
         })
             .then(function (response) {
                 console.log('Registered successfully:', response.data);
-                // Vous pouvez rediriger l'utilisateur ou afficher un message de succès ici
-                navigateTo('login'); // Mettez ici l'URL de votre page de connexion
+                //ici pour jwt je pense
+                navigateTo('login');
             })
             .catch(function (error) {
                 console.error('Registration error:', error);
-                // Affichez un message d'erreur à l'utilisateur ici
             });
     } else {
         alert('Passwords do not match!');
@@ -102,11 +95,11 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     })
         .then(function (response) {
             console.log('Login successful:', response.data);
-            // Gérer la connexion réussie ici
-            navigateTo('welcome'); // Par exemple, naviguer vers la section 'home'
+            localStorage.setItem('username', username);
+            showWelcome();
         })
         .catch(function (error) {
             console.error('Login error:', error);
-            // Afficher un message d'erreur ici
         });
 });
+
