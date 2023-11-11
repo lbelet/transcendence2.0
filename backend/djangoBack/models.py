@@ -18,7 +18,6 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-
     # def create_superuser(self, email, password=None, **extra_fields):
     #     extra_fields.setdefault('is_staff', True)
     #     extra_fields.setdefault('is_superuser', True)
@@ -51,13 +50,20 @@ class User(AbstractBaseUser):
 
 
 class Game(models.Model):
-    username1 = models.CharField(max_length=100)
-    username2 = models.CharField(max_length=100)
-    winner = models.CharField(max_length=100)
+    player1Username = models.CharField(max_length=100, default='')
+    player2Username = models.CharField(max_length=100, default='')
+    player1Score = models.IntegerField(default=0)
+    player2Score = models.IntegerField(default=0)
+    winner = models.CharField(max_length=100, default='')
+    status = models.CharField(max_length=12, default='waiting', choices=[
+        ('waiting', 'Waiting'),
+        ('in-progress', 'In Progress'),
+        ('completed', 'Completed')
+    ])
+    isPaused = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.username1} vs {self.username2} - Winner: {self.winner}"
-
+        return f"{self.player1Username} vs {self.player2Username} - Winner: {self.winner}"
 
 class Test(models.Model):
     number_of_games = models.IntegerField()

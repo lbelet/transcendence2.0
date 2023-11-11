@@ -100,3 +100,10 @@ button:focus-visible {
   display: none;
 }
 
+#pong-canvas {
+  width: 800px; /* ou toute autre taille appropriée */
+  height: 600px;
+  border: 1px solid black;
+}
+
+

@@ -6,7 +6,14 @@ function showRegisterForm() {
     navigateTo('register');
 }
 
+function playPong() {
+    navigateTo('pong')
+}
+
 function showGameForm() {
+    const username = localStorage.getItem('username');
+    console.log("1 username: ", username)
+    document.getElementById('user-name-game').textContent = username || 'Utilisateur';
     navigateTo('game');
 }
 
@@ -16,6 +23,7 @@ function hideAllSections() {
     document.getElementById('register-section').classList.add('hidden');
     document.getElementById('welcome-section').classList.add('hidden');
     document.getElementById('game-section').classList.add('hidden');
+    document.getElementById('pong-section').classList.add('hidden');
 }
 
 // Initialiser la page sur la section d'accueil
@@ -39,6 +47,11 @@ function navigateTo(sectionId) {
     }
 }
 
+function logout() {
+    localStorage.removeItem('username');
+    navigateTo('home');
+}
+
 window.onpopstate = function (event) {
     console.log("Popstate event:", event.state);
     if (event.state && event.state.section) {
@@ -50,7 +63,8 @@ window.onpopstate = function (event) {
 
 function showWelcome() {
     const username = localStorage.getItem('username');
-    document.getElementById('user-name').textContent = username || 'Utilisateur';
+    console.log("2 username: ", username)
+    document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
     navigateTo('welcome');
 }
 
@@ -73,7 +87,6 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
         })
             .then(function (response) {
                 console.log('Registered successfully:', response.data);
-                //ici pour jwt je pense
                 navigateTo('login');
             })
             .catch(function (error) {
@@ -94,6 +107,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         password: password,
     })
         .then(function (response) {
+            //ici pour jwt je pense
             console.log('Login successful:', response.data);
             localStorage.setItem('username', username);
             showWelcome();
@@ -102,4 +116,56 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
             console.error('Login error:', error);
         });
 });
+
+
+//-------------------- SOCKETS -----------------
+
+// main.js
+
+// Variable globale pour la connexion WebSocket
+let socket;
+
+// Fonction pour établir la connexion WebSocket
+function connectWebSocket() {
+    // Remplacez 'wss://votreurl.com' par votre URL WebSocket
+    socket = new WebSocket('wss://localhost/ws/');
+
+    socket.onopen = function (event) {
+        console.log('WebSocket connecté');
+        // Autres traitements à l'ouverture
+    };
+
+    socket.onmessage = function (event) {
+        console.log('Message reçu:', event.data);
+        // Traiter les messages entrants
+    };
+
+    socket.onerror = function (error) {
+        console.error('Erreur WebSocket:', error);
+    };
+
+    socket.onclose = function (event) {
+        console.log('WebSocket déconnecté');
+        // Autres traitements à la fermeture
+    };
+}
+
+// Fonction pour envoyer un message via WebSocket
+function sendWebSocketMessage(message) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(message);
+    }
+}
+
+// Fonction pour fermer la connexion WebSocket
+function disconnectWebSocket() {
+    if (socket) {
+        socket.close();
+    }
+}
+
+// Intégrer avec la connexion et la déconnexion de l'utilisateur
+// Par exemple, appeler connectWebSocket() après une connexion utilisateur réussie
+// et disconnectWebSocket() lors de la déconnexion de l'utilisateur
+
 

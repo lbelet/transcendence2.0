@@ -12,7 +12,7 @@
 <body>
     <div class="container">
         <div id="home-section">
-            <h1>Bienvenue sur Mon Site test</h1>
+            <h1>Bienvenue sur Mon Site</h1>
             <button class="btn btn-primary" onclick="showLoginForm()">Login</button>
             <button class="btn btn-secondary" onclick="showRegisterForm()">Créer un compte</button>
         </div>
@@ -66,7 +66,7 @@
 
         <div id="welcome-section" class="hidden">
             <h2>Bienvenue sur Mon Site</h2>
-            <p>Bienvenue, <span id="user-name"></span>!</p>
+            <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
             <button class="btn btn-primary" onclick="logout()">Déconnexion</button>
             <button class="btn btn-primary" onclick="showGameForm()">Game</button>
             <button class="btn btn-primary" onclick="edit()">Edit profile</button>
@@ -74,7 +74,13 @@
 
         <div id="game-section" class="hidden">
             <h2>Bienvenue sur la page de jeu</h2>
-            <p>Bienvenue, <span id="user-name"></span>!</p>
+            <p>Bienvenue, <span id="user-name-game"></span>!</p>
+            <button class="btn btn-primary" onclick="playPong()">play Pong</button>
+        </div>
+
+        <div id="pong-section" class="hidden">
+            <h2>Pong 3D</h2>
+            <canvas id="pong-canvas"></canvas>
         </div>
 
 
