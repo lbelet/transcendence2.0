@@ -111,6 +111,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
             console.log('Login successful:', response.data);
             localStorage.setItem('username', username);
             showWelcome();
+            connectWebSocket();
         })
         .catch(function (error) {
             console.error('Login error:', error);
@@ -120,16 +121,14 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
 
 //-------------------- SOCKETS -----------------
 
-// main.js
-
 // Variable globale pour la connexion WebSocket
 let socket;
 
 // Fonction pour établir la connexion WebSocket
 function connectWebSocket() {
     // Remplacez 'wss://votreurl.com' par votre URL WebSocket
-    socket = new WebSocket('wss://localhost/ws/');
-
+    socket = new WebSocket('wss://localhost');
+    console.log("socket: ", socket)
     socket.onopen = function (event) {
         console.log('WebSocket connecté');
         // Autres traitements à l'ouverture
