@@ -49,6 +49,7 @@ function navigateTo(sectionId) {
 
 function logout() {
     localStorage.removeItem('username');
+    disconnectWebSocket();
     navigateTo('home');
 }
 
@@ -127,7 +128,7 @@ let socket;
 // Fonction pour établir la connexion WebSocket
 function connectWebSocket() {
     // Remplacez 'wss://votreurl.com' par votre URL WebSocket
-    socket = new WebSocket('wss://localhost');
+    socket = new WebSocket('wss://localhost/');
     console.log("socket: ", socket)
     socket.onopen = function (event) {
         console.log('WebSocket connecté');
