@@ -11,12 +11,14 @@
 
 <body>
     <div class="container">
+        <!-- Home Section -->
         <div id="home-section">
             <h1>Bienvenue sur Mon Site</h1>
             <button class="btn btn-primary" onclick="showLoginForm()">Login</button>
             <button class="btn btn-secondary" onclick="showRegisterForm()">Créer un compte</button>
         </div>
 
+        <!-- Login Section -->
         <div id="login-section" class="hidden">
             <h2>Login</h2>
             <form id="loginForm">
@@ -32,7 +34,19 @@
             </form>
         </div>
 
+        <!-- Two-Factor Authentication Section -->
+        <div id="two-factor-section" class="hidden">
+            <h2>Two-Factor Authentication</h2>
+            <form id="twoFactorForm">
+                <div class="form-group">
+                    <label for="twoFactorCode">2FA Code</label>
+                    <input type="text" class="form-control" id="twoFactorCode" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Verify</button>
+            </form>
+        </div>
 
+        <!-- Register Section -->
         <div id="register-section" class="hidden">
             <h2>Créer un compte</h2>
             <form id="registerForm">
@@ -64,19 +78,32 @@
             </form>
         </div>
 
+        <!-- Welcome Section -->
         <div id="welcome-section" class="hidden">
             <h2>Bienvenue sur Mon Site</h2>
             <p>Bienvenue, <span id="user-name"></span>!</p>
             <button class="btn btn-primary" onclick="logout()">Déconnexion</button>
             <button class="btn btn-primary" onclick="showGameForm()">Game</button>
-            <button class="btn btn-primary" onclick="edit()">Edit profile</button>
+            <button class="btn btn-primary" onclick="showEditUserForm()">Modifier le profil</button>
         </div>
 
+        <!-- Game Section -->
         <div id="game-section" class="hidden">
             <h2>Bienvenue sur la page de jeu</h2>
             <p>Bienvenue, <span id="user-name"></span>!</p>
         </div>
 
+        <!-- Edit User Section -->
+        <div id="edit-user-section" class="hidden">
+            <h2>Modifier le profil</h2>
+            <form id="editUserForm">
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="toggle-2fa">
+                    <label class="form-check-label" for="toggle-2fa">Activer l'authentification à deux facteurs</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+            </form>
+        </div>
 
     </div>
 
