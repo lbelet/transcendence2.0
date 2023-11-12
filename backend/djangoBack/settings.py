@@ -124,6 +124,6 @@ SIMPLE_JWT = {
     # ... other settings ...
 }
 
-# Media files configuration (uncomment if needed)
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = BASE_DIR / 'media'
+# Media files configuration (needed for the avatar)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

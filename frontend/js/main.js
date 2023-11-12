@@ -33,9 +33,26 @@ function showQrTwoFactorForm() {
 
 function showWelcome() {
     const username = localStorage.getItem('username');
-    document.getElementById('user-name').textContent = username || 'Utilisateur';
+    document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
+
+    // Fetch user avatar URL from the backend
+    axios.get(`/api/user/avatar/${username}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+    .then(function (response) {
+        const avatarUrl = response.data.avatarUrl;
+        document.getElementById('user-avatar').src = avatarUrl;
+    })
+    .catch(function (error) {
+        console.error('Error fetching avatar:', error);
+        document.getElementById('user-avatar').src = '/media/avatars/default.png';
+    });
+
     navigateTo('welcome');
 }
+
 
 // --- Utility Functions ---
 
@@ -88,28 +105,32 @@ function showWelcome() {
 // Event listener for the registration form submission
 document.getElementById('registerForm').addEventListener('submit', function (event) {
     event.preventDefault();
-    const username = document.getElementById('username').value;
-    const firstName = document.getElementById('firstname').value;
-    const lastName = document.getElementById('lastname').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const retypePassword = document.getElementById('retypePassword').value;
-
-    if (password === retypePassword) {
-        axios.post('/api/register/', {
-            username: username,
-            first_name: firstName,
-            last_name: lastName,
-            email: email,
-            password: password,
+    // Create FormData object
+    let formData = new FormData();
+    formData.append('username', document.getElementById('username').value);
+    formData.append('first_name', document.getElementById('firstname').value);
+    formData.append('last_name', document.getElementById('lastname').value);
+    formData.append('email', document.getElementById('email').value);
+    formData.append('password', document.getElementById('password').value);
+    // Add avatar file to FormData
+    let avatarFile = document.getElementById('avatar').files[0];
+    if (avatarFile) {
+        formData.append('avatar', avatarFile);
+    }
+    // Check if passwords match
+    if (document.getElementById('password').value === document.getElementById('retypePassword').value) {
+        axios.post('/api/register/', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
         })
-            .then(function (response) {
-                console.log('Registered successfully:', response.data);
-                navigateTo('login');
-            })
-            .catch(function (error) {
-                console.error('Registration error:', error);
-            });
+        .then(function (response) {
+            console.log('Registered successfully:', response.data);
+            navigateTo('login');
+        })
+        .catch(function (error) {
+            console.error('Registration error:', error);
+        });
     } else {
         alert('Passwords do not match!');
     }

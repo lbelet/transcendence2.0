@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from django.conf.urls.static import static
+
+from djangoBack import settings
 
 from . import views
 
@@ -20,7 +23,11 @@ urlpatterns = [
 
     # User related URL
     path('user/update', views.update_user, name='update-user'),
+    path('api/user/avatar/<str:username>/', views.get_user_avatar, name='get_user_avatar'),
 
     # Home page URL
     path('', views.index, name='index'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

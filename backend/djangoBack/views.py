@@ -4,11 +4,14 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 # Third-party imports
 import pyotp
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from djangoBack import settings
 
 # Local application imports
 from djangoBack.models import User
@@ -17,18 +20,51 @@ from djangoBack.helpers import (
     retrieve_stored_2fa_code
 )
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_avatar(request, username):
+    try:
+        user = User.objects.get(username=username)
+        if user.avatar:
+            avatar_url = request.build_absolute_uri(user.avatar.url)
+        else:
+            avatar_url = request.build_absolute_uri(settings.MEDIA_URL + 'avatars/default.png')
+        return JsonResponse({'avatarUrl': avatar_url})
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
 @csrf_exempt
 def register(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST method is accepted'}, status=405)
 
-    data = json.loads(request.body)
-    required_fields = ['first_name', 'last_name', 'email', 'username', 'password']
-    if not all(data.get(field) for field in required_fields):
+    # Use Django's request.POST and request.FILES for form data and file uploads
+    username = request.POST.get('username')
+    first_name = request.POST.get('first_name')
+    last_name = request.POST.get('last_name')
+    email = request.POST.get('email')
+    password = request.POST.get('password')
+    avatar = request.FILES.get('avatar')  # Access the uploaded file
+
+    if not all([username, first_name, last_name, email, password]):
         return JsonResponse({'error': 'All fields are required'}, status=400)
 
     try:
-        User.objects.create_user(**data)
+        user = User.objects.create_user(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            password=password
+        )
+        # Save avatar if provided
+        if avatar:
+            # Save the file under 'avatars/username/filename'
+            file_path = f'avatars/{username}/{avatar.name}'
+            saved_path = default_storage.save(file_path, ContentFile(avatar.read()))
+            user.avatar = saved_path  # Link the saved file path to the user's avatar field
+            user.save()
+
         return JsonResponse({'success': 'User created successfully'}, status=201)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
