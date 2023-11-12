@@ -1,49 +1,22 @@
+# Standard library imports
 import json
-import secrets
-import datetime
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate
-from django.core.mail import send_mail
-from django.conf import settings
-from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+
+# Third-party imports
+import pyotp
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken
 
+# Local application imports
 from djangoBack.models import User
+from djangoBack.helpers import (
+    get_tokens_for_user, send_two_factor_email, generate_qr_code, 
+    retrieve_stored_2fa_code
+)
 
-# Helper Functions
-def get_tokens_for_user(user):
-    refresh = RefreshToken.for_user(user)
-    return {
-        'refresh': str(refresh),
-        'access': str(refresh.access_token),
-    }
-
-def generate_2fa_code():
-    return ''.join(secrets.choice('0123456789') for i in range(6))
-
-def send_two_factor_email(user_email, user):
-    two_factor_code = generate_2fa_code()
-    user.two_factor_code = two_factor_code
-    user.two_factor_code_expires = timezone.now() + datetime.timedelta(minutes=5)
-    user.save()
-    send_mail(
-        subject='Your 2FA Code',
-        message=f'Your 2FA code is: {two_factor_code}',
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[user_email],
-        fail_silently=False,
-    )
-
-def retrieve_stored_2fa_code(user):
-    if user.two_factor_code_expires and timezone.now() < user.two_factor_code_expires:
-        return user.two_factor_code
-    return None
-
-# View Functions
 @csrf_exempt
 def register(request):
     if request.method != 'POST':
@@ -71,12 +44,17 @@ def api_login(request):
 
     if not username or not password:
         return JsonResponse({'error': 'Username and password are required'}, status=400)
-
+    
     user = authenticate(username=username, password=password)
     if user:
         if user.is_two_factor_enabled:
-            send_two_factor_email(user.email, user)
-            return JsonResponse({'2fa_required': True})
+            if user.two_factor_method == 'email':
+                send_two_factor_email(user.email, user)
+                return JsonResponse({'2fa_required': True, '2fa_method': 'email'})
+            elif user.two_factor_method == 'qr':
+                qr_code_img = generate_qr_code(user)
+                return JsonResponse({'2fa_required': True, '2fa_method': 'qr', 'qr_code_img': qr_code_img})
+
         tokens = get_tokens_for_user(user)
         return JsonResponse(tokens, status=200)
     return JsonResponse({'error': 'Invalid username or password'}, status=400)
@@ -85,22 +63,31 @@ def api_login(request):
 @permission_classes([IsAuthenticated])
 def update_user(request):
     data = json.loads(request.body)
-    is_two_factor_enabled = data.get('isTwoFactorEnabled')
+    two_factor_method = data.get('twoFactorMethod')
 
     user = request.user
-    user.is_two_factor_enabled = is_two_factor_enabled
-    user.save()
+    user.two_factor_method = two_factor_method
 
-    if is_two_factor_enabled:
-        send_mail(
-            subject='Two-Factor Authentication Enabled',
-            message='Two-factor authentication has been enabled for your account.',
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[user.email],
-            fail_silently=False,
-        )
+    if two_factor_method == 'qr':
+        if not user.totp_secret:
+            user.totp_secret = pyotp.random_base32()
+        user.is_two_factor_enabled = True
+        user.save()
 
-    return JsonResponse({'success': 'Profile updated successfully'}, status=200)
+        qr_code_img = generate_qr_code(user)
+        return JsonResponse({'success': 'Profile updated successfully', 'qr_code_data': qr_code_img}, status=200)
+
+    elif two_factor_method == 'email':
+        user.is_two_factor_enabled = True
+        user.save()
+
+        send_two_factor_email(user.email, user)
+        return JsonResponse({'success': 'Profile updated successfully'}, status=200)
+
+    else:
+        user.is_two_factor_enabled = False
+        user.save()
+        return JsonResponse({'success': 'Two-factor authentication disabled'}, status=200)
 
 @csrf_exempt
 def verify_two_factor_code(request):
@@ -116,11 +103,23 @@ def verify_two_factor_code(request):
     except User.DoesNotExist:
         return JsonResponse({'error': 'Invalid username'}, status=400)
 
-    stored_code = retrieve_stored_2fa_code(user)
-    if two_factor_code == stored_code:
-        tokens = get_tokens_for_user(user)
-        return JsonResponse(tokens, status=200)
-    return JsonResponse({'error': 'Invalid 2FA code'}, status=400)
+    if user.is_two_factor_enabled:
+        if user.two_factor_method == 'email':
+            stored_code = retrieve_stored_2fa_code(user)
+            if two_factor_code == stored_code:
+                tokens = get_tokens_for_user(user)
+                return JsonResponse(tokens, status=200)
+            else:
+                return JsonResponse({'error': 'Invalid 2FA code'}, status=400)
+        elif user.two_factor_method == 'qr':
+            totp = pyotp.TOTP(user.totp_secret)
+            if totp.verify(two_factor_code):
+                tokens = get_tokens_for_user(user)
+                return JsonResponse(tokens, status=200)
+            else:
+                return JsonResponse({'error': 'Invalid QR code'}, status=400)
+
+    return JsonResponse({'error': '2FA is not enabled for this user'}, status=400)
 
 def index(request):
     return render(request, 'index.html')
