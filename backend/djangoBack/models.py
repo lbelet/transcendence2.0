@@ -35,6 +35,8 @@ class User(AbstractBaseUser):
     is_two_factor_enabled = models.BooleanField(default=False)
     two_factor_code = models.CharField(max_length=6, null=True, blank=True)
     two_factor_code_expires = models.DateTimeField(null=True, blank=True)
+    totp_secret = models.CharField(max_length=100, null=True, blank=True)
+    two_factor_method = models.CharField(max_length=10, choices=[('email', 'Email'), ('qr', 'QR')], default='email')
     # Add additional fields here if necessary
 
     objects = UserManager()

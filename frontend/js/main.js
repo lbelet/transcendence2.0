@@ -1,4 +1,5 @@
-// Navigation Functions
+// --- Navigation Functions ---
+
 function showLoginForm() {
     navigateTo('login');
 }
@@ -26,13 +27,19 @@ function showTwoFactorForm() {
     navigateTo('two-factor');
 }
 
+function showQrTwoFactorForm() {
+    navigateTo('qr-two-factor');
+}
+
 function showWelcome() {
     const username = localStorage.getItem('username');
     document.getElementById('user-name').textContent = username || 'Utilisateur';
     navigateTo('welcome');
 }
 
-// Utility Functions
+// --- Utility Functions ---
+
+// Function to hide all sections
 function hideAllSections() {
     document.getElementById('home-section').classList.add('hidden');
     document.getElementById('login-section').classList.add('hidden');
@@ -42,8 +49,11 @@ function hideAllSections() {
     document.getElementById('edit-user-section').classList.add('hidden'); // Add this line 
     document.getElementById('two-factor-section').classList.add('hidden');
     document.getElementById('pong-section').classList.add('hidden');
+    document.getElementById('qr-two-factor-section').classList.add('hidden');
+
 }
 
+// Function to navigate to a specific section
 function navigateTo(sectionId) {
     console.log("Navigating to:", sectionId);
     hideAllSections();
@@ -73,6 +83,9 @@ function showWelcome() {
     navigateTo('welcome');
 }
 
+// --- Event Listeners ---
+
+// Event listener for the registration form submission
 document.getElementById('registerForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const username = document.getElementById('username').value;
@@ -102,6 +115,7 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
     }
 });
 
+// Event listener for the login form submission
 document.getElementById('loginForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const username = document.getElementById('login-username').value;
@@ -112,9 +126,16 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         password: password,
     })
         .then(function (response) {
+            localStorage.setItem('username', username);
+
             if (response.data['2fa_required']) {
-                localStorage.setItem('username', username);
-                showTwoFactorForm();
+                if (response.data['2fa_method'] === 'qr') {
+                    const qrCodeImgSrc = response.data['qr_code_img'];
+                    document.getElementById('qr-code-img').src = qrCodeImgSrc;
+                    showQrTwoFactorForm();
+                } else {
+                    showTwoFactorForm();
+                }
             } else {
                 console.log('Login successful:', response.data);
                 localStorage.setItem('username', username);
@@ -129,26 +150,29 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         });
 });
 
+// Event listener for the edit user form submission
 document.getElementById('editUserForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    const isTwoFactorEnabled = document.getElementById('toggle-2fa').checked;
+    const selectedTwoFactorMethod = document.getElementById('twoFactorMethod').value;
 
     axios.post('/api/user/update', {
-        isTwoFactorEnabled: isTwoFactorEnabled,
+        username: localStorage.getItem('username'),
+        twoFactorMethod: selectedTwoFactorMethod,
     }, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
         }
     }).then(response => {
-        alert('Profile updated successfully!');
+        alert(`2FA preference updated to ${selectedTwoFactorMethod.toUpperCase()}.`);
         navigateTo('welcome');
     }).catch(error => {
-        console.error('Error updating profile:', error);
-        alert('Error updating profile. Please try again.');
+        console.error('Error updating 2FA preference:', error);
+        alert('Error updating 2FA preference. Please try again.');
     });
 });
 
+// Event listener for the two-factor authentication form submission
 document.getElementById('twoFactorForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const twoFactorCode = document.getElementById('twoFactorCode').value;
@@ -170,7 +194,31 @@ document.getElementById('twoFactorForm').addEventListener('submit', function (ev
         });
 });
 
-// Token Management
+// Event listener for the QR two-factor authentication form submission
+document.getElementById('qrTwoFactorForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    const qrTwoFactorCode = document.getElementById('qrTwoFactorCode').value;
+    const username = localStorage.getItem('username'); // Assuming username is stored in localStorage
+
+    axios.post('/api/verify_two_factor_code/', {
+        username: username,
+        two_factor_code: qrTwoFactorCode,
+    })
+        .then(function (response) {
+            console.log('QR 2FA Verification successful:', response.data);
+            localStorage.setItem('access_token', response.data.access);
+            localStorage.setItem('refresh_token', response.data.refresh);
+            showWelcome();
+        })
+        .catch(function (error) {
+            console.error('QR 2FA Verification error:', error);
+            alert('Invalid QR 2FA code. Please try again.');
+        });
+});
+
+// --- Token Management ---
+
+// Function to refresh the token
 function refreshToken() {
     const refreshToken = localStorage.getItem('refresh_token');
     if (!refreshToken) {
@@ -190,6 +238,7 @@ function refreshToken() {
         });
 }
 
+// Function to verify the token
 function verifyToken() {
     const accessToken = localStorage.getItem('access_token');
     if (!accessToken) {
@@ -208,6 +257,7 @@ function verifyToken() {
         });
 }
 
+// Function to handle user logout
 function logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
@@ -216,7 +266,9 @@ function logout() {
     navigateTo('login');
 }
 
-// Page Initialization
+// --- Page Initialization ---
+
+// Function to initialize the page based on the URL hash
 window.onload = function () {
     const path = window.location.hash.substring(1);
     if (path) {
@@ -226,6 +278,7 @@ window.onload = function () {
     }
 };
 
+// Handling browser back and forward navigation events
 window.onpopstate = function (event) {
     console.log("Popstate event:", event.state);
     if (event.state && event.state.section) {
