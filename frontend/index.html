@@ -81,7 +81,7 @@
         <!-- Welcome Section -->
         <div id="welcome-section" class="hidden">
             <h2>Bienvenue sur Mon Site</h2>
-            <p>Bienvenue, <span id="user-name"></span>!</p>
+            <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
             <button class="btn btn-primary" onclick="logout()">Déconnexion</button>
             <button class="btn btn-primary" onclick="showGameForm()">Game</button>
             <button class="btn btn-primary" onclick="showEditUserForm()">Modifier le profil</button>
@@ -90,7 +90,13 @@
         <!-- Game Section -->
         <div id="game-section" class="hidden">
             <h2>Bienvenue sur la page de jeu</h2>
-            <p>Bienvenue, <span id="user-name"></span>!</p>
+            <p>Bienvenue, <span id="user-name-game"></span>!</p>
+            <button class="btn btn-primary" onclick="playPong()">play Pong</button>
+        </div>
+
+        <div id="pong-section" class="hidden">
+            <h2>Pong 3D</h2>
+            <canvas id="pong-canvas"></canvas>
         </div>
 
         <!-- Edit User Section -->

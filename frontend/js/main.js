@@ -7,7 +7,14 @@ function showRegisterForm() {
     navigateTo('register');
 }
 
+function playPong() {
+    navigateTo('pong')
+}
+
 function showGameForm() {
+    const username = localStorage.getItem('username');
+    console.log("1 username: ", username)
+    document.getElementById('user-name-game').textContent = username || 'Utilisateur';
     navigateTo('game');
 }
 
@@ -34,6 +41,7 @@ function hideAllSections() {
     document.getElementById('game-section').classList.add('hidden');
     document.getElementById('edit-user-section').classList.add('hidden'); // Add this line 
     document.getElementById('two-factor-section').classList.add('hidden');
+    document.getElementById('pong-section').classList.add('hidden');
 }
 
 function navigateTo(sectionId) {
@@ -48,6 +56,23 @@ function navigateTo(sectionId) {
 }
 
 // Event Listeners
+
+window.onpopstate = function (event) {
+    console.log("Popstate event:", event.state);
+    if (event.state && event.state.section) {
+        navigateTo(event.state.section);
+    } else {
+        navigateTo('home');
+    }
+};
+
+function showWelcome() {
+    const username = localStorage.getItem('username');
+    console.log("2 username: ", username)
+    document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
+    navigateTo('welcome');
+}
+
 document.getElementById('registerForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const username = document.getElementById('username').value;
@@ -92,9 +117,11 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                 showTwoFactorForm();
             } else {
                 console.log('Login successful:', response.data);
+                localStorage.setItem('username', username);
                 localStorage.setItem('access_token', response.data.access);
                 localStorage.setItem('refresh_token', response.data.refresh);
                 showWelcome();
+                connectWebSocket();
             }
         })
         .catch(function (error) {
@@ -212,3 +239,53 @@ window.onpopstate = function (event) {
 if (window.location.hash === '#edit-user') {
     showEditUserForm();
 }
+
+//-------------------- SOCKETS -----------------
+
+// Variable globale pour la connexion WebSocket
+let socket;
+
+// Fonction pour établir la connexion WebSocket
+function connectWebSocket() {
+    // Remplacez 'wss://votreurl.com' par votre URL WebSocket
+    socket = new WebSocket('wss://localhost/');
+    console.log("socket: ", socket)
+    socket.onopen = function (event) {
+        console.log('WebSocket connecté');
+        // Autres traitements à l'ouverture
+    };
+
+    socket.onmessage = function (event) {
+        console.log('Message reçu:', event.data);
+        // Traiter les messages entrants
+    };
+
+    socket.onerror = function (error) {
+        console.error('Erreur WebSocket:', error);
+    };
+
+    socket.onclose = function (event) {
+        console.log('WebSocket déconnecté');
+        // Autres traitements à la fermeture
+    };
+}
+
+// Fonction pour envoyer un message via WebSocket
+function sendWebSocketMessage(message) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(message);
+    }
+}
+
+// Fonction pour fermer la connexion WebSocket
+function disconnectWebSocket() {
+    if (socket) {
+        socket.close();
+    }
+}
+
+// Intégrer avec la connexion et la déconnexion de l'utilisateur
+// Par exemple, appeler connectWebSocket() après une connexion utilisateur réussie
+// et disconnectWebSocket() lors de la déconnexion de l'utilisateur
+
+

@@ -47,14 +47,21 @@ class User(AbstractBaseUser):
 
 # Game Model
 class Game(models.Model):
-    username1 = models.CharField(max_length=100)
-    username2 = models.CharField(max_length=100)
-    winner = models.CharField(max_length=100)
+    player1Username = models.CharField(max_length=100, default='')
+    player2Username = models.CharField(max_length=100, default='')
+    player1Score = models.IntegerField(default=0)
+    player2Score = models.IntegerField(default=0)
+    winner = models.CharField(max_length=100, default='')
+    status = models.CharField(max_length=12, default='waiting', choices=[
+        ('waiting', 'Waiting'),
+        ('in-progress', 'In Progress'),
+        ('completed', 'Completed')
+    ])
+    isPaused = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.username1} vs {self.username2} - Winner: {self.winner}"
+        return f"{self.player1Username} vs {self.player2Username} - Winner: {self.winner}"
 
-# Test Model
 class Test(models.Model):
     number_of_games = models.IntegerField()
     number_of_wins = models.IntegerField()

@@ -1,4 +1,4 @@
-# myapp/consumers.py
+# djangoBack/consumers.py
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
