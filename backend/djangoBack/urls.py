@@ -23,7 +23,7 @@ urlpatterns = [
 
     # User related URL
     path('user/update', views.update_user, name='update-user'),
-    path('api/user/avatar/<str:username>/', views.get_user_avatar, name='get_user_avatar'),
+    path('get_user_avatar/', views.get_user_avatar, name='get-user-avatar'),
 
     # Home page URL
     path('', views.index, name='index'),

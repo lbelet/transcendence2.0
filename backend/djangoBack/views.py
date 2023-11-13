@@ -22,16 +22,20 @@ from djangoBack.helpers import (
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_user_avatar(request, username):
-    try:
-        user = User.objects.get(username=username)
-        if user.avatar:
-            avatar_url = request.build_absolute_uri(user.avatar.url)
-        else:
-            avatar_url = request.build_absolute_uri(settings.MEDIA_URL + 'avatars/default.png')
-        return JsonResponse({'avatarUrl': avatar_url})
-    except User.DoesNotExist:
-        return JsonResponse({'error': 'User not found'}, status=404)
+def get_user_avatar(request):
+    user = request.user
+    if user.avatar:
+        # Construction de l'URL en HTTPS si nécessaire
+        avatar_url = request.build_absolute_uri(user.avatar.url)
+        if request.is_secure():
+            avatar_url = avatar_url.replace('http://', 'https://')
+    else:
+        # URL de l'avatar par défaut
+        avatar_url = request.build_absolute_uri(settings.MEDIA_URL + 'avatars/default.png')
+        if request.is_secure():
+            avatar_url = avatar_url.replace('http://', 'https://')
+    return JsonResponse({'avatarUrl': avatar_url})
+
 
 @csrf_exempt
 def register(request):

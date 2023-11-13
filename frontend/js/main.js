@@ -36,7 +36,7 @@ function showWelcome() {
     document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
 
     // Fetch user avatar URL from the backend
-    axios.get(`/api/user/avatar/${username}`, {
+    axios.get(`/api/get_user_avatar/`, {
         headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
         }
@@ -93,12 +93,12 @@ window.onpopstate = function (event) {
     }
 };
 
-function showWelcome() {
-    const username = localStorage.getItem('username');
-    console.log("2 username: ", username)
-    document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
-    navigateTo('welcome');
-}
+// function showWelcome() {
+//     const username = localStorage.getItem('username');
+//     console.log("2 username: ", username)
+//     document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
+//     navigateTo('welcome');
+// }
 
 // --- Event Listeners ---
 
