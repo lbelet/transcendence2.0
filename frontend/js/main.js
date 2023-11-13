@@ -93,13 +93,6 @@ window.onpopstate = function (event) {
     }
 };
 
-// function showWelcome() {
-//     const username = localStorage.getItem('username');
-//     console.log("2 username: ", username)
-//     document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
-//     navigateTo('welcome');
-// }
-
 // --- Event Listeners ---
 
 // Event listener for the registration form submission
