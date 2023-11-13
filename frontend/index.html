@@ -11,7 +11,7 @@
 
 <body>
     <div class="container">
-        
+
         <!-- Home Section -->
         <div id="home-section">
             <h1>Bienvenue sur Mon Site</h1>
@@ -80,12 +80,27 @@
             <h2>Bienvenue sur Mon Site</h2>
             <img id="user-avatar" src="" alt="User Avatar" style="width: 100px; height: 100px;">
             <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
-            
+
             <!-- Welcome Buttons -->
             <button class="btn btn-primary" onclick="logout()">Déconnexion</button>
             <button class="btn btn-primary" onclick="showGameForm()">Game</button>
             <button class="btn btn-primary" onclick="showEditUserForm()">Modifier le profil</button>
+            <button class="btn btn-primary" onclick="openSearchModal()">Rechercher Utilisateur</button>
         </div>
+
+
+        <!-- Modale de recherche utilisateur -->
+        <!-- Modale de recherche utilisateur -->
+        <div id="searchUserModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeSearchModal()">&times;</span>
+                <h2>Rechercher Utilisateur</h2>
+                <input type="text" id="search-username" placeholder="Nom d'utilisateur">
+                <button class="btn btn-primary" onclick="searchUser()">Rechercher</button>
+                <div id="search-results"></div>
+            </div>
+        </div>
+
 
         <!-- Two-Factor Authentication Section -->
         <div id="two-factor-section" class="hidden">

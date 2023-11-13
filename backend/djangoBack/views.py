@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.contrib.auth import get_user_model
+
 
 # Third-party imports
 import pyotp
@@ -16,9 +18,10 @@ from djangoBack import settings
 # Local application imports
 from djangoBack.models import User
 from djangoBack.helpers import (
-    get_tokens_for_user, send_two_factor_email, generate_qr_code, 
+    get_tokens_for_user, send_two_factor_email, generate_qr_code,
     retrieve_stored_2fa_code
 )
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -31,7 +34,8 @@ def get_user_avatar(request):
             avatar_url = avatar_url.replace('http://', 'https://')
     else:
         # URL de l'avatar par défaut
-        avatar_url = request.build_absolute_uri(settings.MEDIA_URL + 'avatars/default.png')
+        avatar_url = request.build_absolute_uri(
+            settings.MEDIA_URL + 'avatars/default.png')
         if request.is_secure():
             avatar_url = avatar_url.replace('http://', 'https://')
     return JsonResponse({'avatarUrl': avatar_url})
@@ -65,13 +69,15 @@ def register(request):
         if avatar:
             # Save the file under 'avatars/username/filename'
             file_path = f'avatars/{username}/{avatar.name}'
-            saved_path = default_storage.save(file_path, ContentFile(avatar.read()))
+            saved_path = default_storage.save(
+                file_path, ContentFile(avatar.read()))
             user.avatar = saved_path  # Link the saved file path to the user's avatar field
             user.save()
 
         return JsonResponse({'success': 'User created successfully'}, status=201)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
 
 @csrf_exempt
 def api_login(request):
@@ -84,7 +90,7 @@ def api_login(request):
 
     if not username or not password:
         return JsonResponse({'error': 'Username and password are required'}, status=400)
-    
+
     user = authenticate(username=username, password=password)
     if user:
         if user.is_two_factor_enabled:
@@ -98,6 +104,7 @@ def api_login(request):
         tokens = get_tokens_for_user(user)
         return JsonResponse(tokens, status=200)
     return JsonResponse({'error': 'Invalid username or password'}, status=400)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -128,6 +135,7 @@ def update_user(request):
         user.is_two_factor_enabled = False
         user.save()
         return JsonResponse({'success': 'Two-factor authentication disabled'}, status=200)
+
 
 @csrf_exempt
 def verify_two_factor_code(request):
@@ -160,6 +168,26 @@ def verify_two_factor_code(request):
                 return JsonResponse({'error': 'Invalid QR code'}, status=400)
 
     return JsonResponse({'error': '2FA is not enabled for this user'}, status=400)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def search_users(request):
+    query = request.GET.get('username', '')
+    User = get_user_model()
+    users = User.objects.filter(username__icontains=query)
+
+    users_data = []
+    for user in users:
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'avatarUrl': request.build_absolute_uri(user.avatar.url) if user.avatar else None
+        }
+        users_data.append(user_data)
+
+    return JsonResponse(users_data, safe=False)
+
 
 def index(request):
     return render(request, 'index.html')

@@ -41,17 +41,87 @@ function showWelcome() {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`
         }
     })
-    .then(function (response) {
-        const avatarUrl = response.data.avatarUrl;
-        document.getElementById('user-avatar').src = avatarUrl;
-    })
-    .catch(function (error) {
-        console.error('Error fetching avatar:', error);
-        document.getElementById('user-avatar').src = '/media/avatars/default.png';
-    });
+        .then(function (response) {
+            const avatarUrl = response.data.avatarUrl;
+            document.getElementById('user-avatar').src = avatarUrl;
+        })
+        .catch(function (error) {
+            console.error('Error fetching avatar:', error);
+            document.getElementById('user-avatar').src = '/media/avatars/default.png';
+        });
 
     navigateTo('welcome');
 }
+
+
+function openSearchModal() {
+    document.getElementById('searchUserModal').style.display = 'block';
+}
+
+function closeSearchModal() {
+    document.getElementById('searchUserModal').style.display = 'none';
+}
+
+function searchUser() {
+    var username = document.getElementById('search-username').value;
+    axios.get(`/api/search_users/?username=${encodeURIComponent(username)}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+        .then(function (response) {
+            var users = response.data;
+            var resultsContainer = document.getElementById('search-results');
+
+            // Effacer les résultats précédents
+            resultsContainer.innerHTML = '';
+
+            if (users.length === 0) {
+                resultsContainer.textContent = 'Utilisateur non trouvé';
+            } else {
+                users.forEach(function (user) {
+                    var userContainer = document.createElement('div');
+                    userContainer.className = 'user-container';
+
+                    // Nom de l'utilisateur
+                    var userName = document.createElement('p');
+                    userName.textContent = user.username;
+                    userContainer.appendChild(userName);
+
+                    // Avatar de l'utilisateur
+                    if (user.avatarUrl) {
+                        console.log("avatar search user: ", user.avatarUrl)
+                        var userAvatar = document.createElement('img');
+                        userAvatar.src = user.avatarUrl;
+                        userAvatar.alt = 'Avatar de ' + user.username;
+                        userAvatar.style.width = '50px'; // ajustez la taille selon vos besoins
+                        userContainer.appendChild(userAvatar);
+                    }
+
+                    // Bouton Ajouter en ami
+                    var addFriendButton = document.createElement('button');
+                    addFriendButton.textContent = 'Ajouter en ami';
+                    addFriendButton.className = 'btn btn-primary';
+                    addFriendButton.onclick = function () {
+                        addFriend(user.id); // Implémentez cette fonction selon vos besoins
+                    };
+                    userContainer.appendChild(addFriendButton);
+
+                    // Ajout du conteneur de l'utilisateur dans les résultats
+                    resultsContainer.appendChild(userContainer);
+                });
+            }
+        })
+        .catch(function (error) {
+            console.error('Erreur lors de la recherche de l\'utilisateur:', error);
+        });
+}
+
+
+
+
+
+
 
 
 // --- Utility Functions ---
@@ -117,13 +187,13 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
                 'Content-Type': 'multipart/form-data'
             }
         })
-        .then(function (response) {
-            console.log('Registered successfully:', response.data);
-            navigateTo('login');
-        })
-        .catch(function (error) {
-            console.error('Registration error:', error);
-        });
+            .then(function (response) {
+                console.log('Registered successfully:', response.data);
+                navigateTo('login');
+            })
+            .catch(function (error) {
+                console.error('Registration error:', error);
+            });
     } else {
         alert('Passwords do not match!');
     }
@@ -277,7 +347,7 @@ function logout() {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('username');
 
-    navigateTo('login');
+    navigateTo('home');
 }
 
 // --- Page Initialization ---
