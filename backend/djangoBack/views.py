@@ -1,4 +1,5 @@
 # Standard library imports
+from django.db.models import Q
 import json
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -16,7 +17,7 @@ from rest_framework.permissions import IsAuthenticated
 from djangoBack import settings
 
 # Local application imports
-from djangoBack.models import User
+from djangoBack.models import User, FriendRequest
 from djangoBack.helpers import (
     get_tokens_for_user, send_two_factor_email, generate_qr_code,
     retrieve_stored_2fa_code
@@ -187,6 +188,27 @@ def search_users(request):
         users_data.append(user_data)
 
     return JsonResponse(users_data, safe=False)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def send_friend_request(request):
+    receiver_username = request.data.get('receiver_username')
+    User = get_user_model()
+    try:
+        receiver = User.objects.get(username=receiver_username)
+
+        # Vérifier si une demande d'ami existe déjà
+        if FriendRequest.objects.filter(
+            Q(sender=request.user, receiver=receiver) |
+            Q(sender=receiver, receiver=request.user)
+        ).exists():
+            return JsonResponse({'error': 'Une demande d\'ami existe déjà'}, status=400)
+
+        FriendRequest.objects.create(sender=request.user, receiver=receiver)
+        return JsonResponse({'message': 'Demande d\'ami envoyée avec succès'}, status=200)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'Utilisateur non trouvé'}, status=404)
 
 
 def index(request):

@@ -26,6 +26,8 @@ urlpatterns = [
     path('user/update', views.update_user, name='update-user'),
     path('get_user_avatar/', views.get_user_avatar, name='get-user-avatar'),
     path('search_users/', views.search_users, name='search_users'),
+    path('send_friend_request/', views.send_friend_request, name='send_friend_request'),
+
 
 
     # Home page URL

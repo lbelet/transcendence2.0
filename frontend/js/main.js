@@ -103,7 +103,7 @@ function searchUser() {
                     addFriendButton.textContent = 'Ajouter en ami';
                     addFriendButton.className = 'btn btn-primary';
                     addFriendButton.onclick = function () {
-                        addFriend(user.id); // Implémentez cette fonction selon vos besoins
+                        addFriend(user.username);
                     };
                     userContainer.appendChild(addFriendButton);
 
@@ -116,11 +116,6 @@ function searchUser() {
             console.error('Erreur lors de la recherche de l\'utilisateur:', error);
         });
 }
-
-
-
-
-
 
 
 
@@ -338,6 +333,24 @@ function verifyToken() {
         })
         .catch(function (error) {
             console.error('Invalid token:', error);
+        });
+}
+
+// Function to add friend
+function addFriend(receiverUsername) {
+    axios.post('/api/send_friend_request/', {
+        receiver_username: receiverUsername
+    }, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+        .then(function (response) {
+            console.log(response.data.message);
+            // Vous pouvez également mettre à jour l'interface utilisateur ici
+        })
+        .catch(function (error) {
+            console.error('Erreur lors de l\'envoi de la demande d\'ami:', error);
         });
 }
 

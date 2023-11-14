@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 # Custom UserManager
+
+
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -26,6 +28,8 @@ class UserManager(BaseUserManager):
     #     return self.create_user(email, password, **extra_fields)
 
 # Custom User Model
+
+
 class User(AbstractBaseUser):
     username = models.CharField(max_length=100, unique=True)
     first_name = models.CharField(max_length=100)
@@ -36,8 +40,12 @@ class User(AbstractBaseUser):
     two_factor_code = models.CharField(max_length=6, null=True, blank=True)
     two_factor_code_expires = models.DateTimeField(null=True, blank=True)
     totp_secret = models.CharField(max_length=100, null=True, blank=True)
-    two_factor_method = models.CharField(max_length=10, choices=[('email', 'Email'), ('qr', 'QR')], default='email')
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True, default='avatars/default.png')
+    two_factor_method = models.CharField(
+        max_length=10, choices=[('email', 'Email'), ('qr', 'QR')], default='email')
+    avatar = models.ImageField(
+        upload_to='avatars/', null=True, blank=True, default='avatars/default.png')
+    friends = models.ManyToManyField('self', symmetrical=True, blank=True)
+
     # Add additional fields here if necessary
 
     objects = UserManager()
@@ -49,6 +57,8 @@ class User(AbstractBaseUser):
         return f"{self.username} ({self.email})"
 
 # Game Model
+
+
 class Game(models.Model):
     player1Username = models.CharField(max_length=100, default='')
     player2Username = models.CharField(max_length=100, default='')
@@ -64,6 +74,19 @@ class Game(models.Model):
 
     def __str__(self):
         return f"{self.player1Username} vs {self.player2Username} - Winner: {self.winner}"
+
+class FriendRequest(models.Model):
+    sender = models.ForeignKey(
+        User, related_name='sent_friend_requests', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(
+        User, related_name='received_friend_requests', on_delete=models.CASCADE)
+    is_accepted = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"De {self.sender.username} à {self.receiver.username}"
+
 
 class Test(models.Model):
     number_of_games = models.IntegerField()
