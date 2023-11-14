@@ -27,7 +27,10 @@ urlpatterns = [
     path('get_user_avatar/', views.get_user_avatar, name='get-user-avatar'),
     path('search_users/', views.search_users, name='search_users'),
     path('send_friend_request/', views.send_friend_request, name='send_friend_request'),
-
+    path('pending_friend_requests/', views.get_pending_friend_requests, name='pending_friend_requests'),
+    path('accept_friend_request/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),
+    path('decline_friend_request/<int:request_id>/', views.decline_friend_request, name='decline_friend_request'),
+    path('get_friends/', views.get_friends, name='get_friends'),
 
 
     # Home page URL

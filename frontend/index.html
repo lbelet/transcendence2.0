@@ -86,10 +86,11 @@
             <button class="btn btn-primary" onclick="showGameForm()">Game</button>
             <button class="btn btn-primary" onclick="showEditUserForm()">Modifier le profil</button>
             <button class="btn btn-primary" onclick="openSearchModal()">Rechercher Utilisateur</button>
+            <button class="btn btn-primary" onclick="showFriendsModal()">Amis</button>
+            <div id="pending-requests-container"></div>
         </div>
 
 
-        <!-- Modale de recherche utilisateur -->
         <!-- Modale de recherche utilisateur -->
         <div id="searchUserModal" class="modal">
             <div class="modal-content">
@@ -101,6 +102,15 @@
             </div>
         </div>
 
+        <!-- Modale affichage des amis -->
+        <div id="friendsModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close" onclick="closeFriendsModal()">&times;</span>
+                <h2>Liste des Amis</h2>
+                <div id="friends-list-container"></div>
+            </div>
+        </div>
+        
 
         <!-- Two-Factor Authentication Section -->
         <div id="two-factor-section" class="hidden">

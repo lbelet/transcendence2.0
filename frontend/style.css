@@ -163,3 +163,50 @@ button:focus-visible {
 .user-container button {
   margin-left: 10px;
 }
+
+#pending-requests-container {
+  margin-top: 20px;
+}
+
+.request-item {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.request-item p {
+  margin: 10;
+  font-size: 1rem;
+}
+
+/* .request-button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: blue;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+} */
+
+/* .request-button:hover {
+  background-color: darkblue;
+} */
+
+.friend-item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.friend-item img {
+  margin-right: 10px;
+}
+

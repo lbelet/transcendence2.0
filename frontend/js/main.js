@@ -51,6 +51,7 @@ function showWelcome() {
         });
 
     navigateTo('welcome');
+    showPendingFriendRequests();
 }
 
 
@@ -117,6 +118,49 @@ function searchUser() {
         });
 }
 
+function showPendingFriendRequests() {
+    axios.get('/api/pending_friend_requests/', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+        .then(function (response) {
+            const requests = response.data;
+            const requestsContainer = document.getElementById('pending-requests-container');
+
+            // Effacer les demandes précédentes
+            requestsContainer.innerHTML = '';
+
+            requests.forEach(function (request) {
+                const requestElement = document.createElement('div');
+                requestElement.id = `friend-request-${request.id}`;
+                requestElement.textContent = `Demande de ${request.sender}`;
+
+                // Bouton pour accepter la demande d'ami
+                const acceptButton = document.createElement('button');
+                acceptButton.className = 'btn btn-primary';
+                acceptButton.textContent = 'Accepter';
+                acceptButton.onclick = function () {
+                    acceptFriendRequest(request.id);
+                };
+
+                // Bouton pour refuser la demande d'ami
+                const declineButton = document.createElement('button');
+                declineButton.className = 'btn btn-primary';
+                declineButton.textContent = 'Refuser';
+                declineButton.onclick = function () {
+                    declineFriendRequest(request.id);
+                };
+
+                requestElement.appendChild(acceptButton);
+                requestElement.appendChild(declineButton);
+                requestsContainer.appendChild(requestElement);
+            });
+        })
+        .catch(function (error) {
+            console.error('Erreur lors de la récupération des demandes d\'ami:', error);
+        });
+}
 
 
 // --- Utility Functions ---
@@ -336,7 +380,7 @@ function verifyToken() {
         });
 }
 
-// Function to add friend
+// Function for friends
 function addFriend(receiverUsername) {
     axios.post('/api/send_friend_request/', {
         receiver_username: receiverUsername
@@ -353,6 +397,97 @@ function addFriend(receiverUsername) {
             console.error('Erreur lors de l\'envoi de la demande d\'ami:', error);
         });
 }
+
+function acceptFriendRequest(requestId) {
+    axios.post(`/api/accept_friend_request/${requestId}/`, {}, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+        .then(function (response) {
+            console.log(response.data.message);
+            const requestElement = document.getElementById(`friend-request-${requestId}`);
+            if (requestElement) {
+                requestElement.remove();
+            }
+        })
+        .catch(function (error) {
+            console.error('Erreur lors de l\'acceptation de la demande d\'ami:', error);
+        });
+}
+
+function declineFriendRequest(requestId) {
+    axios.post(`/api/decline_friend_request/${requestId}/`, {}, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+        .then(function (response) {
+            console.log(response.data.message);
+            // Mettre à jour l'interface utilisateur ici
+            // Retirer l'élément de demande d'ami du DOM
+            const requestElement = document.getElementById(`friend-request-${requestId}`);
+            if (requestElement) {
+                requestElement.remove();
+            }
+        })
+        .catch(function (error) {
+            console.error('Erreur lors du refus de la demande d\'ami:', error);
+        });
+}
+
+function showFriendsModal() {
+    document.getElementById('friendsModal').style.display = 'block';
+    loadFriendsList(); // Fonction pour charger la liste des amis
+}
+
+function closeFriendsModal() {
+    document.getElementById('friendsModal').style.display = 'none';
+}
+
+function loadFriendsList() {
+    axios.get('/api/get_friends/', {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+        .then(function (response) {
+            const friends = response.data;
+            const friendsListContainer = document.getElementById('friends-list-container');
+            friendsListContainer.innerHTML = ''; // Effacer la liste actuelle
+
+            friends.forEach(function (friend) {
+                // Création du conteneur pour chaque ami
+                const friendElement = document.createElement('div');
+                friendElement.className = 'friend-item';
+
+                // Ajout du nom de l'ami
+                const friendName = document.createElement('p');
+                friendName.textContent = friend.username;
+                friendElement.appendChild(friendName);
+
+                // Ajout de l'avatar (si disponible)
+                if (friend.avatarUrl) {
+                    const friendAvatar = document.createElement('img');
+                    friendAvatar.src = friend.avatarUrl;
+                    friendAvatar.alt = `Avatar de ${friend.username}`;
+                    friendAvatar.style.width = '50px'; // Ajustez la taille selon vos besoins
+                    friendElement.appendChild(friendAvatar);
+                }
+
+                // Ajouter le conteneur de l'ami au conteneur principal
+                friendsListContainer.appendChild(friendElement);
+            });
+        })
+        .catch(function (error) {
+            console.error('Erreur lors de la récupération de la liste des amis:', error);
+        });
+}
+
+
+
+
+
 
 // Function to handle user logout
 function logout() {

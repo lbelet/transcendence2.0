@@ -211,5 +211,64 @@ def send_friend_request(request):
         return JsonResponse({'error': 'Utilisateur non trouvé'}, status=404)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_pending_friend_requests(request):
+    pending_requests = FriendRequest.objects.filter(
+        receiver=request.user, is_accepted=False)
+    requests_data = [{
+        'id': fr.id,
+        'sender': fr.sender.username,
+        # Ajoutez d'autres informations si nécessaire
+    } for fr in pending_requests]
+
+    return JsonResponse(requests_data, safe=False)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def accept_friend_request(request, request_id):
+    try:
+        friend_request = FriendRequest.objects.get(
+            id=request_id, receiver=request.user)
+        friend_request.is_accepted = True
+        friend_request.save()
+
+        # Ajouter les amis dans la table User
+        request.user.friends.add(friend_request.sender)
+        friend_request.sender.friends.add(request.user)
+
+        return JsonResponse({'message': 'Demande d\'ami acceptée'}, status=200)
+    except FriendRequest.DoesNotExist:
+        return JsonResponse({'error': 'Demande d\'ami non trouvée'}, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def decline_friend_request(request, request_id):
+    try:
+        friend_request = FriendRequest.objects.get(
+            id=request_id, receiver=request.user)
+        friend_request.delete()
+
+        return JsonResponse({'message': 'Demande d\'ami refusée'}, status=200)
+    except FriendRequest.DoesNotExist:
+        return JsonResponse({'error': 'Demande d\'ami non trouvée'}, status=404)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_friends(request):
+    user = request.user
+    friends = user.friends.all()
+
+    friends_data = [{
+        'username': friend.username,
+        'avatarUrl': request.build_absolute_uri(friend.avatar.url) if friend.avatar else None
+    } for friend in friends]
+
+    return JsonResponse(friends_data, safe=False)
+
+
 def index(request):
     return render(request, 'index.html')
