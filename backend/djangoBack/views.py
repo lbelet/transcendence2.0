@@ -94,6 +94,8 @@ def api_login(request):
 
     user = authenticate(username=username, password=password)
     if user:
+        user.status = User.ONLINE
+        user.save()
         if user.is_two_factor_enabled:
             if user.two_factor_method == 'email':
                 send_two_factor_email(user.email, user)
@@ -268,6 +270,15 @@ def get_friends(request):
     } for friend in friends]
 
     return JsonResponse(friends_data, safe=False)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_logout(request):
+    user = request.user
+    user.status = User.OFFLINE
+    user.save()
+
+    return JsonResponse({'message': 'Déconnexion réussie'}, status=200)
 
 
 def index(request):

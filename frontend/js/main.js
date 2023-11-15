@@ -491,11 +491,25 @@ function loadFriendsList() {
 
 // Function to handle user logout
 function logout() {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('username');
+    axios.post('/api/logout/', {}, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+        .then(response => {
+            console.log(response.data.message);
 
-    navigateTo('home');
+            // Supprimer les tokens et autres données de l'utilisateur du localStorage
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            localStorage.removeItem('username');
+
+            // Rediriger vers la page d'accueil
+            navigateTo('home');
+        })
+        .catch(error => {
+            console.error('Erreur lors de la déconnexion:', error);
+        });
 }
 
 // --- Page Initialization ---

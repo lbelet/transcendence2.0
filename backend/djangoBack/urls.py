@@ -16,6 +16,8 @@ urlpatterns = [
     path('api_login/', views.api_login, name='api-login'),
     path('verify_two_factor_code/', views.verify_two_factor_code,
          name='verify-two-factor-code'),
+    path('logout/', views.api_logout, name='api_logout'),
+
 
     # JWT Token URLs
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

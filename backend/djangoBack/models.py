@@ -46,6 +46,17 @@ class User(AbstractBaseUser):
         upload_to='avatars/', null=True, blank=True, default='avatars/default.png')
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)
 
+    ONLINE = 'en ligne'
+    OFFLINE = 'hors ligne'
+    IN_GAME = 'en jeu'
+    STATUS_CHOICES = [
+        (ONLINE, 'En ligne'),
+        (OFFLINE, 'Hors ligne'),
+        (IN_GAME, 'En jeu'),
+    ]
+
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=OFFLINE)
+
     # Add additional fields here if necessary
 
     objects = UserManager()
