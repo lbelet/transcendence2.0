@@ -41,7 +41,7 @@ class User(AbstractBaseUser):
     two_factor_code_expires = models.DateTimeField(null=True, blank=True)
     totp_secret = models.CharField(max_length=100, null=True, blank=True)
     two_factor_method = models.CharField(
-        max_length=10, choices=[('email', 'Email'), ('qr', 'QR')], default='email')
+        max_length=10, choices=[('email', 'Email'), ('qr', 'QR'), ('none', 'NONE')], default='none')
     avatar = models.ImageField(
         upload_to='avatars/', null=True, blank=True, default='avatars/default.png')
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)

@@ -113,9 +113,9 @@
         
 
         <!-- Two-Factor Authentication Section -->
-        <div id="two-factor-section" class="hidden">
+        <div id="email-two-factor-section" class="hidden">
             <h2>Two-Factor Authentication</h2>
-            <form id="twoFactorForm">
+            <form id="EmailTwoFactorForm">
                 <div class="form-group">
                     <label for="twoFactorCode">2FA Code</label>
                     <input type="text" class="form-control" id="twoFactorCode" required>
@@ -149,6 +149,7 @@
 
         <div id="pong-section" class="hidden">
             <h2>Pong 3D</h2>
+            <button class="btn btn-primary" onclick="quitPong3D()">Quitter</button>
             <canvas id="pong-canvas"></canvas>
         </div>
 
@@ -159,6 +160,7 @@
                 <div class="form-group">
                     <label for="twoFactorMethod">Choose 2FA Method:</label>
                     <select class="form-control" id="twoFactorMethod">
+                        <option value="none">Aucune</option>
                         <option value="email">Email</option>
                         <option value="qr">QR Code</option>
                     </select>
@@ -170,7 +172,7 @@
     </div>
 
     <script src="js/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> -->
     <script type="module" src="js/pong.js"></script>
 
 </body>

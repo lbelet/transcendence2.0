@@ -266,7 +266,8 @@ def get_friends(request):
 
     friends_data = [{
         'username': friend.username,
-        'avatarUrl': request.build_absolute_uri(friend.avatar.url) if friend.avatar else None
+        'avatarUrl': request.build_absolute_uri(friend.avatar.url) if friend.avatar else None,
+        'status': friend.status
     } for friend in friends]
 
     return JsonResponse(friends_data, safe=False)
@@ -279,6 +280,24 @@ def api_logout(request):
     user.save()
 
     return JsonResponse({'message': 'Déconnexion réussie'}, status=200)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_inGame(request):
+    user = request.user
+    user.status = User.IN_GAME
+    user.save()
+
+    return JsonResponse({'message': 'en jeu réussie'}, status=200)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_outGame(request):
+    user = request.user
+    user.status = User.ONLINE
+    user.save()
+
+    return JsonResponse({'message': 'quitter le jeu réussie'}, status=200)
 
 
 def index(request):

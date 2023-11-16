@@ -33,6 +33,8 @@ urlpatterns = [
     path('accept_friend_request/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),
     path('decline_friend_request/<int:request_id>/', views.decline_friend_request, name='decline_friend_request'),
     path('get_friends/', views.get_friends, name='get_friends'),
+    path('api_inGame/', views.api_inGame, name='in-game'),
+    path('api_outGame/', views.api_outGame, name='api-outGame'),
 
 
     # Home page URL

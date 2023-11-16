@@ -1,5 +1,30 @@
 // --- Navigation Functions ---
 
+function quitPong3D() {
+    fetch('/api/api_outGame/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({}) // Si vous avez des données à envoyer, sinon vous pouvez omettre cette ligne
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json(); // ou .text() si vous attendez du texte
+        })
+        .then(data => {
+            console.log('Success:', data);
+            navigateTo('welcome');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+
 function showLoginForm() {
     navigateTo('login');
 }
@@ -9,8 +34,29 @@ function showRegisterForm() {
 }
 
 function playPong() {
-    navigateTo('pong')
+    fetch('/api/api_inGame/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({})  // Si vous avez des données à envoyer, sinon vous pouvez omettre cette ligne
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();  // ou .text() si vous attendez du texte
+        })
+        .then(data => {
+            console.log('Success:', data);
+            navigateTo('pong');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
+
 
 function showGameForm() {
     const username = localStorage.getItem('username');
@@ -24,7 +70,7 @@ function showEditUserForm() {
 }
 
 function showTwoFactorForm() {
-    navigateTo('two-factor');
+    navigateTo('email-two-factor');
 }
 
 function showQrTwoFactorForm() {
@@ -36,16 +82,23 @@ function showWelcome() {
     document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
 
     // Fetch user avatar URL from the backend
-    axios.get(`/api/get_user_avatar/`, {
+    fetch(`/api/get_user_avatar/`, {
+        method: 'GET',
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         }
     })
-        .then(function (response) {
-            const avatarUrl = response.data.avatarUrl;
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const avatarUrl = data.avatarUrl;
             document.getElementById('user-avatar').src = avatarUrl;
         })
-        .catch(function (error) {
+        .catch(error => {
             console.error('Error fetching avatar:', error);
             document.getElementById('user-avatar').src = '/media/avatars/default.png';
         });
@@ -53,6 +106,7 @@ function showWelcome() {
     navigateTo('welcome');
     showPendingFriendRequests();
 }
+
 
 
 function openSearchModal() {
@@ -65,13 +119,19 @@ function closeSearchModal() {
 
 function searchUser() {
     var username = document.getElementById('search-username').value;
-    axios.get(`/api/search_users/?username=${encodeURIComponent(username)}`, {
+    fetch(`/api/search_users/?username=${encodeURIComponent(username)}`, {
+        method: 'GET',
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         }
     })
-        .then(function (response) {
-            var users = response.data;
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(users => {
             var resultsContainer = document.getElementById('search-results');
 
             // Effacer les résultats précédents
@@ -80,7 +140,7 @@ function searchUser() {
             if (users.length === 0) {
                 resultsContainer.textContent = 'Utilisateur non trouvé';
             } else {
-                users.forEach(function (user) {
+                users.forEach(user => {
                     var userContainer = document.createElement('div');
                     userContainer.className = 'user-container';
 
@@ -91,7 +151,7 @@ function searchUser() {
 
                     // Avatar de l'utilisateur
                     if (user.avatarUrl) {
-                        console.log("avatar search user: ", user.avatarUrl)
+                        console.log("avatar search user: ", user.avatarUrl);
                         var userAvatar = document.createElement('img');
                         userAvatar.src = user.avatarUrl;
                         userAvatar.alt = 'Avatar de ' + user.username;
@@ -113,25 +173,32 @@ function searchUser() {
                 });
             }
         })
-        .catch(function (error) {
+        .catch(error => {
             console.error('Erreur lors de la recherche de l\'utilisateur:', error);
         });
 }
 
+
 function showPendingFriendRequests() {
-    axios.get('/api/pending_friend_requests/', {
+    fetch('/api/pending_friend_requests/', {
+        method: 'GET',
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         }
     })
-        .then(function (response) {
-            const requests = response.data;
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(requests => {
             const requestsContainer = document.getElementById('pending-requests-container');
 
             // Effacer les demandes précédentes
             requestsContainer.innerHTML = '';
 
-            requests.forEach(function (request) {
+            requests.forEach(request => {
                 const requestElement = document.createElement('div');
                 requestElement.id = `friend-request-${request.id}`;
                 requestElement.textContent = `Demande de ${request.sender}`;
@@ -157,10 +224,11 @@ function showPendingFriendRequests() {
                 requestsContainer.appendChild(requestElement);
             });
         })
-        .catch(function (error) {
+        .catch(error => {
             console.error('Erreur lors de la récupération des demandes d\'ami:', error);
         });
 }
+
 
 
 // --- Utility Functions ---
@@ -173,7 +241,7 @@ function hideAllSections() {
     document.getElementById('welcome-section').classList.add('hidden');
     document.getElementById('game-section').classList.add('hidden');
     document.getElementById('edit-user-section').classList.add('hidden'); // Add this line 
-    document.getElementById('two-factor-section').classList.add('hidden');
+    document.getElementById('email-two-factor-section').classList.add('hidden');
     document.getElementById('pong-section').classList.add('hidden');
     document.getElementById('qr-two-factor-section').classList.add('hidden');
 
@@ -207,30 +275,36 @@ window.onpopstate = function (event) {
 // Event listener for the registration form submission
 document.getElementById('registerForm').addEventListener('submit', function (event) {
     event.preventDefault();
-    // Create FormData object
+
     let formData = new FormData();
     formData.append('username', document.getElementById('username').value);
     formData.append('first_name', document.getElementById('firstname').value);
     formData.append('last_name', document.getElementById('lastname').value);
     formData.append('email', document.getElementById('email').value);
     formData.append('password', document.getElementById('password').value);
-    // Add avatar file to FormData
+
     let avatarFile = document.getElementById('avatar').files[0];
     if (avatarFile) {
         formData.append('avatar', avatarFile);
     }
-    // Check if passwords match
+
     if (document.getElementById('password').value === document.getElementById('retypePassword').value) {
-        axios.post('/api/register/', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
+        fetch('/api/register/', {
+            method: 'POST',
+            body: formData
+            // Pas d'en-tête 'Content-Type' ici car il est automatiquement défini avec FormData
         })
-            .then(function (response) {
-                console.log('Registered successfully:', response.data);
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Registered successfully:', data);
                 navigateTo('login');
             })
-            .catch(function (error) {
+            .catch(error => {
                 console.error('Registration error:', error);
             });
     } else {
@@ -238,40 +312,53 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
     }
 });
 
+
 // Event listener for the login form submission
 document.getElementById('loginForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
 
-    axios.post('/api/api_login/', {
-        username: username,
-        password: password,
+    fetch('/api/api_login/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password,
+        })
     })
-        .then(function (response) {
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
             localStorage.setItem('username', username);
 
-            if (response.data['2fa_required']) {
-                if (response.data['2fa_method'] === 'qr') {
-                    const qrCodeImgSrc = response.data['qr_code_img'];
+            if (data['2fa_required']) {
+                if (data['2fa_method'] === 'qr') {
+                    const qrCodeImgSrc = data['qr_code_img'];
                     document.getElementById('qr-code-img').src = qrCodeImgSrc;
                     showQrTwoFactorForm();
                 } else {
                     showTwoFactorForm();
                 }
             } else {
-                console.log('Login successful:', response.data);
-                localStorage.setItem('username', username);
-                localStorage.setItem('access_token', response.data.access);
-                localStorage.setItem('refresh_token', response.data.refresh);
+                console.log('Login successful:', data);
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
                 showWelcome();
                 connectWebSocket();
             }
         })
-        .catch(function (error) {
+        .catch(error => {
             console.error('Login error:', error);
         });
 });
+
 
 // Event listener for the edit user form submission
 document.getElementById('editUserForm').addEventListener('submit', function (event) {
@@ -279,43 +366,69 @@ document.getElementById('editUserForm').addEventListener('submit', function (eve
 
     const selectedTwoFactorMethod = document.getElementById('twoFactorMethod').value;
 
-    axios.post('/api/user/update', {
-        username: localStorage.getItem('username'),
-        twoFactorMethod: selectedTwoFactorMethod,
-    }, {
+    fetch('/api/user/update', {
+        method: 'POST',
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`
-        }
-    }).then(response => {
-        alert(`2FA preference updated to ${selectedTwoFactorMethod.toUpperCase()}.`);
-        navigateTo('welcome');
-    }).catch(error => {
-        console.error('Error updating 2FA preference:', error);
-        alert('Error updating 2FA preference. Please try again.');
-    });
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({
+            username: localStorage.getItem('username'),
+            twoFactorMethod: selectedTwoFactorMethod,
+        })
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(() => {
+            alert(`2FA preference updated to ${selectedTwoFactorMethod.toUpperCase()}.`);
+            navigateTo('welcome');
+        })
+        .catch(error => {
+            console.error('Error updating 2FA preference:', error);
+            alert('Error updating 2FA preference. Please try again.');
+        });
 });
 
+
 // Event listener for the two-factor authentication form submission
-document.getElementById('twoFactorForm').addEventListener('submit', function (event) {
+document.getElementById('EmailTwoFactorForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const twoFactorCode = document.getElementById('twoFactorCode').value;
-    const username = localStorage.getItem('username'); // Ensure the username is stored during the initial login attempt
+    const username = localStorage.getItem('username'); // Assurez-vous que le nom d'utilisateur est stocké lors de la tentative de connexion initiale
 
-    axios.post('/api/verify_two_factor_code/', {
-        username: username,
-        two_factor_code: twoFactorCode,
+    fetch('/api/verify_two_factor_code/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({
+            username: username,
+            two_factor_code: twoFactorCode,
+        })
     })
-        .then(function (response) {
-            console.log('2FA Verification successful:', response.data);
-            localStorage.setItem('access_token', response.data.access);
-            localStorage.setItem('refresh_token', response.data.refresh);
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('2FA Verification successful:', data);
+            localStorage.setItem('access_token', data.access);
+            localStorage.setItem('refresh_token', data.refresh);
             showWelcome();
         })
-        .catch(function (error) {
+        .catch(error => {
             console.error('2FA Verification error:', error);
             alert('Invalid 2FA code. Please try again.');
         });
 });
+
 
 // Event listener for the QR two-factor authentication form submission
 document.getElementById('qrTwoFactorForm').addEventListener('submit', function (event) {
@@ -323,21 +436,35 @@ document.getElementById('qrTwoFactorForm').addEventListener('submit', function (
     const qrTwoFactorCode = document.getElementById('qrTwoFactorCode').value;
     const username = localStorage.getItem('username'); // Assuming username is stored in localStorage
 
-    axios.post('/api/verify_two_factor_code/', {
-        username: username,
-        two_factor_code: qrTwoFactorCode,
+    fetch('/api/verify_two_factor_code/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({
+            username: username,
+            two_factor_code: qrTwoFactorCode,
+        })
     })
-        .then(function (response) {
-            console.log('QR 2FA Verification successful:', response.data);
-            localStorage.setItem('access_token', response.data.access);
-            localStorage.setItem('refresh_token', response.data.refresh);
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('QR 2FA Verification successful:', data);
+            localStorage.setItem('access_token', data.access);
+            localStorage.setItem('refresh_token', data.refresh);
             showWelcome();
         })
-        .catch(function (error) {
+        .catch(error => {
             console.error('QR 2FA Verification error:', error);
             alert('Invalid QR 2FA code. Please try again.');
         });
 });
+
 
 // --- Token Management ---
 
@@ -349,17 +476,30 @@ function refreshToken() {
         return;
     }
 
-    axios.post('/api/token/refresh/', {
-        refresh: refreshToken
-    })
-        .then(function (response) {
-            console.log('Token refreshed successfully');
-            localStorage.setItem('access_token', response.data.access);
+    fetch('/api/token/refresh/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            refresh: refreshToken
         })
-        .catch(function (error) {
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Token refreshed successfully');
+            localStorage.setItem('access_token', data.access);
+        })
+        .catch(error => {
             console.error('Error refreshing token:', error);
         });
 }
+
 
 // Function to verify the token
 function verifyToken() {
@@ -369,61 +509,98 @@ function verifyToken() {
         return;
     }
 
-    axios.post('/api/token/verify/', {
-        token: accessToken
+    fetch('/api/token/verify/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            token: accessToken
+        })
     })
-        .then(function (response) {
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
             console.log('Token is valid');
         })
-        .catch(function (error) {
+        .catch(error => {
             console.error('Invalid token:', error);
         });
 }
 
+
 // Function for friends
 function addFriend(receiverUsername) {
-    axios.post('/api/send_friend_request/', {
-        receiver_username: receiverUsername
-    }, {
+    fetch('/api/send_friend_request/', {
+        method: 'POST',
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`
-        }
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({
+            receiver_username: receiverUsername
+        })
     })
-        .then(function (response) {
-            console.log(response.data.message);
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data.message);
             // Vous pouvez également mettre à jour l'interface utilisateur ici
         })
-        .catch(function (error) {
+        .catch(error => {
             console.error('Erreur lors de l\'envoi de la demande d\'ami:', error);
         });
 }
 
+
 function acceptFriendRequest(requestId) {
-    axios.post(`/api/accept_friend_request/${requestId}/`, {}, {
+    fetch(`/api/accept_friend_request/${requestId}/`, {
+        method: 'POST',
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`
-        }
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({}) // Corps vide mais formaté en JSON
     })
-        .then(function (response) {
-            console.log(response.data.message);
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data.message);
             const requestElement = document.getElementById(`friend-request-${requestId}`);
             if (requestElement) {
                 requestElement.remove();
             }
         })
-        .catch(function (error) {
+        .catch(error => {
             console.error('Erreur lors de l\'acceptation de la demande d\'ami:', error);
         });
 }
 
+
 function declineFriendRequest(requestId) {
-    axios.post(`/api/decline_friend_request/${requestId}/`, {}, {
+    fetch(`/api/decline_friend_request/${requestId}/`, {
+        method: 'POST',
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`
-        }
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({}) // Corps vide mais formaté en JSON
     })
-        .then(function (response) {
-            console.log(response.data.message);
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data.message);
             // Mettre à jour l'interface utilisateur ici
             // Retirer l'élément de demande d'ami du DOM
             const requestElement = document.getElementById(`friend-request-${requestId}`);
@@ -431,10 +608,11 @@ function declineFriendRequest(requestId) {
                 requestElement.remove();
             }
         })
-        .catch(function (error) {
+        .catch(error => {
             console.error('Erreur lors du refus de la demande d\'ami:', error);
         });
 }
+
 
 function showFriendsModal() {
     document.getElementById('friendsModal').style.display = 'block';
@@ -446,17 +624,23 @@ function closeFriendsModal() {
 }
 
 function loadFriendsList() {
-    axios.get('/api/get_friends/', {
+    fetch('/api/get_friends/', {
+        method: 'GET',
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         }
     })
-        .then(function (response) {
-            const friends = response.data;
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(friends => {
             const friendsListContainer = document.getElementById('friends-list-container');
             friendsListContainer.innerHTML = ''; // Effacer la liste actuelle
 
-            friends.forEach(function (friend) {
+            friends.forEach(friend => {
                 // Création du conteneur pour chaque ami
                 const friendElement = document.createElement('div');
                 friendElement.className = 'friend-item';
@@ -475,11 +659,15 @@ function loadFriendsList() {
                     friendElement.appendChild(friendAvatar);
                 }
 
+                const friendStatus = document.createElement('p');
+                friendStatus.textContent = friend.status;
+                friendElement.appendChild(friendStatus);
+
                 // Ajouter le conteneur de l'ami au conteneur principal
                 friendsListContainer.appendChild(friendElement);
             });
         })
-        .catch(function (error) {
+        .catch(error => {
             console.error('Erreur lors de la récupération de la liste des amis:', error);
         });
 }
@@ -488,16 +676,23 @@ function loadFriendsList() {
 
 
 
-
 // Function to handle user logout
 function logout() {
-    axios.post('/api/logout/', {}, {
+    fetch('/api/logout/', {
+        method: 'POST',
         headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`
-        }
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({}) // Corps vide mais formaté en JSON
     })
         .then(response => {
-            console.log(response.data.message);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data.message);
 
             // Supprimer les tokens et autres données de l'utilisateur du localStorage
             localStorage.removeItem('access_token');
@@ -511,6 +706,7 @@ function logout() {
             console.error('Erreur lors de la déconnexion:', error);
         });
 }
+
 
 // --- Page Initialization ---
 
