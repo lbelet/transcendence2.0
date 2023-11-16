@@ -60,6 +60,8 @@ MIDDLEWARE = [
 # URL configuration
 ROOT_URLCONF = 'djangoBack.urls'
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 # Templates configuration
 TEMPLATES = [
     {
@@ -79,7 +81,16 @@ TEMPLATES = [
 
 # WSGI and ASGI configuration
 WSGI_APPLICATION = 'djangoBack.wsgi.application'
-ASGI_APPLICATION = 'djangoBack.asgi.application'
+ASGI_APPLICATION = 'djangoBack.routing.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],  # Utilisez le nom du service Redis dans Docker Compose
+        },
+    },
+}
 
 # Password validators
 AUTH_PASSWORD_VALIDATORS = [

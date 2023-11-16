@@ -1,4 +1,5 @@
 // --- Navigation Functions ---
+let websocket; // Déclaration globale
 
 function quitPong3D() {
     fetch('/api/api_outGame/', {
@@ -351,7 +352,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                 localStorage.setItem('access_token', data.access);
                 localStorage.setItem('refresh_token', data.refresh);
                 showWelcome();
-                connectWebSocket();
+                openWebSocketConnection();
             }
         })
         .catch(error => {
@@ -678,6 +679,12 @@ function loadFriendsList() {
 
 // Function to handle user logout
 function logout() {
+
+    if (websocket && websocket.readyState === WebSocket.OPEN) {
+        websocket.close();
+        console.log("socket close: ", websocket )  // Ferme la connexion WebSocket
+    }
+
     fetch('/api/logout/', {
         method: 'POST',
         headers: {
@@ -738,46 +745,38 @@ if (window.location.hash === '#edit-user') {
 //-------------------- SOCKETS -----------------
 
 // Variable globale pour la connexion WebSocket
-let socket;
+// let socket;
 
 // Fonction pour établir la connexion WebSocket
-function connectWebSocket() {
-    // Remplacez 'wss://votreurl.com' par votre URL WebSocket
-    socket = new WebSocket('wss://localhost/');
-    console.log("socket: ", socket)
-    socket.onopen = function (event) {
-        console.log('WebSocket connecté');
-        // Autres traitements à l'ouverture
+function openWebSocketConnection() {
+    websocket = new WebSocket('wss://localhost/ws/notifications/');
+
+    websocket.onopen = function (event) {
+        console.log('WebSocket ouvert :', event);
     };
 
-    socket.onmessage = function (event) {
-        console.log('Message reçu:', event.data);
-        // Traiter les messages entrants
+    websocket.onmessage = function (event) {
+        console.log('Message reçu :', event.data);
     };
 
-    socket.onerror = function (error) {
-        console.error('Erreur WebSocket:', error);
-    };
-
-    socket.onclose = function (event) {
-        console.log('WebSocket déconnecté');
-        // Autres traitements à la fermeture
+    websocket.onerror = function (error) {
+        console.log('Erreur WebSocket :', error);
     };
 }
 
 // Fonction pour envoyer un message via WebSocket
-function sendWebSocketMessage(message) {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(message);
-    }
-}
+// function sendWebSocketMessage(message) {
+//     if (socket && socket.readyState === WebSocket.OPEN) {
+//         socket.send(message);
+//     }
+// }
 
-// Fonction pour fermer la connexion WebSocket
-function disconnectWebSocket() {
-    if (socket) {
-        socket.close();
-    }
-}
+// // Fonction pour fermer la connexion WebSocket
+// function disconnectWebSocket() {
+//     if (socket) {
+//         socket.close();
+//     }
+// }
 
 // Intégrer avec la connexion et la déconnexion de l'utilisateur
 // Par exemple, appeler connectWebSocket() après une connexion utilisateur réussie

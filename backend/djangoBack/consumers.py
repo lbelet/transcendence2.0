@@ -1,9 +1,9 @@
-# djangoBack/consumers.py
+# consumers.py
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
-class MyConsumer(AsyncWebsocketConsumer):
+class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
 
@@ -11,10 +11,5 @@ class MyConsumer(AsyncWebsocketConsumer):
         pass
 
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json['message']
+        pass  # Traitez les données reçues ici
 
-        # Envoyer le message à tous les clients connectés
-        await self.send(text_data=json.dumps({
-            'message': message
-        }))

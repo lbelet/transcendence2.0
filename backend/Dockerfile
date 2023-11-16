@@ -23,5 +23,5 @@ COPY . .
 # Exposer le port sur lequel le serveur Django va écouter
 EXPOSE 8000
 
-# Lancer le serveur Gunicorn avec le module WSGI
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "djangoBack.wsgi:application"]
+# Lancer le serveur Uvicorn avec le module WSGI/ASGI
+CMD ["uvicorn", "djangoBack.asgi:application", "--host", "0.0.0.0", "--port", "8000"]
