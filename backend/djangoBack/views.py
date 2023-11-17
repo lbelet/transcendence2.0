@@ -23,6 +23,19 @@ from djangoBack.helpers import (
     retrieve_stored_2fa_code
 )
 
+@api_view(['POST'])
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+def update_socket_id(request):
+    user = request.user
+    socket_id = request.data.get('socket_id')
+    if socket_id:
+        user.socket_id = socket_id
+        user.save()
+        return JsonResponse({'status': 'success', 'message': 'Socket ID updated successfully.'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'No socket ID provided.'})
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -277,6 +290,7 @@ def get_friends(request):
 def api_logout(request):
     user = request.user
     user.status = User.OFFLINE
+    user.socket_id = "NONE"
     user.save()
 
     return JsonResponse({'message': 'Déconnexion réussie'}, status=200)

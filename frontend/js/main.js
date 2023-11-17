@@ -674,15 +674,12 @@ function loadFriendsList() {
 }
 
 
-
-
-
 // Function to handle user logout
 function logout() {
 
     if (websocket && websocket.readyState === WebSocket.OPEN) {
         websocket.close();
-        console.log("socket close: ", websocket )  // Ferme la connexion WebSocket
+        console.log("socket close: ", websocket)  // Ferme la connexion WebSocket
     }
 
     fetch('/api/logout/', {
@@ -757,7 +754,33 @@ function openWebSocketConnection() {
 
     websocket.onmessage = function (event) {
         console.log('Message reçu :', event.data);
+        try {
+            const data = JSON.parse(event.data);
+            if (data.socket_id) {
+                console.log('Socket ID reçu:', data.socket_id);
+                // Envoyer une requête pour mettre à jour le socket_id côté serveur
+                fetch('/api/update_socket_id/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Si vous utilisez l'authentification par token
+                    },
+                    body: JSON.stringify({ socket_id: data.socket_id })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log('Mise à jour du socket_id réussie:', result);
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la mise à jour du socket_id:', error);
+                });
+            }
+        } catch (error) {
+            console.error('Erreur de parsing JSON:', error);
+        }
     };
+    
+
 
     websocket.onerror = function (error) {
         console.log('Erreur WebSocket :', error);

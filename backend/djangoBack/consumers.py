@@ -6,6 +6,8 @@ import json
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
+        await self.send(text_data=json.dumps({"socket_id": self.channel_name}))
+
 
     async def disconnect(self, close_code):
         pass
