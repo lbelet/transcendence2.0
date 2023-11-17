@@ -9,6 +9,9 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 
 # Third-party imports
 import pyotp
@@ -22,6 +25,7 @@ from djangoBack.helpers import (
     get_tokens_for_user, send_two_factor_email, generate_qr_code,
     retrieve_stored_2fa_code
 )
+
 
 @api_view(['POST'])
 @csrf_exempt
@@ -213,14 +217,20 @@ def send_friend_request(request):
     try:
         receiver = User.objects.get(username=receiver_username)
 
-        # Vérifier si une demande d'ami existe déjà
         if FriendRequest.objects.filter(
             Q(sender=request.user, receiver=receiver) |
             Q(sender=receiver, receiver=request.user)
         ).exists():
             return JsonResponse({'error': 'Une demande d\'ami existe déjà'}, status=400)
 
-        FriendRequest.objects.create(sender=request.user, receiver=receiver)
+        # Créer la demande d'ami
+        friend_request = FriendRequest.objects.create(
+            sender=request.user, receiver=receiver)
+
+        # Envoyer la notification WebSocket
+        send_friend_request_notification(
+            receiver.id, friend_request.id, request.user.username)
+
         return JsonResponse({'message': 'Demande d\'ami envoyée avec succès'}, status=200)
     except User.DoesNotExist:
         return JsonResponse({'error': 'Utilisateur non trouvé'}, status=404)
@@ -285,6 +295,7 @@ def get_friends(request):
 
     return JsonResponse(friends_data, safe=False)
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def api_logout(request):
@@ -295,6 +306,7 @@ def api_logout(request):
 
     return JsonResponse({'message': 'Déconnexion réussie'}, status=200)
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def api_inGame(request):
@@ -303,6 +315,7 @@ def api_inGame(request):
     user.save()
 
     return JsonResponse({'message': 'en jeu réussie'}, status=200)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -316,3 +329,21 @@ def api_outGame(request):
 
 def index(request):
     return render(request, 'index.html')
+
+
+def send_friend_request_notification(receiver_user_id, request_id, sender_username):
+    User = get_user_model()
+    try:
+        receiver_user = User.objects.get(id=receiver_user_id)
+        if receiver_user.socket_id:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.send)(receiver_user.socket_id, {
+                "type": "websocket.send",
+                "text": json.dumps({
+                    'type': 'friend_request',
+                    'request_id': request_id,
+                    'sender': sender_username
+                })
+            })
+    except User.DoesNotExist:
+        pass  # L'utilisateur destinataire n'existe pas ou n'est pas connecté
