@@ -95,9 +95,9 @@ function openGameWebSocketConnection() {
         try {
             const data = JSON.parse(event.data);
 
-            if (data.game_socket_id) {
-                console.log('Game Socket ID reçu:', data.game_socket_id);
-                updateGameSocketId(data.game_socket_id);
+            if (data.GameSocket_id) {
+                console.log('Game Socket ID reçu:', data.GameSocket_id);
+                updateGameSocketId(data.GameSocket_id);
 
                 // Vous pouvez gérer les mises à jour spécifiques au jeu ici
                 // Par exemple, mise à jour de la position des raquettes, de la balle, etc.
@@ -118,14 +118,14 @@ function openGameWebSocketConnection() {
     // Vous pouvez ajouter d'autres gestionnaires d'événements si nécessaire
 }
 
-function updateGameSocketId(GamesocketId) {
+function updateGameSocketId(Gamesocket_Id) {
     fetch('/api/update_GameSocket_id/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         },
-        body: JSON.stringify({ Game_socket_id: GamesocketId })
+        body: JSON.stringify({ game_socket_id: Gamesocket_Id })
     })
         .then(response => response.json())
         .then(result => {

@@ -46,7 +46,7 @@ def update_socket_id(request):
 @permission_classes([IsAuthenticated])
 def update_GameSocket_id(request):
     user = request.user
-    game_socket_id = request.data.get('socket_id')
+    game_socket_id = request.data.get('game_socket_id')
     if game_socket_id:
         user.game_socket_id = game_socket_id
         user.save()
@@ -342,6 +342,7 @@ def api_inGame(request):
 def api_outGame(request):
     user = request.user
     user.status = User.ONLINE
+    user.game_socket_id = "NONE"
     user.save()
 
     return JsonResponse({'message': 'quitter le jeu réussie'}, status=200)
