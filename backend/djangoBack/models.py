@@ -59,6 +59,7 @@ class User(AbstractBaseUser):
 
     socket_id = models.CharField(max_length=255, null=True, blank=True)
 
+    language = models.CharField(max_length=10, default='fr')
 
     # Add additional fields here if necessary
 

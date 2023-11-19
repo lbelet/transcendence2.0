@@ -36,6 +36,8 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                 console.log('Login successful:', data);
                 localStorage.setItem('access_token', data.access);
                 localStorage.setItem('refresh_token', data.refresh);
+                localStorage.setItem('language', data.language);
+                loadTranslations(data.language); // Charger les traductions pour la langue récupérée
                 showWelcome();
                 openWebSocketConnection();
             }
@@ -72,6 +74,7 @@ function logout() {
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('username');
+            localStorage.removeItem('language');
             navigateTo('home');
         })
         .catch(error => {

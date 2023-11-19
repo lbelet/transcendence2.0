@@ -1,7 +1,6 @@
-
-// Function to initialize the page based on the URL hash
+// Function to initialize the page based on the URL
 window.onload = function () {
-    const path = window.location.hash.substring(1);
+    const path = window.location.pathname.substring(1);
     if (path) {
         navigateTo(path);
     } else {
@@ -20,7 +19,7 @@ window.onpopstate = function (event) {
 };
 
 // Add this line to initialize the edit user form when the edit user page is loaded
-if (window.location.hash === '#edit-user') {
-    showEditUserForm();
-}
+// if (window.location.hash === '#edit-user') {
+//     showEditUserForm();
+// }
 

@@ -113,6 +113,7 @@ def api_login(request):
     if user:
         user.status = User.ONLINE
         user.save()
+
         if user.is_two_factor_enabled:
             if user.two_factor_method == 'email':
                 send_two_factor_email(user.email, user)
@@ -122,7 +123,10 @@ def api_login(request):
                 return JsonResponse({'2fa_required': True, '2fa_method': 'qr', 'qr_code_img': qr_code_img})
 
         tokens = get_tokens_for_user(user)
+        # Ajouter la langue de l'utilisateur à la réponse
+        tokens['language'] = user.language
         return JsonResponse(tokens, status=200)
+
     return JsonResponse({'error': 'Invalid username or password'}, status=400)
 
 
@@ -131,9 +135,11 @@ def api_login(request):
 def update_user(request):
     data = json.loads(request.body)
     two_factor_method = data.get('twoFactorMethod')
+    language = data.get('language', 'fr')  # Default to English if not provided
 
     user = request.user
     user.two_factor_method = two_factor_method
+    user.language = language  # Update the user's language preference
 
     if two_factor_method == 'qr':
         if not user.totp_secret:

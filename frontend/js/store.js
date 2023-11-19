@@ -3,6 +3,7 @@
 const initialState = {
     username: null,
     token: null,
+    language: "fr"
     // autres variables...
 };
 

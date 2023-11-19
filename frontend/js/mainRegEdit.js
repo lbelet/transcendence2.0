@@ -42,6 +42,7 @@ document.getElementById('editUserForm').addEventListener('submit', function (eve
     event.preventDefault();
 
     const selectedTwoFactorMethod = document.getElementById('twoFactorMethod').value;
+    const selectedLanguage = document.getElementById('language').value;
 
     fetch('/api/user/update', {
         method: 'POST',
@@ -52,6 +53,7 @@ document.getElementById('editUserForm').addEventListener('submit', function (eve
         body: JSON.stringify({
             username: localStorage.getItem('username'),
             twoFactorMethod: selectedTwoFactorMethod,
+            language: selectedLanguage // Include the selected language in the request
         })
     })
         .then(response => {
@@ -61,7 +63,8 @@ document.getElementById('editUserForm').addEventListener('submit', function (eve
             return response.json();
         })
         .then(() => {
-            alert(`2FA preference updated to ${selectedTwoFactorMethod.toUpperCase()}.`);
+            alert(`Preferences updated. 2FA method: ${selectedTwoFactorMethod.toUpperCase()}, Language: ${selectedLanguage}`);
+            loadTranslations(selectedLanguage); // Load the new language translations
             navigateTo('welcome');
         })
         .catch(error => {
@@ -69,3 +72,31 @@ document.getElementById('editUserForm').addEventListener('submit', function (eve
             alert('Error updating 2FA preference. Please try again.');
         });
 });
+
+// Define the applyTranslations function
+function applyTranslations(translations) {
+    document.querySelectorAll('[data-key]').forEach(elem => {
+        const key = elem.getAttribute('data-key');
+        if (translations[key]) {
+            elem.textContent = translations[key];
+        }
+    });
+}
+
+// Define the loadTranslations function
+async function loadTranslations(language) {
+    try {
+        const response = await fetch(`locales/${language}.json`);
+        const translations = await response.json();
+        return applyTranslations(translations);
+    } catch (error) {
+        return console.error('Error loading translations:', error);
+    }
+}
+
+// Additional code to load the default or previously selected language on page load
+// document.addEventListener('DOMContentLoaded', () => {
+//     const savedLanguage = localStorage.getItem('language') || 'fr'; // Default to french if no preference is saved
+//     console.log("saved language: ", localStorage.getItem('language'))
+//     loadTranslations(savedLanguage);
+// });

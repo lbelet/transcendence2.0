@@ -77,14 +77,14 @@
 
         <!-- Welcome Section -->
         <div id="welcome-section" class="hidden">
-            <h2>Bienvenue sur Mon Site</h2>
+            <h2 data-key="welcome">Bienvenue sur Mon Site</h2>
             <img id="user-avatar" src="" alt="User Avatar" style="width: 100px; height: 100px;">
             <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
 
             <!-- Welcome Buttons -->
             <button class="btn btn-primary" onclick="logout()">Déconnexion</button>
             <button class="btn btn-primary" onclick="showGameForm()">Game</button>
-            <button class="btn btn-primary" onclick="showEditUserForm()">Modifier le profil</button>
+            <button class="btn btn-primary" onclick="showEditUserForm()" data-key="edit_profile">Modifier le profil</button>
             <button class="btn btn-primary" onclick="openSearchModal()">Rechercher Utilisateur</button>
             <button class="btn btn-primary" onclick="showFriendsModal()">Amis</button>
             <div id="pending-requests-container"></div>
@@ -163,6 +163,15 @@
                         <option value="none">Aucune</option>
                         <option value="email">Email</option>
                         <option value="qr">QR Code</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="language">Language:</label>
+                    <select class="form-control" id="language">
+                        <option value="fr">Français</option>
+                        <option value="blr">Bielorusse</option>
+                        <option value="en">English</option>
+                        <option value="de">Deutsch</option>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
