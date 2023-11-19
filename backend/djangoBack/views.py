@@ -41,6 +41,20 @@ def update_socket_id(request):
         return JsonResponse({'status': 'error', 'message': 'No socket ID provided.'})
 
 
+@api_view(['POST'])
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+def update_GameSocket_id(request):
+    user = request.user
+    game_socket_id = request.data.get('socket_id')
+    if game_socket_id:
+        user.game_socket_id = game_socket_id
+        user.save()
+        return JsonResponse({'status': 'success', 'message': 'Game Socket ID updated successfully.'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'No  game socket ID provided.'})
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_avatar(request):

@@ -79,3 +79,61 @@ function openWebSocketConnection() {
         console.log('Erreur WebSocket :', error);
     };
 }
+
+
+let gameWebsocket;
+
+function openGameWebSocketConnection() {
+    gameWebsocket = new WebSocket('wss://localhost/ws/game/');
+
+    gameWebsocket.onopen = function (event) {
+        console.log('WebSocket de jeu ouvert :', event);
+    };
+
+    gameWebsocket.onmessage = function (event) {
+        console.log('Message reçu du jeu :', event.data);
+        try {
+            const data = JSON.parse(event.data);
+
+            if (data.game_socket_id) {
+                console.log('Game Socket ID reçu:', data.game_socket_id);
+                updateGameSocketId(data.game_socket_id);
+
+                // Vous pouvez gérer les mises à jour spécifiques au jeu ici
+                // Par exemple, mise à jour de la position des raquettes, de la balle, etc.
+            }
+
+            // Gérer d'autres types de messages spécifiques au jeu
+            // ...
+
+        } catch (error) {
+            console.error('Erreur de parsing JSON dans le jeu:', error);
+        }
+    };
+
+    gameWebsocket.onerror = function (error) {
+        console.log('Erreur WebSocket de jeu:', error);
+    };
+
+    // Vous pouvez ajouter d'autres gestionnaires d'événements si nécessaire
+}
+
+function updateGameSocketId(GamesocketId) {
+    fetch('/api/update_GameSocket_id/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({ Game_socket_id: GamesocketId })
+    })
+        .then(response => response.json())
+        .then(result => {
+            console.log('Mise à jour du game_socket_id réussie:', result);
+        })
+        .catch(error => {
+            console.error('Erreur lors de la mise à jour du game_socket_id:', error);
+        });
+}
+// Appelez cette fonction au lancement du jeu
+// openGameWebSocketConnection();

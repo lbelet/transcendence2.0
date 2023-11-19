@@ -21,10 +21,24 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         # Envoyer le message au client WebSocket
         await self.send(event["text"])
 
-    # async def send_friend_request_notification(self, request_id, sender_username):
-    #     # Envoyer une notification à l'utilisateur
-    #     await self.send(text_data=json.dumps({
-    #         'type': 'friend_request',
-    #         'request_id': request_id,
-    #         'sender': sender_username
-    #     }))
+
+class GameConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        # Accepter la connexion WebSocket pour le jeu
+        await self.accept()
+        await self.send(text_data=json.dumps({"GameSocket_id": self.channel_name}))
+
+
+    async def disconnect(self, close_code):
+        # Gérer la déconnexion du jeu
+        pass
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        # Traiter les données reçues pour le jeu (par exemple, mouvements des raquettes)
+    
+    async def websocket_send(self, event):
+        # Envoyer le message au client WebSocket
+        await self.send(event["text"])
+
+    # Vous pouvez ajouter d'autres méthodes utiles pour le jeu ici

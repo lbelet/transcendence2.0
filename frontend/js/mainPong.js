@@ -17,6 +17,8 @@ function playPong() {
         .then(data => {
             console.log('Success:', data);
             navigateTo('pong');
+            openGameWebSocketConnection()
+
         })
         .catch(error => {
             console.error('Error:', error);
