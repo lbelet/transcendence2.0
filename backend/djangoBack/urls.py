@@ -36,6 +36,8 @@ urlpatterns = [
     path('api_inGame/', views.api_inGame, name='in-game'),
     path('api_outGame/', views.api_outGame, name='api-outGame'),
     path('update_socket_id/', views.update_socket_id, name='update-socket-id'),
+    path('update_GameSocket_id/', views.update_GameSocket_id, name='update-GameSocket-id'),
+
 
 
 

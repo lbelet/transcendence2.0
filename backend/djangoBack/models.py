@@ -58,6 +58,8 @@ class User(AbstractBaseUser):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=OFFLINE)
 
     socket_id = models.CharField(max_length=255, null=True, blank=True)
+    game_socket_id = models.CharField(max_length=255, null=True, blank=True)
+
 
 
     # Add additional fields here if necessary

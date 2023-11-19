@@ -36,8 +36,8 @@ function navigateTo(sectionId) {
     hideAllSections();
     document.getElementById(sectionId + '-section').classList.remove('hidden');
 
-    if (window.location.hash !== `#${sectionId}`) {
-        console.log("Already in the section:", sectionId);
-        window.history.pushState({ section: sectionId }, '', `#${sectionId}`);
+    if (!window.location.pathname.endsWith(`/${sectionId}`)) {
+        console.log("Updating state to:", sectionId);
+        window.history.pushState({ section: sectionId }, '', `/${sectionId}`);
     }
 }
