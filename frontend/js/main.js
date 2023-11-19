@@ -2,9 +2,11 @@
 
 function showLoginForm() {
     navigateTo('login');
+    // stopParticles(); // Stop particles when hiding the login form
 }
 
 function showRegisterForm() {
+    // stopParticles(); // Stop particles when hiding the login form
     navigateTo('register');
 }
 
@@ -133,7 +135,7 @@ function hideAllSections() {
     document.getElementById('register-section').classList.add('hidden');
     document.getElementById('welcome-section').classList.add('hidden');
     document.getElementById('game-section').classList.add('hidden');
-    document.getElementById('edit-user-section').classList.add('hidden'); // Add this line 
+    document.getElementById('edit-user-section').classList.add('hidden'); // Add this line
     document.getElementById('two-factor-section').classList.add('hidden');
     document.getElementById('pong-section').classList.add('hidden');
     document.getElementById('qr-two-factor-section').classList.add('hidden');
@@ -420,6 +422,12 @@ function disconnectWebSocket() {
         socket.close();
     }
 }
+
+//   // Function that hides the login form and stops particles
+//   function hideLoginForm() {
+//     // ... your existing code to hide the login form ...
+//     stopParticles(); // Stop particles when hiding the login form
+//   }
 
 // Intégrer avec la connexion et la déconnexion de l'utilisateur
 // Par exemple, appeler connectWebSocket() après une connexion utilisateur réussie

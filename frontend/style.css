@@ -1,38 +1,92 @@
-:root {
+/* :root {
+  --main-background-color: #d62323; Define a CSS variable for background color
+  --primary-text-color: #646cff; Define a CSS variable for text color
+}
+
+body {
+  background-color: var(--main-background-color);  Use the CSS variable for background color
+  color: var(--primary-text-color);  Use the CSS variable for text color
+}
+*/
+
+
+/* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
+  background-color: #000000;
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: rgba(10, 0, 0, 0.87);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-}
+} */
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
+#canvas1 {
+	border: 2px solid rgb(0, 6, 20);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	/* width: 1000px;
+	height: 576px; */
 
-a:hover {
-  color: #535bf2;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Puts the canvas behind your content */
+  pointer-events: none; /* This line makes the canvas ignore mouse events */
+  /*z-index: -1; Puts the canvas behind your content */
 }
 
 body {
+  background-color: rgb(0, 6, 20);
   margin: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  z-index: 1;
+}
+
+.hidden {
+  display: none;
+}
+
+/*buttons*/
+button {
+  border-radius: 8px;
+  border: 1px solid rgb(78, 74, 74);
+  /* padding: 0.6em 1.2em; */
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  /* cursor: pointer; */
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #c3c4d2;
+}
+
+.button-primary {
+  color: #faf6f6; /* Text color for the button */
+}
+
+.button-container {
+  padding-bottom: 8rem; /* Adjust the value as needed */
+}
+
+.spaced-buttons {
+  margin-left: 10px; /* Adjust the value as needed */
 }
 
 h1 {
+  color: rgb(244, 237, 237);
   font-size: 3.2em;
   line-height: 1.1;
 }
@@ -67,22 +121,6 @@ h1 {
   color: #888;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  border-color: #646cff;
-}
-
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -103,9 +141,6 @@ button:focus-visible {
   }
 }
 
-.hidden {
-  display: none;
-}
 
 #pong-canvas {
   width: 800px;
@@ -127,7 +162,7 @@ button:focus-visible {
 }
 
 .modal-content {
-  background-color: #fefefe;
+  background-color: #342525;
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
@@ -148,7 +183,6 @@ button:focus-visible {
   cursor: pointer;
 }
 
-
 .user-container {
   border: 1px solid #ddd;
   padding: 10px;
@@ -163,3 +197,121 @@ button:focus-visible {
 .user-container button {
   margin-left: 10px;
 }
+
+.login-container {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  justify-content: flex-center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  min-height: 100vh; /* Ensure container takes up at least the full viewport height */
+  margin-top: 10px;
+}
+
+#home-section {
+  height: 0px; /* Adjust the height as needed */
+}
+
+/* login page: customised the text of input fields */
+#loginForm label {
+  color: #cacaca; /* Label text color */
+  font-size: 16px; /* Label font size */
+
+}
+
+/* login page: customised the input field styles */
+#login-username,
+#login-password {
+  background-color: transparent; /* Input background color */
+  border: 1px solid #6c757d; /* Input border color */
+  color: #6c757d; /* Input text color */
+  border-radius: 10px; /* Input border radius */
+  padding: 8px;
+  margin-bottom: 15px;
+}
+
+/*Change the input field border color on focus */
+#login-username:focus,
+#login-password:focus {
+  border-color: #ffffff; /* Change the border color on focus */
+}
+
+/* #registersection-section {
+  height: 100px; /* Adjust the height as needed */
+/*} */
+/* Custom styles for the login form */
+/* .form-label {
+  text-align: center;
+  color: #be2e11; /* Label text color */
+  /*font-size: 16px;
+} */
+
+/* .button-primary:hover {
+  background-color: #000000; /* Change the color on hover */
+/* }
+
+.button-secondary {
+  background-color: #000000; /* Replace with your desired color */
+  /*color: #ffffff; /* Text color for the button
+}
+
+.button-secondary:hover {
+  background-color: #00eeff; /* Change the color on hover
+} */
+
+/* #registerForm label {
+  max-width: 500px; *//* Sets the maximum width of the form */
+  /*margin: 0 auto; /* Centers the form horizontally */
+/*} */
+/* Customize the submit button styles */
+/* #loginForm button[type="submit"] {
+  margin-top: 30px;
+  background-color: #000000;
+  color: #ffffff;
+  border: 1px solid #d81818;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-weight: bold;
+  text-align: center;
+} */
+
+/* Change button background color on hover
+#loginForm button[type="submit"]:hover {
+  margin-top: 30px;
+  background-color: #4f4d4d; */ /* Change the background color on hover
+}*/
+
+/* .navbar-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+Optional: Add some spacing between menu items
+.nav-item {
+  margin: 0 15px;
+} */
+
+/* position-values: (
+  0: 0,
+  50: 50%,
+  75: 75%,
+  100: 100%
+); */
+
+
+/* a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #535bf2;
+} */
+
+
+/*
+.custom-navbar {
+  background-color: rgb(239, 124, 9); /* Replace with your desired color */
+  /* text-align: center;
+} */

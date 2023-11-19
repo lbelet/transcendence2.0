@@ -4,165 +4,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Site SPA</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Transcendence</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link href="style.css" rel="stylesheet">
 </head>
 
 <body>
-    <div class="container">
+    <!-- Canvas for particle animation -->
+    <canvas id="canvas1"></canvas>
 
-        <!-- Home Section -->
-        <div id="home-section">
-            <h1>Bienvenue sur Mon Site</h1>
-            <button class="btn btn-primary" onclick="showLoginForm()">Login</button>
-            <button class="btn btn-secondary" onclick="showRegisterForm()">Créer un compte</button>
+    <!-- Home Section -->
+    <div class="container-fluid d-flex min-vh-100">
+
+        <div class="row mt-auto button-container">
+            <div class="col text-center">
+                <div id="home-section">
+                    <h1></h1>
+                    <div class="position-absolute top-75 start-50 translate-middle">
+                    <button class="btn btn-outline-secondary" onclick="showLoginForm()">Login</button>
+                    <button class="btn btn-outline-secondary spaced-buttons" onclick="showRegisterForm()">Créer un compte</button>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <!-- Login Section -->
+    <div class="container">
+    <div class="row justify-content-center align-self-center button-container">
+        <div class="col-lg-4">
         <div id="login-section" class="hidden">
-            <h2>Login</h2>
+            <h2 class="text-center" style="color: #ffffff;">Login</h2>
             <!-- Login Form -->
             <form id="loginForm">
                 <!-- Username Field -->
-                <div class="form-group">
-                    <label for="login-username">Nom d'utilisateur</label>
+                <div class="form-group text-center">
+                    <label for="login-username" class="form-label">Nom d'utilisateur</label>
                     <input type="text" class="form-control" id="login-username" required>
                 </div>
                 <!-- Password Field -->
-                <div class="form-group">
-                    <label for="login-password">Mot de passe</label>
+                <div class="form-group text-center">
+                    <label for="login-password" class="form-label">Mot de passe</label>
                     <input type="password" class="form-control" id="login-password" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Se connecter</button>
+                <div class="text-center"> <!-- Center the button -->
+                    <button class="btn btn-outline-secondary">Se connecter</button>
+                </div>
             </form>
         </div>
+    </div>
+    </div>
+    </div>
 
-        <!-- Register Section -->
+    <!-- Register Section -->
+    <div class="container">
+    <!-- <div class="row align-self-center button-container"> -->
+        <!-- <div class="col-lg-4"> -->
         <div id="register-section" class="hidden">
-            <h2>Créer un compte</h2>
+            <h2 class="text-center" style="color: #ffffff;">Créer un compte</h2>
             <form id="registerForm" enctype="multipart/form-data">
-                <div class="form-group">
+                <div class="form-group text-center">
                     <label for="username">Nom d'utilisateur</label>
                     <input type="text" class="form-control" id="username" required>
                 </div>
-                <div class="form-group">
-                    <label for="firstname">Prénom</label>
+                <div class="form-group text-center">
+                    <label for="firstname" class="form-label">Prénom</label>
                     <input type="text" class="form-control" id="firstname" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group text-center">
                     <label for="lastname">Nom</label>
                     <input type="text" class="form-control" id="lastname" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group text-center">
                     <label for="email">Email</label>
                     <input type="email" class="form-control" id="email" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group text-center">
                     <label for="password">Mot de passe</label>
                     <input type="password" class="form-control" id="password" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group text-center">
                     <label for="retypePassword">Retaper le mot de passe</label>
                     <input type="password" class="form-control" id="retypePassword" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group text-center">
                     <label for="avatar">Avatar</label>
                     <input type="file" class="form-control" id="avatar" accept="image/*">
                     <small class="form-text text-muted">Laissez ce champ vide pour utiliser l'avatar par défaut.</small>
                 </div>
-                <button type="submit" class="btn btn-primary">Créer</button>
+                <button type="submit" class="btn btn-outline-secondary">Créer</button>
             </form>
         </div>
+    </div>
+<!-- </div> -->
+<!-- </div>
+</div> -->
 
-        <!-- Welcome Section -->
-        <div id="welcome-section" class="hidden">
-            <h2>Bienvenue sur Mon Site</h2>
-            <img id="user-avatar" src="" alt="User Avatar" style="width: 100px; height: 100px;">
-            <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
+    <!-- Welcome Section -->
+    <!-- <div class="container"> -->
+    <div id="welcome-section" class="hidden">
+        <h2>Bienvenue sur Mon Site</h2>
+        <img id="user-avatar" src="" alt="User Avatar" style="width: 100px; height: 100px;">
+        <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
 
-            <!-- Welcome Buttons -->
-            <button class="btn btn-primary" onclick="logout()">Déconnexion</button>
-            <button class="btn btn-primary" onclick="showGameForm()">Game</button>
-            <button class="btn btn-primary" onclick="showEditUserForm()">Modifier le profil</button>
-            <button class="btn btn-primary" onclick="openSearchModal()">Rechercher Utilisateur</button>
+        <!-- Welcome Buttons -->
+        <button class="btn btn-primary" onclick="logout()">Déconnexion</button>
+        <button class="btn btn-primary" onclick="showGameForm()">Game</button>
+        <button class="btn btn-primary" onclick="showEditUserForm()">Modifier le profil</button>
+        <button class="btn btn-primary" onclick="openSearchModal()">Rechercher Utilisateur</button>
+    </div>
+<!-- </div> -->
+
+    <!-- Modale de recherche utilisateur -->
+    <!-- <div class="container"> -->
+    <div id="searchUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSearchModal()">&times;</span>
+            <h2>Rechercher Utilisateur</h2>
+            <input type="text" id="search-username" placeholder="Nom d'utilisateur">
+            <button class="btn btn-primary" onclick="searchUser()">Rechercher</button>
+            <div id="search-results"></div>
         </div>
+    <!-- </div> -->
 
 
-        <!-- Modale de recherche utilisateur -->
-        <!-- Modale de recherche utilisateur -->
-        <div id="searchUserModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeSearchModal()">&times;</span>
-                <h2>Rechercher Utilisateur</h2>
-                <input type="text" id="search-username" placeholder="Nom d'utilisateur">
-                <button class="btn btn-primary" onclick="searchUser()">Rechercher</button>
-                <div id="search-results"></div>
+    <!-- Two-Factor Authentication Section -->
+    <!-- <div class="container"> -->
+    <div id="two-factor-section" class="hidden">
+        <h2>Two-Factor Authentication</h2>
+        <form id="twoFactorForm">
+            <div class="form-group">
+                <label for="twoFactorCode">2FA Code</label>
+                <input type="text" class="form-control" id="twoFactorCode" required>
             </div>
-        </div>
+            <button type="submit" class="btn btn-primary">Verify</button>
+        </form>
+    </div>
+<!-- </div> -->
 
 
-        <!-- Two-Factor Authentication Section -->
-        <div id="two-factor-section" class="hidden">
-            <h2>Two-Factor Authentication</h2>
-            <form id="twoFactorForm">
-                <div class="form-group">
-                    <label for="twoFactorCode">2FA Code</label>
-                    <input type="text" class="form-control" id="twoFactorCode" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Verify</button>
-            </form>
-        </div>
+    <!-- QR Two-Factor Authentication Section -->
+    <!-- <div class="container"> -->
+    <div id="qr-two-factor-section" class="hidden">
+        <h2>QR Two-Factor Authentication</h2>
+        <p>Scan the QR Code with your 2FA app and enter the code below.</p>
+        <!-- QR Code Image -->
+        <img id="qr-code-img" src="" alt="QR Code" class="mb-3">
+        <!-- QR Two-Factor Form -->
+        <form id="qrTwoFactorForm">
+            <div class="form-group">
+                <label for="qrTwoFactorCode">2FA Code</label>
+                <input type="text" class="form-control" id="qrTwoFactorCode" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Verify</button>
+        </form>
+    </div>
+<!-- </div> -->
 
-        <!-- QR Two-Factor Authentication Section -->
-        <div id="qr-two-factor-section" class="hidden">
-            <h2>QR Two-Factor Authentication</h2>
-            <p>Scan the QR Code with your 2FA app and enter the code below.</p>
-            <!-- QR Code Image -->
-            <img id="qr-code-img" src="" alt="QR Code" class="mb-3">
-            <!-- QR Two-Factor Form -->
-            <form id="qrTwoFactorForm">
-                <div class="form-group">
-                    <label for="qrTwoFactorCode">2FA Code</label>
-                    <input type="text" class="form-control" id="qrTwoFactorCode" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Verify</button>
-            </form>
-        </div>
 
-        <!-- Game Section -->
-        <div id="game-section" class="hidden">
-            <h2>Bienvenue sur la page de jeu</h2>
-            <p>Bienvenue, <span id="user-name-game"></span>!</p>
-            <button class="btn btn-primary" onclick="playPong()">play Pong</button>
-        </div>
-
-        <div id="pong-section" class="hidden">
-            <h2>Pong 3D</h2>
-            <canvas id="pong-canvas"></canvas>
-        </div>
-
-        <!-- Edit User Section -->
-        <div id="edit-user-section" class="hidden">
-            <h2>Modifier le profil</h2>
-            <form id="editUserForm">
-                <div class="form-group">
-                    <label for="twoFactorMethod">Choose 2FA Method:</label>
-                    <select class="form-control" id="twoFactorMethod">
-                        <option value="email">Email</option>
-                        <option value="qr">QR Code</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-            </form>
-        </div>
-
+    <!-- Game Section -->
+    <!-- <div class="container"> -->
+    <div id="game-section" class="hidden">
+        <h2>Bienvenue sur la page de jeu</h2>
+        <p>Bienvenue, <span id="user-name-game"></span>!</p>
+        <button class="btn btn-primary" onclick="playPong()">play Pong</button>
     </div>
 
+    <div id="pong-section" class="hidden">
+        <h2>Pong 3D</h2>
+        <canvas id="pong-canvas"></canvas>
+    </div>
+<!-- </div> -->
+
+
+    <!-- Edit User Section -->
+    <!-- <div class="container"> -->
+    <div id="edit-user-section" class="hidden">
+    <h2>Modifier le profil</h2>
+    <form id="editUserForm">
+        <div class="form-group">
+            <label for="twoFactorMethod">Choose 2FA Method:</label>
+            <select class="form-control" id="twoFactorMethod">
+                <option value="email">Email</option>
+                <option value="qr">QR Code</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+    </form>
+    </div>
+<!-- </div> -->
+
+
+</div>
+<script>
+    // document.addEventListener('DOMContentLoaded', (event) => {
+    //     init(); // Set up the particles
+    //     animate(); // Start the animation loop
+    // });
+    </script>
+    <script src="js/script.js"></script>
     <script src="js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script type="module" src="js/pong.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
 
 </html>
+
+    <!-- Login Section -->
+    <!-- <style>
+    .form-label {
+        text-align: center;
+    }
+    </style> -->

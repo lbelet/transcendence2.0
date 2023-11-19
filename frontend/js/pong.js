@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+console.log('JavaScript is working');
+console.log(THREE);
 
 const scene = new THREE.Scene();
 
