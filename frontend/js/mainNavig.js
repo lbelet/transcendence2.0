@@ -41,3 +41,31 @@ function navigateTo(sectionId) {
         window.history.pushState({ section: sectionId }, '', `/${sectionId}`);
     }
 }
+
+function toggleMenu() {
+    const burgerMenuContent = document.getElementById('burgerMenuContent');
+
+    if (burgerMenuContent.classList.contains('hidden')) {
+        burgerMenuContent.classList.remove('hidden');
+        console.log("plus hidden....")
+    } else {
+        burgerMenuContent.classList.add('hidden');
+        console.log("de nouveau hidden....")
+    }
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Ajouter l'écouteur d'événement au document entier
+    document.addEventListener('click', (event) => {
+        const burgerMenuContent = document.getElementById('burgerMenuContent');
+        const burgerMenu = document.getElementById('bMenu');
+
+        // Vérifier si le clic est en dehors du burgerMenuContent et si le menu est ouvert
+        if (!burgerMenu.contains(event.target) && !burgerMenuContent.contains(event.target) && !burgerMenuContent.classList.contains('hidden')) {
+            burgerMenuContent.classList.add('hidden');
+        }
+    });
+});
+
+

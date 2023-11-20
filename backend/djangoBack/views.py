@@ -400,3 +400,26 @@ def send_friend_request_notification(receiver_user_id, request_id, sender_userna
             })
     except User.DoesNotExist:
         pass  # L'utilisateur destinataire n'existe pas ou n'est pas connecté
+
+    from django.http import JsonResponse
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def update_language(request):
+    user = request.user
+    data = request.data
+
+    # Récupérer la langue à partir de la requête
+    language = data.get('language')
+
+    if language:
+        # Mettre à jour la langue de l'utilisateur
+        user.language = language
+        user.save()
+        return JsonResponse({'success': 'Language updated successfully'}, status=200)
+    else:
+        # Langue non fournie dans la requête
+        return JsonResponse({'error': 'No language provided'}, status=400)
+

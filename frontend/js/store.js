@@ -2,7 +2,7 @@
 
 const initialState = {
     username: null,
-    token: null,
+    access_token: null,
     language: "fr",
     gameSocket_ID: null,
     // autres variables...

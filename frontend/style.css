@@ -26,9 +26,15 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
+  min-height: 100vh;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   min-height: 100vh;
 }
 
@@ -210,3 +216,50 @@ button:focus-visible {
   margin-right: 10px;
 }
 
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  /* Assurez-vous qu'il s'étend sur toute la largeur */
+}
+
+.burger-menu {
+  cursor: pointer;
+}
+
+.burger-menu div {
+  width: 30px;
+  height: 3px;
+  background-color: white;
+  margin: 5px 0;
+}
+
+#burgerMenuContent {
+  position: absolute;
+  top: 100%; /* Positionner juste en dessous de l'icône du menu burger */
+  right: 0;
+  width: 200px; /* Ou la largeur que vous souhaitez */
+  background-color: rgb(47, 47, 47);
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  z-index: 1000; /* Assurez-vous qu'il est au-dessus des autres éléments */
+}
+
+#burgerMenuContent.hidden {
+  display: none;
+}
+
+.header-right {
+  position: relative;
+}
+
+.language-selection button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}

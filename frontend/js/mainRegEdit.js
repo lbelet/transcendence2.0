@@ -88,15 +88,37 @@ async function loadTranslations(language) {
     try {
         const response = await fetch(`locales/${language}.json`);
         const translations = await response.json();
+        // updateUserLanguage(language);
         return applyTranslations(translations);
     } catch (error) {
         return console.error('Error loading translations:', error);
     }
 }
 
-// Additional code to load the default or previously selected language on page load
-// document.addEventListener('DOMContentLoaded', () => {
-//     const savedLanguage = localStorage.getItem('language') || 'fr'; // Default to french if no preference is saved
-//     console.log("saved language: ", localStorage.getItem('language'))
-//     loadTranslations(savedLanguage);
-// });
+function updateUserLanguage(language) {
+    fetch('/api/update-language/', {  // Assurez-vous que l'URL est correcte
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({
+            language: language
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(() => {
+        console.log(`Language updated to: ${language}`);
+        // loadTranslations(language);
+        // Optionnel : recharger la page ou mettre à jour l'interface utilisateur pour refléter le changement de langue
+    })
+    .catch(error => {
+        console.error('Error updating language preference:', error);
+    });
+}
+

@@ -37,6 +37,12 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                 localStorage.setItem('access_token', data.access);
                 localStorage.setItem('refresh_token', data.refresh);
                 localStorage.setItem('language', data.language);
+                // Après une connexion réussie
+                const burgerMenu = document.getElementById('bMenu');
+                burgerMenu.classList.remove('hidden');
+                console.log("Burger menu should be visible now");
+
+
                 loadTranslations(data.language); // Charger les traductions pour la langue récupérée
                 showWelcome();
                 openWebSocketConnection();
@@ -75,6 +81,14 @@ function logout() {
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('username');
             localStorage.removeItem('language');
+
+            const burgerMenu = document.getElementById('bMenu');
+            burgerMenu.classList.add('hidden');
+            
+            const burgerMenuContent = document.getElementById('burgerMenuContent');
+            burgerMenuContent.classList.add('hidden');
+            console.log("Burger menu should be hidden now");
+
             navigateTo('home');
         })
         .catch(error => {
