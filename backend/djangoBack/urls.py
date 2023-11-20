@@ -37,8 +37,7 @@ urlpatterns = [
     path('api_outGame/', views.api_outGame, name='api-outGame'),
     path('update_socket_id/', views.update_socket_id, name='update-socket-id'),
     path('update_GameSocket_id/', views.update_GameSocket_id, name='update-GameSocket-id'),
-
-
+    path('join_game_queue/', views.join_game_queue, name='join-game-queue'),
 
 
     # Home page URL

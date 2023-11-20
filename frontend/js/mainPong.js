@@ -17,7 +17,7 @@ function playPong() {
         .then(data => {
             console.log('Success:', data);
             navigateTo('pong');
-            openGameWebSocketConnection()
+            // openGameWebSocketConnection()
 
         })
         .catch(error => {
@@ -53,5 +53,30 @@ function showGameForm() {
     const username = localStorage.getItem('username');
     console.log("1 username: ", username)
     document.getElementById('user-name-game').textContent = username || 'Utilisateur';
+    openGameWebSocketConnection();
     navigateTo('game');
 }
+
+// document.getElementById('joinGameButton').addEventListener('click', joinGameQueue);
+
+function joinGameQueue() {
+    const gameSocketId = localStorage.getItem('gameSocket_ID'); // Assurez-vous que cette valeur est correctement définie
+
+    fetch('/api/join_game_queue/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({ game_socket_id: gameSocketId }) // Envoyez le game_socket_id
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Réponse du serveur:', data);
+        // Traitez la réponse ici
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+    });
+}
+

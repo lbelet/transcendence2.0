@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 # Custom UserManager
@@ -76,21 +77,23 @@ class User(AbstractBaseUser):
 # Game Model
 
 
-class Game(models.Model):
-    player1Username = models.CharField(max_length=100, default='')
-    player2Username = models.CharField(max_length=100, default='')
-    player1Score = models.IntegerField(default=0)
-    player2Score = models.IntegerField(default=0)
-    winner = models.CharField(max_length=100, default='')
-    status = models.CharField(max_length=12, default='waiting', choices=[
-        ('waiting', 'Waiting'),
-        ('in-progress', 'In Progress'),
-        ('completed', 'Completed')
-    ])
+class PongGame(models.Model):
+    player_one = models.ForeignKey(get_user_model(), related_name='player_one_game', on_delete=models.SET_NULL, null=True)
+    player_two = models.ForeignKey(get_user_model(), related_name='player_two_game', on_delete=models.SET_NULL, null=True)
+    player_one_socket_id = models.CharField(max_length=255, null=True, blank=True)
+    player_two_socket_id = models.CharField(max_length=255, null=True, blank=True)
+    score_player_one = models.IntegerField(default=0)
+    score_player_two = models.IntegerField(default=0)
+    winner = models.ForeignKey(get_user_model(), related_name='game_winner', on_delete=models.SET_NULL, null=True, blank=True)
+    status = models.CharField(max_length=10, choices=[('waiting', 'Waiting'), ('playing', 'Playing'), ('complete', 'Complete')], default='waiting')
     isPaused = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.player1Username} vs {self.player2Username} - Winner: {self.winner}"
+        player_one_username = self.player_one.username if self.player_one else "No Player"
+        player_two_username = self.player_two.username if self.player_two else "No Player"
+        winner_username = self.winner.username if self.winner else "No Winner"
+
+        return f"{player_one_username} vs {self.player_two_username} - Winner: {winner_username}"
 
 class FriendRequest(models.Model):
     sender = models.ForeignKey(

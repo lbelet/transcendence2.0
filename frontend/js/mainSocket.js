@@ -98,6 +98,7 @@ function openGameWebSocketConnection() {
             if (data.GameSocket_id) {
                 console.log('Game Socket ID reçu:', data.GameSocket_id);
                 updateGameSocketId(data.GameSocket_id);
+                localStorage.setItem('gameSocket_ID', data.GameSocket_id);
 
                 // Vous pouvez gérer les mises à jour spécifiques au jeu ici
                 // Par exemple, mise à jour de la position des raquettes, de la balle, etc.

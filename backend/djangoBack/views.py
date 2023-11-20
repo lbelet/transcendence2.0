@@ -20,11 +20,43 @@ from rest_framework.permissions import IsAuthenticated
 from djangoBack import settings
 
 # Local application imports
-from djangoBack.models import User, FriendRequest
+from djangoBack.models import User, FriendRequest, PongGame
 from djangoBack.helpers import (
     get_tokens_for_user, send_two_factor_email, generate_qr_code,
     retrieve_stored_2fa_code
 )
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def join_game_queue(request):
+    # Récupérer l'utilisateur actuel
+    current_user = request.user
+
+    game_socket_id = request.data.get('game_socket_id')
+
+
+    # Chercher une partie en attente
+    game_waiting = PongGame.objects.filter(status='waiting').first()
+
+    if game_waiting:
+        # S'il y a déjà une partie en attente, ajouter l'utilisateur actuel comme joueur deux
+        game_waiting.player_two = current_user
+        game_waiting.player_two_socket_id = game_socket_id
+        game_waiting.status = 'playing'
+        game_waiting.save()
+
+        return JsonResponse({'message': 'Vous avez rejoint une partie en cours', 'game_id': game_waiting.id})
+    else:
+        # S'il n'y a pas de partie en attente, créer une nouvelle partie
+        new_game = PongGame.objects.create(
+            player_one=current_user,
+            player_one_socket_id = game_socket_id,
+            status='waiting'
+        )
+
+        return JsonResponse({'message': 'Vous êtes en file d attente pour une nouvelle partie', 'game_id': new_game.id})
+
 
 
 @api_view(['POST'])
