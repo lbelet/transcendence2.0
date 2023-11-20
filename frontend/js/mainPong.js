@@ -16,6 +16,8 @@ function playPong() {
         })
         .then(data => {
             console.log('Success:', data);
+            openGameWebSocketConnection();
+
             navigateTo('pong');
             // openGameWebSocketConnection()
 
@@ -53,13 +55,15 @@ function showGameForm() {
     const username = localStorage.getItem('username');
     console.log("1 username: ", username)
     document.getElementById('user-name-game').textContent = username || 'Utilisateur';
-    openGameWebSocketConnection();
+    // openGameWebSocketConnection();
     navigateTo('game');
 }
 
 // document.getElementById('joinGameButton').addEventListener('click', joinGameQueue);
 
 function joinGameQueue() {
+    openGameWebSocketConnection();
+
     const gameSocketId = localStorage.getItem('gameSocket_ID'); // Assurez-vous que cette valeur est correctement définie
 
     fetch('/api/join_game_queue/', {

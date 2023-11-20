@@ -354,6 +354,8 @@ def api_logout(request):
     user = request.user
     user.status = User.OFFLINE
     user.socket_id = "NONE"
+    user.game_socket_id = "NONE"
+
     user.save()
 
     return JsonResponse({'message': 'Déconnexion réussie'}, status=200)
@@ -409,17 +411,13 @@ from rest_framework.permissions import IsAuthenticated
 @permission_classes([IsAuthenticated])
 def update_language(request):
     user = request.user
-    data = request.data
+    data = json.loads(request.body)
 
-    # Récupérer la langue à partir de la requête
     language = data.get('language')
-
     if language:
-        # Mettre à jour la langue de l'utilisateur
         user.language = language
         user.save()
         return JsonResponse({'success': 'Language updated successfully'}, status=200)
     else:
-        # Langue non fournie dans la requête
         return JsonResponse({'error': 'No language provided'}, status=400)
 

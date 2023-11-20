@@ -96,7 +96,7 @@ async function loadTranslations(language) {
 }
 
 function updateUserLanguage(language) {
-    fetch('/api/update-language/', {  // Assurez-vous que l'URL est correcte
+    fetch('/api/update_language/', {  // Assurez-vous que l'URL est correcte
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ function updateUserLanguage(language) {
     })
     .then(() => {
         console.log(`Language updated to: ${language}`);
-        // loadTranslations(language);
+        loadTranslations(language);
         // Optionnel : recharger la page ou mettre à jour l'interface utilisateur pour refléter le changement de langue
     })
     .catch(error => {
