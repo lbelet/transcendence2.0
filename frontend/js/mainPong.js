@@ -62,9 +62,7 @@ function showGameForm() {
 // document.getElementById('joinGameButton').addEventListener('click', joinGameQueue);
 
 function joinGameQueue() {
-    openGameWebSocketConnection();
-
-    const gameSocketId = localStorage.getItem('gameSocket_ID'); // Assurez-vous que cette valeur est correctement définie
+    const gameSocketId = localStorage.getItem('gameSocket_ID');
 
     fetch('/api/join_game_queue/', {
         method: 'POST',
@@ -72,15 +70,20 @@ function joinGameQueue() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         },
-        body: JSON.stringify({ game_socket_id: gameSocketId }) // Envoyez le game_socket_id
+        body: JSON.stringify({ game_socket_id: gameSocketId })
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Réponse du serveur:', data);
-        // Traitez la réponse ici
-    })
-    .catch(error => {
-        console.error('Erreur:', error);
-    });
+        .then(response => response.json())
+        .then(data => {
+            console.log('Réponse du serveur:', data);
+            // Stockez le game_id dans localStorage
+            if (data.game_id) {
+                localStorage.setItem('currentGameId', data.game_id);
+                openGameWebSocketConnection(data.game_id); // Ouvrez la connexion WebSocket avec le game_id
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+        });
 }
+
 

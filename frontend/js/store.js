@@ -5,6 +5,7 @@ const initialState = {
     access_token: null,
     language: "fr",
     gameSocket_ID: null,
+    currentGameId: null,
     // autres variables...
 };
 

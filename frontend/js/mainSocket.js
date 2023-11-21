@@ -83,8 +83,8 @@ function openWebSocketConnection() {
 
 let gameWebsocket;
 
-function openGameWebSocketConnection() {
-    gameWebsocket = new WebSocket('wss://localhost/ws/game/');
+function openGameWebSocketConnection(gameId) {
+    gameWebsocket = new WebSocket(`wss://localhost/ws/game/${gameId}/`);
 
     gameWebsocket.onopen = function (event) {
         console.log('WebSocket de jeu ouvert :', event);
@@ -94,23 +94,35 @@ function openGameWebSocketConnection() {
         console.log('Message reçu du jeu :', event.data);
         try {
             const data = JSON.parse(event.data);
-
+    
             if (data.GameSocket_id) {
                 console.log('Game Socket ID reçu:', data.GameSocket_id);
                 updateGameSocketId(data.GameSocket_id);
                 localStorage.setItem('gameSocket_ID', data.GameSocket_id);
-
-                // Vous pouvez gérer les mises à jour spécifiques au jeu ici
-                // Par exemple, mise à jour de la position des raquettes, de la balle, etc.
             }
-
+    
+            // Gestion du démarrage de la partie de Pong
+            if (data.type === 'game_start') {
+                console.log('La partie de Pong commence, game_id:', data.game_id);
+                // Implémentez la logique pour démarrer la partie
+                startPongGame(data.game_id);
+            }
+    
             // Gérer d'autres types de messages spécifiques au jeu
             // ...
-
+    
         } catch (error) {
             console.error('Erreur de parsing JSON dans le jeu:', error);
         }
     };
+    
+    function startPongGame(gameId) {
+        // Logique pour initialiser et démarrer la partie de Pong
+        console.log('Démarrage de la partie de Pong avec l\'ID :', gameId);
+        // Par exemple, afficher le canvas de jeu, initialiser les positions des raquettes, etc.
+        // Vous devrez éventuellement synchroniser l'état du jeu avec le serveur
+    }
+    
 
     gameWebsocket.onerror = function (error) {
         console.log('Erreur WebSocket de jeu:', error);

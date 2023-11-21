@@ -35,7 +35,6 @@ def join_game_queue(request):
 
     game_socket_id = request.data.get('game_socket_id')
 
-
     # Chercher une partie en attente
     game_waiting = PongGame.objects.filter(status='waiting').first()
 
@@ -46,17 +45,26 @@ def join_game_queue(request):
         game_waiting.status = 'playing'
         game_waiting.save()
 
+        # Notifier les deux joueurs que la partie peut commencer
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            'pong_game_{}'.format(game_waiting.id),
+            {
+                'type': 'game_start',
+                'game_id': game_waiting.id
+            }
+        )
+
         return JsonResponse({'message': 'Vous avez rejoint une partie en cours', 'game_id': game_waiting.id})
     else:
         # S'il n'y a pas de partie en attente, créer une nouvelle partie
         new_game = PongGame.objects.create(
             player_one=current_user,
-            player_one_socket_id = game_socket_id,
+            player_one_socket_id=game_socket_id,
             status='waiting'
         )
 
         return JsonResponse({'message': 'Vous êtes en file d attente pour une nouvelle partie', 'game_id': new_game.id})
-
 
 
 @api_view(['POST'])
@@ -355,8 +363,17 @@ def api_logout(request):
     user.status = User.OFFLINE
     user.socket_id = "NONE"
     user.game_socket_id = "NONE"
-
     user.save()
+
+    # Vérifier et supprimer une partie de Pong en attente si nécessaire
+    game_to_delete = PongGame.objects.filter(
+        status='waiting',
+        player_one=user,
+        player_two__isnull=True
+    ).first()
+
+    if game_to_delete:
+        game_to_delete.delete()
 
     return JsonResponse({'message': 'Déconnexion réussie'}, status=200)
 
@@ -404,8 +421,7 @@ def send_friend_request_notification(receiver_user_id, request_id, sender_userna
         pass  # L'utilisateur destinataire n'existe pas ou n'est pas connecté
 
     from django.http import JsonResponse
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -420,4 +436,3 @@ def update_language(request):
         return JsonResponse({'success': 'Language updated successfully'}, status=200)
     else:
         return JsonResponse({'error': 'No language provided'}, status=400)
-
