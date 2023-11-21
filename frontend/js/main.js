@@ -18,6 +18,13 @@ window.onpopstate = function (event) {
     }
 };
 
+window.onclick = function(event) {
+    let modal = document.getElementById('editUserModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+
 // Add this line to initialize the edit user form when the edit user page is loaded
 // if (window.location.hash === '#edit-user') {
 //     showEditUserForm();

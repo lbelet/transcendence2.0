@@ -25,7 +25,18 @@ document.getElementById('EmailTwoFactorForm').addEventListener('submit', functio
             console.log('2FA Verification successful:', data);
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
+            localStorage.setItem('language', data.language);
+            // Après une connexion réussie
+            const burgerMenu = document.getElementById('bMenu');
+            burgerMenu.classList.remove('hidden');
+
+            const searchingBar = document.getElementById('searchU');
+            searchingBar.classList.remove('hidden');
+
+            console.log("Burger menu should be visible now");
+
             showWelcome();
+            openWebSocketConnection();
         })
         .catch(error => {
             console.error('2FA Verification error:', error);
@@ -60,7 +71,18 @@ document.getElementById('qrTwoFactorForm').addEventListener('submit', function (
             console.log('QR 2FA Verification successful:', data);
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
+            localStorage.setItem('language', data.language);
+            // Après une connexion réussie
+            const burgerMenu = document.getElementById('bMenu');
+            burgerMenu.classList.remove('hidden');
+
+            const searchingBar = document.getElementById('searchU');
+            searchingBar.classList.remove('hidden');
+
+            console.log("Burger menu should be visible now");
+
             showWelcome();
+            openWebSocketConnection();
         })
         .catch(error => {
             console.error('QR 2FA Verification error:', error);

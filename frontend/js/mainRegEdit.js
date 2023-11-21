@@ -38,7 +38,7 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
 });
 
 
-document.getElementById('editUserForm').addEventListener('submit', function (event) {
+document.getElementById('editUserModal').addEventListener('submit', function (event) {
     event.preventDefault();
 
     const selectedTwoFactorMethod = document.getElementById('twoFactorMethod').value;

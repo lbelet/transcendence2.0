@@ -263,3 +263,25 @@ header {
   background: none;
   cursor: pointer;
 }
+
+.search-container {
+  display: flex;
+  align-items: center;
+  margin-right: 10px; /* Ajuster selon vos besoins */
+}
+
+.search-container.hidden{
+  display: none;
+}
+
+.search-container input {
+  background-color:rgb(47, 47, 47);
+  padding: 5px;
+  margin-right: 5px;
+}
+
+.search-container button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}

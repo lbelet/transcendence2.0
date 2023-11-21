@@ -7,9 +7,9 @@ function showRegisterForm() {
     navigateTo('register');
 }
 
-function showEditUserForm() {
-    navigateTo('edit-user');
-}
+// function showEditUserForm() {
+//     navigateTo('edit-user');
+// }
 
 function showTwoFactorForm() {
     navigateTo('email-two-factor');
@@ -25,7 +25,7 @@ function hideAllSections() {
     document.getElementById('register-section').classList.add('hidden');
     document.getElementById('welcome-section').classList.add('hidden');
     document.getElementById('game-section').classList.add('hidden');
-    document.getElementById('edit-user-section').classList.add('hidden'); // Add this line 
+    // document.getElementById('edit-user-section').classList.add('hidden'); // Add this line 
     document.getElementById('email-two-factor-section').classList.add('hidden');
     document.getElementById('pong-section').classList.add('hidden');
     document.getElementById('qr-two-factor-section').classList.add('hidden');
@@ -54,6 +54,19 @@ function toggleMenu() {
     }
 }
 
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Ajouter l'écouteur d'événement au document entier
+    document.addEventListener('click', (event) => {
+        const burgerMenuContent = document.getElementById('burgerMenuContent');
+        const burgerMenu = document.getElementById('bMenu');
+
+        // Vérifier si le clic est en dehors du burgerMenuContent et si le menu est ouvert
+        if (!burgerMenu.contains(event.target) && !burgerMenuContent.contains(event.target) && !burgerMenuContent.classList.contains('hidden')) {
+            burgerMenuContent.classList.add('hidden');
+        }
+    });
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     // Ajouter l'écouteur d'événement au document entier

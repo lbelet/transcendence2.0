@@ -14,6 +14,10 @@
         <div class="header-left">
             <h1>Mon Site SPA</h1>
         </div>
+        <div class="search-container hidden" id="searchU">
+            <input type="text" id="search-username" placeholder="Rechercher Utilisateur">
+            <button onclick="searchUser()">search</button> <!-- Utilisez une icône de loupe ici -->
+        </div>
         <div class="header-right">
             <div class="burger-menu hidden" id="bMenu" onclick="toggleMenu()">
                 <!-- Icône du menu burger (3 lignes) -->
@@ -32,6 +36,7 @@
                     <button onclick="updateUserLanguage('blr')">blr</button>
                     <button onclick="updateUserLanguage('en')">en</button>
                 </div>
+                <button class="btn btn-primary" onclick="openEditUserModal()">Modifier le Profil</button>
                 <button class="btn btn-primary" onclick="logout()">Déconnexion</button>
             </div>
         </div>
@@ -111,11 +116,7 @@
                 <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
 
                 <!-- Welcome Buttons -->
-                <button class="btn btn-primary" onclick="logout()">Déconnexion</button>
                 <button class="btn btn-primary" onclick="showGameForm()">Game</button>
-                <button class="btn btn-primary" onclick="showEditUserForm()" data-key="edit_profile">Modifier le
-                    profil</button>
-                <button class="btn btn-primary" onclick="openSearchModal()">Rechercher Utilisateur</button>
                 <button class="btn btn-primary" onclick="showFriendsModal()">Amis</button>
                 <div id="pending-requests-container"></div>
             </div>
@@ -128,7 +129,7 @@
                     <h2>Rechercher Utilisateur</h2>
                     <input type="text" id="search-username" placeholder="Nom d'utilisateur">
                     <button class="btn btn-primary" onclick="searchUser()">Rechercher</button>
-                    <div id="search-results"></div>
+                    <!-- <div id="search-results"></div> -->
                 </div>
             </div>
 
@@ -140,7 +141,6 @@
                     <div id="friends-list-container"></div>
                 </div>
             </div>
-
 
             <!-- Two-Factor Authentication Section -->
             <div id="email-two-factor-section" class="hidden">
@@ -185,48 +185,58 @@
                 <canvas id="pong-canvas"></canvas>
             </div>
 
-            <!-- Edit User Section -->
-            <div id="edit-user-section" class="hidden">
-                <h2>Modifier le profil</h2>
-                <form id="editUserForm">
-                    <div class="form-group">
-                        <label for="twoFactorMethod">Choose 2FA Method:</label>
-                        <select class="form-control" id="twoFactorMethod">
-                            <option value="none">Aucune</option>
-                            <option value="email">Email</option>
-                            <option value="qr">QR Code</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="language">Language:</label>
-                        <select class="form-control" id="language">
-                            <option value="fr">Français</option>
-                            <option value="blr">Bielorusse</option>
-                            <option value="en">English</option>
-                            <option value="de">Deutsch</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-                </form>
+
+            <div id="searchResultsModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeSearchResultsModal()">&times;</span>
+                    <h2>Résultats de la Recherche</h2>
+                    <div id="search-results"></div>
+                </div>
             </div>
 
-        </div>
-    </div>
+            <!-- Modal pour la modification du profil -->
+            <div id="editUserModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeEditUserModal()">&times;</span>
+                    <h2>Modifier le profil</h2>
+                    <form id="editUserForm">
+                        <div class="form-group">
+                            <label for="twoFactorMethod">Choose 2FA Method:</label>
+                            <select class="form-control" id="twoFactorMethod">
+                                <option value="none">Aucune</option>
+                                <option value="email">Email</option>
+                                <option value="qr">QR Code</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="language">Language:</label>
+                            <select class="form-control" id="language">
+                                <option value="fr">Français</option>
+                                <option value="blr">Bielorusse</option>
+                                <option value="en">English</option>
+                                <option value="de">Deutsch</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                    </form>
+                </div>
+            </div>
 
-    <script src="js/main.js"></script>
-    <script src="js/mainPong.js"></script>
-    <script src="js/mainWelcome.js"></script>
-    <script src="js/mainSocket.js"></script>
-    <script src="js/mainFriends.js"></script>
-    <script src="js/main2FA-JWT.js"></script>
-    <script src="js/mainToken.js"></script>
-    <script src="js/mainNavig.js"></script>
-    <script src="js/mainLog.js"></script>
-    <script src="js/mainRegEdit.js"></script>
 
-    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+            <script src="js/main.js"></script>
+            <script src="js/mainPong.js"></script>
+            <script src="js/mainWelcome.js"></script>
+            <script src="js/mainSocket.js"></script>
+            <script src="js/mainFriends.js"></script>
+            <script src="js/main2FA-JWT.js"></script>
+            <script src="js/mainToken.js"></script>
+            <script src="js/mainNavig.js"></script>
+            <script src="js/mainLog.js"></script>
+            <script src="js/mainRegEdit.js"></script>
 
-    <script type="module" src="js/pongGame.js"></script>
+            <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+
+            <script type="module" src="js/pongGame.js"></script>
 
 </body>
 

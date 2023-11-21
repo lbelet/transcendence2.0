@@ -29,13 +29,13 @@ function showWelcome() {
     showPendingFriendRequests();
 }
 
-function openSearchModal() {
-    document.getElementById('searchUserModal').style.display = 'block';
-}
+// function openSearchModal() {
+//     document.getElementById('searchUserModal').style.display = 'block';
+// }
 
-function closeSearchModal() {
-    document.getElementById('searchUserModal').style.display = 'none';
-}
+// function closeSearchModal() {
+//     document.getElementById('searchUserModal').style.display = 'none';
+// }
 
 function searchUser() {
     var username = document.getElementById('search-username').value;
@@ -92,11 +92,29 @@ function searchUser() {
                     resultsContainer.appendChild(userContainer);
                 });
             }
+            openSearchResultsModal();
         })
         .catch(error => {
             console.error('Erreur lors de la recherche de l\'utilisateur:', error);
         });
 }
+
+function openSearchResultsModal() {
+    document.getElementById('searchResultsModal').style.display = 'block';
+}
+
+function closeSearchResultsModal() {
+    document.getElementById('searchResultsModal').style.display = 'none';
+}
+
+function openEditUserModal() {
+    document.getElementById('editUserModal').style.display = 'block';
+}
+
+function closeEditUserModal() {
+    document.getElementById('editUserModal').style.display = 'none';
+}
+
 
 function showPendingFriendRequests() {
     fetch('/api/pending_friend_requests/', {

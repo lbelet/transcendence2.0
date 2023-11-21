@@ -40,6 +40,10 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                 // Après une connexion réussie
                 const burgerMenu = document.getElementById('bMenu');
                 burgerMenu.classList.remove('hidden');
+
+                const searchingBar = document.getElementById('searchU');
+                searchingBar.classList.remove('hidden');
+
                 console.log("Burger menu should be visible now");
 
 
@@ -87,6 +91,10 @@ function logout() {
             
             const burgerMenuContent = document.getElementById('burgerMenuContent');
             burgerMenuContent.classList.add('hidden');
+
+            const searchingBar = document.getElementById('searchU');
+            searchingBar.classList.add('hidden');
+
             console.log("Burger menu should be hidden now");
 
             navigateTo('home');
