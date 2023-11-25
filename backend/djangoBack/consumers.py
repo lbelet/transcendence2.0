@@ -23,29 +23,34 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
 
 class GameConsumer(AsyncWebsocketConsumer):
+    game_id = None  # Initialisé à None
+
     async def connect(self):
-        # Extrait l'identifiant du jeu de l'URL (assurez-vous que cela correspond à votre routage URL)
-        self.game_id = self.scope['url_route']['kwargs']['game_id']
-
-        # Rejoindre le groupe de jeu spécifique
-        await self.channel_layer.group_add(
-            f'pong_game_{self.game_id}',
-            self.channel_name
-        )
-
         await self.accept()
-        await self.send(text_data=json.dumps({"GameSocket_id": self.channel_name}))
+        await self.send(text_data=json.dumps({"game_socket_id": self.channel_name}))
 
     async def disconnect(self, close_code):
-        # Quitter le groupe lors de la déconnexion
-        await self.channel_layer.group_discard(
-            f'pong_game_{self.game_id}',
-            self.channel_name
-        )
+        if self.game_id:
+            await self.channel_layer.group_discard(
+                f'pong_game_{self.game_id}',
+                self.channel_name
+            )
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        # Traiter les données reçues pour le jeu
+
+        # Si le message contient un game_id, rejoindre le groupe de jeu
+        if 'game_id' in data:
+            self.game_id = data['game_id']
+            await self.channel_layer.group_add(
+                f'pong_game_{self.game_id}',
+                self.channel_name
+            )
+            # Confirmer l'ajout au groupe
+            await self.send(text_data=json.dumps({
+                "status": "added_to_game",
+                "game_id": self.game_id
+            }))
 
     async def game_start(self, event):
         # Envoyer un message aux clients pour démarrer la partie
@@ -53,5 +58,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             'type': 'game_start',
             'game_id': event['game_id']
         }))
+
 
     # Vous pouvez ajouter d'autres méthodes utiles pour le jeu ici

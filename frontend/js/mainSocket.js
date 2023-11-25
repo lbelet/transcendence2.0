@@ -83,53 +83,73 @@ function openWebSocketConnection() {
 
 let gameWebsocket;
 
-function openGameWebSocketConnection(gameId) {
-    gameWebsocket = new WebSocket(`wss://localhost/ws/game/${gameId}/`);
+function openGameWebSocketConnection() {
+    return new Promise((resolve, reject) => {
+        gameWebsocket = new WebSocket(`wss://localhost/ws/game/`);
 
-    gameWebsocket.onopen = function (event) {
-        console.log('WebSocket de jeu ouvert :', event);
-    };
+        gameWebsocket.onopen = function (event) {
+            console.log('WebSocket de jeu ouvert :', event);
+        };
 
-    gameWebsocket.onmessage = function (event) {
-        console.log('Message reçu du jeu :', event.data);
-        try {
-            const data = JSON.parse(event.data);
-    
-            if (data.GameSocket_id) {
-                console.log('Game Socket ID reçu:', data.GameSocket_id);
-                updateGameSocketId(data.GameSocket_id);
-                localStorage.setItem('gameSocket_ID', data.GameSocket_id);
+        gameWebsocket.onmessage = function (event) {
+            console.log('Message reçu du jeu :', event.data);
+            try {
+                const data = JSON.parse(event.data);
+
+                if (data.game_socket_id) {
+                    console.log('Game Socket ID reçu:', data.game_socket_id);
+                    updateGameSocketId(data.game_socket_id);
+                    localStorage.setItem('gameSocket_ID', data.game_socket_id);
+                    resolve(); // Résoudre la promesse ici
+                }
+
+                // Gestion du démarrage de la partie de Pong
+                if (data.type === 'game_start') {
+                    console.log('La partie de Pong commence, game_id:', data.game_id);
+                    startPongGame(data.game_id);
+                }
+
+                // Gérer d'autres types de messages spécifiques au jeu
+                // ...
+
+            } catch (error) {
+                console.error('Erreur de parsing JSON dans le jeu:', error);
+                reject(error); // Rejeter la promesse en cas d'erreur
             }
-    
-            // Gestion du démarrage de la partie de Pong
-            if (data.type === 'game_start') {
-                console.log('La partie de Pong commence, game_id:', data.game_id);
-                // Implémentez la logique pour démarrer la partie
-                startPongGame(data.game_id);
-            }
-    
-            // Gérer d'autres types de messages spécifiques au jeu
-            // ...
-    
-        } catch (error) {
-            console.error('Erreur de parsing JSON dans le jeu:', error);
-        }
-    };
-    
-    function startPongGame(gameId) {
-        // Logique pour initialiser et démarrer la partie de Pong
-        console.log('Démarrage de la partie de Pong avec l\'ID :', gameId);
-        // Par exemple, afficher le canvas de jeu, initialiser les positions des raquettes, etc.
-        // Vous devrez éventuellement synchroniser l'état du jeu avec le serveur
-    }
-    
+        };
 
-    gameWebsocket.onerror = function (error) {
-        console.log('Erreur WebSocket de jeu:', error);
-    };
-
-    // Vous pouvez ajouter d'autres gestionnaires d'événements si nécessaire
+        gameWebsocket.onerror = function (error) {
+            console.log('Erreur WebSocket de jeu:', error);
+            reject(error); // Rejeter la promesse en cas d'erreur
+        };
+    });
 }
+
+
+function startPongGame(gameId) {
+    // Logique pour initialiser et démarrer la partie de Pong
+    console.log('Démarrage de la partie de Pong avec l\'ID :', gameId);
+
+    // Afficher la section de jeu (s'assurer que l'élément est correctement référencé)
+    // document.getElementById('pong-section').classList.remove('hidden');
+
+    navigateTo('pong')
+
+    // Initialiser les positions des raquettes, de la balle, etc.
+    // Cette partie dépend de la manière dont votre jeu est structuré.
+    // Vous devrez probablement synchroniser l'état du jeu avec le serveur
+    // et initialiser les éléments de jeu comme les raquettes et la balle.
+}
+
+function sendGameIdToWebSocket(gameId) {
+    if (gameWebsocket && gameWebsocket.readyState === WebSocket.OPEN) {
+        gameWebsocket.send(JSON.stringify({ game_id: gameId }));
+        console.log("connexion OK..........")
+    } else {
+        console.error("La connexion WebSocket n'est pas ouverte.");
+    }
+}
+
 
 function updateGameSocketId(Gamesocket_Id) {
     fetch('/api/update_GameSocket_id/', {

@@ -61,29 +61,39 @@ function showGameForm() {
 
 // document.getElementById('joinGameButton').addEventListener('click', joinGameQueue);
 
-function joinGameQueue() {
-    const gameSocketId = localStorage.getItem('gameSocket_ID');
+async function joinGameQueue() {
+    try {
+        // Attendre l'ouverture de la connexion WebSocket et la réception du game_socket_id
+        await openGameWebSocketConnection();
 
-    fetch('/api/join_game_queue/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        },
-        body: JSON.stringify({ game_socket_id: gameSocketId })
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Réponse du serveur:', data);
-            // Stockez le game_id dans localStorage
-            if (data.game_id) {
-                localStorage.setItem('currentGameId', data.game_id);
-                openGameWebSocketConnection(data.game_id); // Ouvrez la connexion WebSocket avec le game_id
-            }
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
+        const gameSocketId = localStorage.getItem('gameSocket_ID');
+        console.log("gameSocketID: ", gameSocketId);
+
+        // Envoyer la requête POST pour rejoindre la file d'attente
+        const response = await fetch('/api/join_game_queue/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            },
+            body: JSON.stringify({ game_socket_id: gameSocketId })
         });
+
+        const data = await response.json();
+        console.log('Réponse du serveur:', data);
+
+        if (data.game_id) {
+            localStorage.setItem('currentGameId', data.game_id);
+            sendGameIdToWebSocket(data.game_id);
+            if (data.message.includes('Partie en cours')) {
+                console.log("partie en cours ok")
+                startPongGame(data.game_id);
+            }
+        }
+    } catch (error) {
+        console.error('Erreur lors de la tentative de rejoindre la file d attente:', error);
+    }
 }
+
 
 

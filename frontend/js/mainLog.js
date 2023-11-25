@@ -85,6 +85,7 @@ function logout() {
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('username');
             localStorage.removeItem('language');
+            localStorage.removeItem('gameSocket_ID');
 
             const burgerMenu = document.getElementById('bMenu');
             burgerMenu.classList.add('hidden');

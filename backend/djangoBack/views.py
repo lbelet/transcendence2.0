@@ -27,44 +27,46 @@ from djangoBack.helpers import (
 )
 
 
+from rest_framework.response import Response
+from rest_framework import status
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def join_game_queue(request):
-    # Récupérer l'utilisateur actuel
     current_user = request.user
-
     game_socket_id = request.data.get('game_socket_id')
 
-    # Chercher une partie en attente
     game_waiting = PongGame.objects.filter(status='waiting').first()
 
-    if game_waiting:
-        # S'il y a déjà une partie en attente, ajouter l'utilisateur actuel comme joueur deux
-        game_waiting.player_two = current_user
-        game_waiting.player_two_socket_id = game_socket_id
-        game_waiting.status = 'playing'
-        game_waiting.save()
+    try:
+        if game_waiting:
+            game_waiting.player_two = current_user
+            game_waiting.player_two_socket_id = game_socket_id
+            game_waiting.status = 'playing'
+            game_waiting.save()
 
-        # Notifier les deux joueurs que la partie peut commencer
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            'pong_game_{}'.format(game_waiting.id),
-            {
-                'type': 'game_start',
-                'game_id': game_waiting.id
-            }
-        )
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                'pong_game_{}'.format(game_waiting.id),
+                {
+                    'type': 'game_start',
+                    'game_id': game_waiting.id
+                }
+            )
 
-        return JsonResponse({'message': 'Vous avez rejoint une partie en cours', 'game_id': game_waiting.id})
-    else:
-        # S'il n'y a pas de partie en attente, créer une nouvelle partie
-        new_game = PongGame.objects.create(
-            player_one=current_user,
-            player_one_socket_id=game_socket_id,
-            status='waiting'
-        )
+            return JsonResponse({'message': 'Partie en cours', 'game_id': game_waiting.id, 'status': 'playing'})
+        else:
+            new_game = PongGame.objects.create(
+                player_one=current_user,
+                player_one_socket_id=game_socket_id,
+                status='waiting'
+            )
 
-        return JsonResponse({'message': 'Vous êtes en file d attente pour une nouvelle partie', 'game_id': new_game.id})
+            return JsonResponse({'message': 'En attente d’un autre joueur', 'game_id': new_game.id, 'status': 'waiting'})
+
+    except Exception as e:
+        return Response({'error': 'Erreur interne du serveur'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
