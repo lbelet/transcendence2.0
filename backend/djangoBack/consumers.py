@@ -38,9 +38,12 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
+        print("Message reçu dans GameConsumer: ", data)  # Ajouter un log pour déboguer
+
 
         # Si le message contient un game_id, rejoindre le groupe de jeu
         if 'game_id' in data:
+            print("game_id.....")
             self.game_id = data['game_id']
             await self.channel_layer.group_add(
                 f'pong_game_{self.game_id}',
@@ -52,12 +55,38 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "game_id": self.game_id
             }))
 
+        if data.get('type') == 'paddle_move':
+            print("consumers paddle move ok: ", data)
+        # Assurez-vous que le message contient les données nécessaires
+            if 'x' in data:
+            # Transmettre la position du paddle à l'autre joueur
+                print("game_id ", self.game_id)  # Ajouter un log pour déboguer
+
+                await self.channel_layer.group_send(
+                    f'pong_game_{self.game_id}',
+                    {
+                        'type': 'paddle_position',
+                        'x': data['x'],
+                        'sender_channel_name': self.channel_name
+                    }
+                )
+
+
     async def game_start(self, event):
         # Envoyer un message aux clients pour démarrer la partie
         await self.send(text_data=json.dumps({
             'type': 'game_start',
             'game_id': event['game_id']
         }))
+
+    async def paddle_position(self, event):
+    # # Ne pas renvoyer le message au client qui l'a envoyé
+        if self.channel_name != event['sender_channel_name']:
+            await self.send(text_data=json.dumps({
+                'type': 'paddle_position',
+                'x': event['x']
+            }))
+
 
 
     # Vous pouvez ajouter d'autres méthodes utiles pour le jeu ici

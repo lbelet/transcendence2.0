@@ -80,8 +80,8 @@ function openWebSocketConnection() {
     };
 }
 
-
-let gameWebsocket;
+// ----------------------------------------------------------------------------------------------------
+// let gameWebsocket;
 
 function openGameWebSocketConnection() {
     return new Promise((resolve, reject) => {
@@ -96,6 +96,8 @@ function openGameWebSocketConnection() {
             try {
                 const data = JSON.parse(event.data);
 
+                console.log("data gamesocket: ", data);
+
                 if (data.game_socket_id) {
                     console.log('Game Socket ID reçu:', data.game_socket_id);
                     updateGameSocketId(data.game_socket_id);
@@ -108,6 +110,15 @@ function openGameWebSocketConnection() {
                     console.log('La partie de Pong commence, game_id:', data.game_id);
                     startPongGame(data.game_id);
                 }
+
+                if (data.type === 'paddle_position') {
+                    console.log("data paddle_position: ", data)
+                    window.updateOpponentPaddlePosition(data.x);
+                }
+                // if (data.type === 'paddle_position') {
+                //     updateOpponentPaddlePosition(data.x);
+                // }
+
 
                 // Gérer d'autres types de messages spécifiques au jeu
                 // ...
@@ -132,7 +143,7 @@ function startPongGame(gameId) {
 
     // Afficher la section de jeu (s'assurer que l'élément est correctement référencé)
     // document.getElementById('pong-section').classList.remove('hidden');
-
+    document.dispatchEvent(new Event("startPongGame"));
     navigateTo('pong')
 
     // Initialiser les positions des raquettes, de la balle, etc.
@@ -168,5 +179,11 @@ function updateGameSocketId(Gamesocket_Id) {
             console.error('Erreur lors de la mise à jour du game_socket_id:', error);
         });
 }
+
+// function updateOpponentPaddlePosition(xPosition) {
+//     // Assurez-vous que la position X reçue est dans les limites du terrain de jeu
+//     // Mettez à jour la position X du paddle de l'adversaire
+//     opponentPaddle.position.x = xPosition;
+// }
 // Appelez cette fonction au lancement du jeu
 // openGameWebSocketConnection();

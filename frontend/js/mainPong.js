@@ -44,6 +44,8 @@ function quitPong3D() {
         })
         .then(data => {
             console.log('Success:', data);
+            // document.dispatchEvent(new Event("startPongGame"));
+            document.dispatchEvent(new Event("stopPongGame"));
             navigateTo('welcome');
         })
         .catch(error => {
@@ -85,6 +87,7 @@ async function joinGameQueue() {
         if (data.game_id) {
             localStorage.setItem('currentGameId', data.game_id);
             sendGameIdToWebSocket(data.game_id);
+            localStorage.setItem('playerRole', data.player_role);  // Stocker le rôle du joueur
             if (data.message.includes('Partie en cours')) {
                 console.log("partie en cours ok")
                 startPongGame(data.game_id);

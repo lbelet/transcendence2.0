@@ -6,6 +6,7 @@ const initialState = {
     language: "fr",
     gameSocket_ID: null,
     currentGameId: null,
+    playerRole: 0,
     // autres variables...
 };
 

@@ -10,11 +10,11 @@ paddle1.position.set(0, 0, 7);
 scene.add(paddle1);
 
 // Raquette 2
-const paddle2Geometry = new THREE.BoxGeometry(2, 0.5, 0.5);
-const paddle2Material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-const paddle2 = new THREE.Mesh(paddle2Geometry, paddle2Material);
-paddle2.position.set(0, 0, -7);
-scene.add(paddle2);
+const opponentPaddleGeometry = new THREE.BoxGeometry(2, 0.5, 0.5);
+const opponentPaddleMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+const opponentPaddle = new THREE.Mesh(opponentPaddleGeometry, opponentPaddleMaterial);
+opponentPaddle.position.set(0, 0, -7);
+scene.add(opponentPaddle);
 
 // Balle
 const ballGeometry = new THREE.SphereGeometry(0.25, 32, 32);
@@ -59,7 +59,7 @@ camera.rotation.x = -Math.PI / 7; // Rotation autour de l'axe X pour regarder ve
 // Renderer
 const canvas = document.getElementById('pong-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas: canvas });
-renderer.setSize(800, 600); 
+renderer.setSize(800, 600);
 
 // Fonction pour mettre à jour la taille du renderer et de la caméra
 function onWindowResize() {
@@ -79,32 +79,82 @@ directionalLight.position.set(0, 1, 0);
 scene.add(directionalLight);
 
 let paddleSpeed = 0.1;
-let paddleDirection = 0; // -1 pour gauche, 1 pour droite, 0 pour immobile
+let localDirection = 0; // -1 pour gauche, 1 pour droite, 0 pour immobile
 
-// Gestionnaire d'événements pour les touches
 window.addEventListener('keydown', function (event) {
+    // let direction = 0;
     if (event.key === 'ArrowRight') {
-        paddleDirection = 1;
+        localDirection = 1;
     } else if (event.key === 'ArrowLeft') {
-        paddleDirection = -1;
+        localDirection = -1;
     }
 });
 
 window.addEventListener('keyup', function (event) {
     if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
-        paddleDirection = 0;
+        localDirection = 0;
     }
 });
 
-// Fonction d'animation du jeu
+let isGameActive = false;
+
+document.addEventListener("startPongGame", startGame);
+document.addEventListener("stopPongGame", stopGame);
+
+function startGame() {
+    isGameActive = true;
+    animate();
+}
+
+function stopGame() {
+    isGameActive = false;
+}
+
+function sendPaddlePositionX() {
+    if (gameWebsocket && gameWebsocket.readyState === WebSocket.OPEN) {
+        const message = JSON.stringify({
+            type: 'paddle_move',
+            x: paddle1.position.x
+        });
+
+        gameWebsocket.send(message);
+        console.log("Envoi de la position du paddle : ", message);
+    } else {
+        console.error("La connexion WebSocket n'est pas ouverte.");
+    }
+}
+
+
+
+window.updateOpponentPaddlePosition = function (xPosition) {
+    opponentPaddle.position.x = xPosition;
+    console.log("opponentPaddle position............", xPosition)
+};
+
+
+// gameWebsocket.onmessage = function(event) {
+//     const data = JSON.parse(event.data);
+//     if (data.type === 'paddle_position') {
+//         updateOpponentPaddlePosition(data.x);
+//     }
+// }
+
+
 function animate() {
     requestAnimationFrame(animate);
+    if (!isGameActive) return;
 
-    // Déplacer le paddle
-    paddle1.position.x += paddleDirection * paddleSpeed;
+    const previousX = paddle1.position.x;
+    paddle1.position.x += localDirection * paddleSpeed;
 
-    // Mettre à jour la scène et la caméra
+    // Vérifiez si la position du paddle a changé
+    if (paddle1.position.x !== previousX) {
+        console.log("envoi OK.................")
+        sendPaddlePositionX();
+    }
+
     renderer.render(scene, camera);
 }
+
 
 animate();
