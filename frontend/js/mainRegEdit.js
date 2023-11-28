@@ -43,6 +43,7 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
 
     const selectedTwoFactorMethod = document.getElementById('twoFactorMethod').value;
     const selectedLanguage = document.getElementById('language').value;
+    const newEmail = document.getElementById('newEmail').value
 
     fetch('/api/user/update', {
         method: 'POST',
@@ -53,7 +54,8 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
         body: JSON.stringify({
             username: localStorage.getItem('username'),
             twoFactorMethod: selectedTwoFactorMethod,
-            language: selectedLanguage // Include the selected language in the request
+            language: selectedLanguage, // Include the selected language in the request
+            email: newEmail
         })
     })
         .then(response => {
@@ -121,4 +123,29 @@ function updateUserLanguage(language) {
         console.error('Error updating language preference:', error);
     });
 }
+
+// function updateEmail() {
+//     const newEmail = document.getElementById('newEmail').value;
+//     // Ajoutez ici le code pour envoyer cette nouvelle adresse e-mail à votre serveur
+//     console.log("Mise à jour de l'email avec:", newEmail);
+
+//     // Vous pouvez utiliser AJAX, fetch API, ou une autre méthode
+//     // Exemple avec fetch:
+//     fetch('/api/update_email', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+//         },
+//         body: JSON.stringify({ email: newEmail })
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         console.log("Réponse du serveur:", data);
+//         // Mise à jour de l'affichage ou traitement des erreurs
+//     })
+//     .catch(error => {
+//         console.error('Erreur lors de la mise à jour de l\'email:', error);
+//     });
+// }
 

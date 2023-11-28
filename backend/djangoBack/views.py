@@ -190,10 +190,13 @@ def update_user(request):
     data = json.loads(request.body)
     two_factor_method = data.get('twoFactorMethod')
     language = data.get('language', 'fr')  # Default to English if not provided
+    email = data.get('email')
 
     user = request.user
     user.two_factor_method = two_factor_method
     user.language = language  # Update the user's language preference
+    if email:
+        user.email = email
 
     if two_factor_method == 'qr':
         if not user.totp_secret:
@@ -436,3 +439,23 @@ def update_language(request):
         return JsonResponse({'success': 'Language updated successfully'}, status=200)
     else:
         return JsonResponse({'error': 'No language provided'}, status=400)
+
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def update_email(request):
+#     user = request.user
+#     print("user : ", user)
+#     data = json.loads(request.body)
+#     print("data : ", data)
+
+#     new_email = data.get('email')
+#     print("new email : ", new_email)
+
+#     if new_email:
+#         user.email = new_email
+#         user.save()
+#         return JsonResponse({'status': 'success', 'message': 'Email mis à jour'})
+#     else:
+#         return JsonResponse({'error': 'email '}, status=400)
+
+
