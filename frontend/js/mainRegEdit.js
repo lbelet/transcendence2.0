@@ -44,6 +44,8 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
     const selectedTwoFactorMethod = document.getElementById('twoFactorMethod').value;
     const selectedLanguage = document.getElementById('language').value;
     const newEmail = document.getElementById('newEmail').value
+    const newUsername = document.getElementById('newUsername').value
+    const newFirstname = document.getElementById('newFirstname').value
 
     fetch('/api/user/update', {
         method: 'POST',
@@ -52,10 +54,12 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         },
         body: JSON.stringify({
-            username: localStorage.getItem('username'),
+            // username: localStorage.getItem('username'),
+            username: newUsername,
             twoFactorMethod: selectedTwoFactorMethod,
             language: selectedLanguage, // Include the selected language in the request
-            email: newEmail
+            email: newEmail,
+            firstname: newFirstname
         })
     })
         .then(response => {

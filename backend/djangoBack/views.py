@@ -191,12 +191,18 @@ def update_user(request):
     two_factor_method = data.get('twoFactorMethod')
     language = data.get('language', 'fr')  # Default to English if not provided
     email = data.get('email')
+    username = data.get('username')
+    firstname = data.get('firstname')
 
     user = request.user
     user.two_factor_method = two_factor_method
     user.language = language  # Update the user's language preference
     if email:
         user.email = email
+    if username:
+        user.username = username
+    if firstname:
+        user.first_name = firstname
 
     if two_factor_method == 'qr':
         if not user.totp_secret:
