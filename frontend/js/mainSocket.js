@@ -2,8 +2,11 @@ let websocket;
 
 
 function openWebSocketConnection() {
-    websocket = new WebSocket('wss://localhost/ws/notifications/');
-
+    let wsHost = window.location.hostname;
+    let wsPort = window.location.port ? `:${window.location.port}` : '';
+    // let wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    let websocket = new WebSocket(`wss://${wsHost}${wsPort}/ws/notifications/`);
+    
     websocket.onopen = function (event) {
         console.log('WebSocket ouvert :', event);
     };
@@ -85,10 +88,14 @@ function openWebSocketConnection() {
 
 function openGameWebSocketConnection() {
     return new Promise((resolve, reject) => {
-        gameWebsocket = new WebSocket(`wss://localhost/ws/game/`);
+        let gameWsHost = window.location.hostname;
+        let gameWsPort = window.location.port ? `:${window.location.port}` : '';
+        let gameWsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        gameWebsocket = new WebSocket(`${gameWsProtocol}://${gameWsHost}${gameWsPort}/ws/game/`);
 
         gameWebsocket.onopen = function (event) {
             console.log('WebSocket de jeu ouvert :', event);
+            resolve(); // Résoudre la promesse ici
         };
 
         gameWebsocket.onmessage = function (event) {
