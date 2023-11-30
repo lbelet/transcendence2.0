@@ -190,6 +190,11 @@ window.updateOpponentPaddlePosition = function (xPosition) {
     console.log("opponentPaddle position............", xPosition)
 };
 
+window.addEventListener('ballUpdate', function(event) {
+    ball.position.set(event.detail.x, event.detail.y, event.detail.z);
+    console.log("x, y, z: ", event.detail.x, ": ", event.detail.y, ": ", event.detail.z)
+});
+
 function animate() {
     requestAnimationFrame(animate);
     if (!isGameActive) return;

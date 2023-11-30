@@ -122,6 +122,13 @@ function openGameWebSocketConnection() {
                     console.log("data paddle_position: ", data)
                     window.updateOpponentPaddlePosition(data.x);
                 }
+
+                if (data.type === 'ball_position') {
+                    console.log("ball postion ok...")
+                    console.log("data ball: ", data.ball)
+                    const updateEvent = new CustomEvent('ballUpdate', { detail: data.ball });
+                    window.dispatchEvent(updateEvent);
+                }
                 // if (data.type === 'paddle_position') {
                 //     updateOpponentPaddlePosition(data.x);
                 // }

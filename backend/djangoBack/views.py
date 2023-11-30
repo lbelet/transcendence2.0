@@ -54,7 +54,6 @@ def join_game_queue(request):
                 'game_id': game_waiting.id
             }
         )
-
         return JsonResponse({'message': 'Partie en cours', 'game_id': game_waiting.id, 'status': 'playing', 'player_role': 2})
     else:
         # S'il n'y a pas de partie en attente, créer une nouvelle partie
