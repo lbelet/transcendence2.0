@@ -8,7 +8,12 @@ import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 
 const scene = new THREE.Scene();
 
-const paddleMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, emissive: 0x770000 });
+const paddleMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffa500, // ou 0xffa500 pour l'orange
+    emissive: 0xff8c00, // ou 0xff8c00 pour l'orange
+    emissiveIntensity: 0.5,
+    wireframe: true
+});
 
 // Raquette 1
 const paddle1Geometry = new THREE.BoxGeometry(2, 0.5, 0.5);
@@ -24,14 +29,25 @@ scene.add(opponentPaddle);
 
 // Balle
 const ballGeometry = new THREE.SphereGeometry(0.25, 32, 32);
-const ballMaterial = new THREE.MeshPhongMaterial({ color: 0xffff00, emissive: 0x777700 });
+const ballMaterial = new THREE.MeshStandardMaterial({
+    color: 0x000000,
+    emissive: 0xffffff,
+    emissiveIntensity: 0.5
+});
 const ball = new THREE.Mesh(ballGeometry, ballMaterial);
 ball.position.set(0, 0, 0);
 scene.add(ball);
 
 // Ajout d'un plan (sol)
 const planeGeometry = new THREE.PlaneGeometry(10, 15);
-const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+const planeMaterial = new THREE.MeshBasicMaterial({
+    color: 0xFFFFFF,
+    side: THREE.DoubleSide,
+    wireframe: false,
+    emissive: 0x2222ff, // Bleu pour un look Tron
+    transparent: true,
+    opacity: 0.8
+});
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 plane.rotation.x = Math.PI / 2; // Rotation pour que le plan soit horizontal
 plane.position.set(0, 0, 0);
@@ -39,7 +55,14 @@ scene.add(plane);
 
 // Ajout des murs
 const wallGeometry = new THREE.BoxGeometry(0.2, 1, 15);
-const wallMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const wallMaterial = new THREE.MeshBasicMaterial({
+    color: 0x2222ff,
+    wireframe: true,
+    emissive: 0x2222ff, // Bleu pour un look Tron
+    transparent: false,
+    opacity: 0.5,
+    emissiveIntensity: 2
+});
 
 // Créez et positionnez chaque mur selon vos besoins
 const wall1 = new THREE.Mesh(wallGeometry, wallMaterial);
@@ -73,19 +96,29 @@ const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 
 // Configurer l'Unreal Bloom Pass
-const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.5, 0.4, 0.85);
+const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    1.5,  // Intensité de la lumière
+    0.4,  // Rayon de la lumière
+    0.85  // Seuil de luminosité
+);
 composer.addPass(bloomPass);
 
 // Création de l'OutlinePass
-const outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene, camera);
-outlinePass.edgeStrength = 3;
-outlinePass.edgeGlow = 0.7;
-outlinePass.edgeThickness = 2.5;
-outlinePass.visibleEdgeColor.set('#ffffff');
-outlinePass.hiddenEdgeColor.set('#190a05');
+const outlinePass = new OutlinePass(
+    new THREE.Vector2(800, 600),
+    scene,
+    camera
+);
+outlinePass.edgeStrength = 5; // Augmente la force du contour
+outlinePass.edgeGlow = 1.0; // Augmente la lueur du contour
+outlinePass.edgeThickness = 3; // Augmente l'épaisseur du contour
+outlinePass.visibleEdgeColor.set('#00ff00'); // Couleur du contour visible
+outlinePass.hiddenEdgeColor.set('#ff0000'); // Couleur du contour caché
+
 
 // Ajouter les objets que vous voulez contourner
-outlinePass.selectedObjects = [paddle1, opponentPaddle];
+outlinePass.selectedObjects = [paddle1, opponentPaddle, wall1, wall2, wall3];
 
 composer.addPass(outlinePass);
 
@@ -152,21 +185,10 @@ function sendPaddlePositionX() {
     }
 }
 
-
-
 window.updateOpponentPaddlePosition = function (xPosition) {
     opponentPaddle.position.x = xPosition;
     console.log("opponentPaddle position............", xPosition)
 };
-
-
-// gameWebsocket.onmessage = function(event) {
-//     const data = JSON.parse(event.data);
-//     if (data.type === 'paddle_position') {
-//         updateOpponentPaddlePosition(data.x);
-//     }
-// }
-
 
 function animate() {
     requestAnimationFrame(animate);
@@ -180,9 +202,7 @@ function animate() {
         console.log("envoi OK.................")
         sendPaddlePositionX();
     }
-
     composer.render();
 }
-
 
 animate();
