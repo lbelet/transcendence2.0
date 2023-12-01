@@ -26,6 +26,101 @@ body {
   -webkit-text-size-adjust: 100%;
 } */
 
+/*-------------------------------------------------------------------------------*/
+
+/*NAVBAR*/
+/* @media (max-width: 768px) { */
+  .custom-navbar {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    font-family: monospace;
+    font-size: 14px;
+    background-color: rgb(0, 6, 20);
+    border: 0.5px solid #ffffff;
+    padding-left: 20px; /* Adds space inside the border */
+    
+  }
+
+  .navbar-nav .nav-item {
+    margin-right: 20px;
+  }
+
+  .custom-navbar, .navbar-nav .nav-link {
+    color:rgb(131, 131, 131);
+    font-size: 14px;
+    transition: transform 0.3s ease;
+    transform: scale(1);
+    /* letter-spacing: 1px;
+     Adjusts spacing between letters */
+  }
+
+  .custom-navbar .nav-link:hover {
+    transform: scale(1.1); /* Slightly increase the size */
+    transition: transform 0.3s ease;
+}
+  .form-inline .form-control {
+    display: inline-block;
+    width: auto; /* Adjust width as needed */
+    vertical-align: middle;
+  }
+  /* .form-inline .trans_button {
+    display: inline-block;
+    vertical-align: middle;
+  } */
+
+.trans_nav_button {
+  background-color: rgb(0, 6, 20); /* Green background */
+  border: 0.5px solid #ffffff;
+  font-family: monospace;
+  color: rgb(131, 131, 131); /* White text */
+  padding: 10px 12px; /* Top and bottom padding of 15px, left and right padding of 32px */
+  text-align: center; /* Centered text */
+  text-decoration: none; /* No underline */
+  display: inline-block; /* Inline block element */
+  font-size: 12px; /* Font size */
+  margin-right: 20px; /* Margin */
+  cursor: pointer; /* Cursor changes to pointer on hover */
+  border-radius: 2px; /*Rounded corners*/
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform: scale(1); /* Default scale */
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1); /* Default shadow */
+}
+
+.trans_nav_button:hover {
+  color: rgb(255, 255, 255); /* White text */
+  transform: scale(1.05); /* Slightly increase the size */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Optional: Adds shadow for depth */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.trans_nav_button:active {
+  background-color: rgb(0, 6, 20);
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.trans_nav_form-control {
+  width: 200px;
+  background-color: rgba(173, 173, 173, 0.4);
+  border: 0.5px solid #ffffff;
+  color: rgb(0, 0, 0);
+  padding: 10px 20px; /* Top and bottom padding of 15px, left and right padding of 32px */
+  border-radius: 2px; /*Rounded corners*/
+  font-family: monospace;
+  font-size: 12px; /* Font size */
+}
+
+.trans_nav_form-control:focus {
+  border-color: #ffffff; /* Replace with your desired color */
+  outline: none; /* Optional: Removes the default outline */
+}
+
+/* } */
+
+/*-------------------------------------------------------------------------------*/
+
+/*CANVAS*/
 #canvas1 {
 	border: 2px solid rgb(0, 6, 20);
 	position: absolute;
@@ -42,9 +137,14 @@ body {
   /*z-index: -1; Puts the canvas behind your content */
 }
 
+/*-------------------------------------------------------------------------------*/
+
+/*BODY*/
 body {
   background-color: rgb(0, 6, 20);
   margin: 0;
+  display: flex;
+  place-items: center;
   min-width: 320px;
   min-height: 100vh;
   z-index: 1;
@@ -54,34 +154,113 @@ body {
   display: none;
 }
 
-/*buttons*/
-button {
-  border-radius: 8px;
-  border: 1px solid rgb(78, 74, 74);
-  /* padding: 0.6em 1.2em; */
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  /* cursor: pointer; */
-  transition: border-color 0.25s;
+.custom-home-bottom-margin {
+  margin-bottom: 0px;
 }
 
-button:hover {
-  border-color: #c3c4d2;
+.delayed-button {
+  display: none;
+}
+/*-------------------------------------------------------------------------------*/
+
+/*BUTTONS*/
+.trans_button {
+  background-color: rgb(0, 6, 20); /* Green background */
+  border: 0.5px solid #ffffff;
+  font-family: monospace;
+  font-size: 14px; /* Font size */
+  color: rgb(173, 173, 173); /* White text */
+  padding: 10px 12px; /* Top and bottom padding of 15px, left and right padding of 32px */
+  text-align: center; /* Centered text */
+  text-decoration: none; /* No underline */
+  display: inline-block; /*Inline block element*/
+  margin-right: 10px; /* Margin */
+  cursor: pointer; /* Cursor changes to pointer on hover */
+  border-radius: 2px; /*Rounded corners*/
+  /* transition: padding 0.3s ease; */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform: scale(1); /* Default scale */
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1); /* Default shadow */
 }
 
-.button-primary {
-  color: #faf6f6; /* Text color for the button */
+.trans_button:hover {
+  color: rgb(255, 255, 255); /* White text */
+  transform: scale(1.05); /* Slightly increase the size */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Optional: Adds shadow for depth */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.button-container {
-  padding-bottom: 8rem; /* Adjust the value as needed */
+.trans_button:active {
+  background-color: rgb(0, 6, 20);
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
 }
 
-.spaced-buttons {
-  margin-left: 10px; /* Adjust the value as needed */
+/*-------------------------------------------------------------------------------*/
+
+.burger-menu {
+  cursor: pointer;
 }
+
+.burger-menu div {
+  width: 30px;
+  height: 3px;
+  background-color: white;
+  margin: 5px 0;
+}
+
+#burgerMenuContent {
+  position: absolute;
+  top: 100%; /* Positionner juste en dessous de l'icône du menu burger */
+  right: 0;
+  width: 200px; /* Ou la largeur que vous souhaitez */
+  background-color: rgb(47, 47, 47);
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  z-index: 1000; /* Assurez-vous qu'il est au-dessus des autres éléments */
+}
+
+#burgerMenuContent.hidden {
+  display: none;
+}
+
+.header-right {
+  position: relative;
+}
+
+.language-selection button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* .search-container {
+  display: flex;
+  align-items: center;
+  margin-right: 10px; /* Ajuster selon vos besoins */
+/* } */
+
+/*.search-container.hidden{
+  display: none;
+}
+
+.search-container input {
+  background-color:rgb(47, 47, 47);
+  padding: 5px;
+  margin-right: 5px;
+}
+
+.search-container button {
+  background: none;
+  border: none;
+  cursor: pointer;
+} */
+
+/*-------------------------------------------------------------------------------*/
+
+/* .spaced-buttons {
+  margin-left: 10px; /* Adjust the value as needed 
+} */
 
 /* .main-container {
   display: flex;
@@ -132,7 +311,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
+/* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
@@ -145,7 +324,7 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */
 
 
 #pong-canvas {
@@ -168,12 +347,11 @@ button:focus-visible {
 }
 
 .modal-content {
-  background-color: white;
+  background-color: #342525;
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
-  color: black;
 }
 
 .close {
@@ -252,7 +430,7 @@ button:focus-visible {
 }
 
 
-header {
+/* header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -260,66 +438,10 @@ header {
   color: white;
   padding: 10px;
   width: 100%;
-  /* Assurez-vous qu'il s'étend sur toute la largeur */
-}
+  /* Assurez-vous qu'il s'étend sur toute la largeur 
+} */
 
-.burger-menu {
-  cursor: pointer;
-}
 
-.burger-menu div {
-  width: 30px;
-  height: 3px;
-  background-color: white;
-  margin: 5px 0;
-}
-
-#burgerMenuContent {
-  position: absolute;
-  top: 100%; /* Positionner juste en dessous de l'icône du menu burger */
-  right: 0;
-  width: 200px; /* Ou la largeur que vous souhaitez */
-  background-color: rgb(47, 47, 47);
-  border: 1px solid #ddd;
-  box-sizing: border-box;
-  z-index: 1000; /* Assurez-vous qu'il est au-dessus des autres éléments */
-}
-
-#burgerMenuContent.hidden {
-  display: none;
-}
-
-.header-right {
-  position: relative;
-}
-
-.language-selection button {
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
-.search-container {
-  display: flex;
-  align-items: center;
-  margin-right: 10px; /* Ajuster selon vos besoins */
-}
-
-.search-container.hidden{
-  display: none;
-}
-
-.search-container input {
-  background-color:rgb(47, 47, 47);
-  padding: 5px;
-  margin-right: 5px;
-}
-
-.search-container button {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
 .login-container {
   display: flex;
   flex-direction: column; /* Stack children vertically */
@@ -357,6 +479,35 @@ header {
   border-color: #ffffff; /* Change the border color on focus */
 }
 
+
+
+
+/*buttons*/
+/* button {
+  border-radius: 8px;
+  border: 1px solid rgb(78, 74, 74);
+  /* padding: 0.6em 1.2em; */
+  /* font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a; */
+  /* cursor: pointer; */
+  /*transition: border-color 0.25s;
+} */
+
+/* button:hover {
+  border-color: #c3c4d2;
+} */
+
+/* .button-primary {
+  color: #faf6f6; Text color for the button 
+}
+
+/* .button-container {
+  padding-bottom: 8rem; /* Adjust the value as needed 
+} */
+
+/* } */
 /* #registersection-section {
   height: 100px; /* Adjust the height as needed */
 /*} */
@@ -437,3 +588,4 @@ a:hover {
   background-color: rgb(239, 124, 9); /* Replace with your desired color */
   /* text-align: center;
 } */
+

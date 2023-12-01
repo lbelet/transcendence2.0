@@ -1,4 +1,3 @@
-
 function showLoginForm() {
     navigateTo('login');
 }
