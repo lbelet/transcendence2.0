@@ -5,8 +5,10 @@ myImage.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAACsCAIAAABO2AZ
 myImage.addEventListener('load', function() {
 	const canvas = document.getElementById('canvas1');
 	const ctx = canvas.getContext('2d');
-	canvas.width = window.innerWidth;
+	let aspectRatio = 16 / 9; // Adjust as per your requirements
+	
 	canvas.height = window.innerHeight;
+	canvas.width = window.innerHeight * aspectRatio;
 
 	let particlesArray = [];
 	const numberOfParticles = 20000;

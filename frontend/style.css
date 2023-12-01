@@ -154,13 +154,21 @@ body {
   display: none;
 }
 
-.custom-home-bottom-margin {
-  margin-bottom: 0px;
+/*-------------------------------------------------------------------------------*/
+
+/*HOME-SECTION*/
+#home-section {
+  height: 0px; /* Adjust the height as needed */
 }
 
 .delayed-button {
   display: none;
 }
+
+.custom-home-bottom-margin {
+  margin-bottom: 0px;
+}
+
 /*-------------------------------------------------------------------------------*/
 
 /*BUTTONS*/
@@ -451,13 +459,11 @@ button:focus-visible {
   margin-top: 10px;
 }
 
-#home-section {
-  height: 0px; /* Adjust the height as needed */
-}
+
 
 /* login page: customised the text of input fields */
 #loginForm label {
-  color: #cacaca; /* Label text color */
+  color: #ffffff; /* Label text color */
   font-size: 16px; /* Label font size */
 
 }
@@ -478,7 +484,6 @@ button:focus-visible {
 #login-password:focus {
   border-color: #ffffff; /* Change the border color on focus */
 }
-
 
 
 

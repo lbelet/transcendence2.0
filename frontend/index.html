@@ -64,7 +64,7 @@
         </nav>
 
     <!-- Canvas for particle animation -->
-    <!-- <canvas id="canvas1"></canvas> -->
+    <canvas id="canvas1"></canvas>
 
     <!-- Home Section -->
     <!-- <div class="container-fluid d-flex min-vh-100"> -->
@@ -75,7 +75,7 @@
                     <h1></h1>
 
                     <div class="position-relative" style="bottom: 100px;">
-                        <div id="delayed-button-container">
+                        <div id="delayed-button-container" class="hidden">
                             <button class="trans_button delayed-button" onclick="showLoginForm()">Login</button>
                             <button class="trans_button" onclick="showRegisterForm()">Créer un compte</button>
                         </div>
@@ -87,7 +87,7 @@
 
         <div class="row justify-content-center align-self-center button-container">
             <div class="col-lg-4">
-                <div id="login-section" class="hidden">
+                <div id="login-section" class="w-100 text-center hidden">
                     <h2 class="text-center" style="color: #ffffff;">Login</h2>
                     <!-- Login Form -->
                     <form id="loginForm">
@@ -102,7 +102,7 @@
                             <input type="password" class="form-control" id="login-password" required>
                         </div>
                         <div class="text-center"> <!-- Center the button -->
-                            <button class="btn btn-outline-secondary">Se connecter</button>
+                            <button class="trans_button">Se connecter</button>
                         </div>
                     </form>
                 </div>
