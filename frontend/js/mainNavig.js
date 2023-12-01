@@ -1,3 +1,4 @@
+
 function showLoginForm() {
     navigateTo('login');
 }
@@ -90,5 +91,3 @@ function isValidToken() {
     // Ajoutez ici la logique pour vérifier la validité du token
     return token !== null; // Exemple simple
 }
-
-

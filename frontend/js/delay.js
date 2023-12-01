@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', (event) => {
+    console.log(document.getElementById('delayed-button-container'));
     setTimeout(function() {
         var buttonContainer = document.getElementById('delayed-button-container');
-        buttonContainer.classList.remove('hidden');
-    }, 1000);
+        if (buttonContainer) {
+            buttonContainer.classList.remove('hidden');
+        }
+    }, 3000);
 });
