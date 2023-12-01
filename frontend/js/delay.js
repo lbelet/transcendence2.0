@@ -5,5 +5,5 @@ document.addEventListener('DOMContentLoaded', (event) => {
         if (buttonContainer) {
             buttonContainer.classList.remove('hidden');
         }
-    }, 7000);
+    }, 1000);
 });

@@ -206,6 +206,52 @@ body {
 
 /*-------------------------------------------------------------------------------*/
 
+/*LOGIN-SECTION*/
+.login-container {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  justify-content: flex-center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  min-height: 100vh; /* Ensure container takes up at least the full viewport height */
+  margin-top: 10px;
+}
+
+
+
+/* login page: customised the text of input fields */
+#loginForm label {
+  font-family: monospace;
+  color: #ffffff; /* Label text color */
+  font-size: 14px; /* Label font size */
+
+}
+
+/* login page: customised the input field styles */
+#login-username,
+#login-password {
+  width: flex;
+  background-color: rgba(173, 173, 173, 0.4);
+  border: 0.5px solid #ffffff;
+  color: rgb(0, 0, 0);
+  padding: 10px 20px; /* Top and bottom padding of 15px, left and right padding of 32px */
+  border-radius: 2px; /*Rounded corners*/
+  font-family: monospace;
+  font-size: 14px; /* Font size */
+  margin-bottom: 10px;
+}
+
+/*Change the input field border color on focus */
+#login-username:focus,
+#login-password:focus {
+  border-color: #ffffff; /* Replace with your desired color */
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0;
+}
+
+/*-------------------------------------------------------------------------------*/
+
 .burger-menu {
   cursor: pointer;
 }
@@ -450,40 +496,7 @@ button:focus-visible {
 } */
 
 
-.login-container {
-  display: flex;
-  flex-direction: column; /* Stack children vertically */
-  justify-content: flex-center; /* Center vertically */
-  align-items: center; /* Center horizontally */
-  min-height: 100vh; /* Ensure container takes up at least the full viewport height */
-  margin-top: 10px;
-}
 
-
-
-/* login page: customised the text of input fields */
-#loginForm label {
-  color: #ffffff; /* Label text color */
-  font-size: 16px; /* Label font size */
-
-}
-
-/* login page: customised the input field styles */
-#login-username,
-#login-password {
-  background-color: transparent; /* Input background color */
-  border: 1px solid #6c757d; /* Input border color */
-  color: #6c757d; /* Input text color */
-  border-radius: 10px; /* Input border radius */
-  padding: 8px;
-  margin-bottom: 15px;
-}
-
-/*Change the input field border color on focus */
-#login-username:focus,
-#login-password:focus {
-  border-color: #ffffff; /* Change the border color on focus */
-}
 
 
 
