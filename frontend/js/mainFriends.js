@@ -20,7 +20,7 @@ function addFriend(receiverUsername) {
             console.log(data.message);
         })
         .catch(error => {
-            console.error('Erreur lors de l\'envoi de la demande d\'ami:', error);
+            alert('Erreur lors du traitement de la demande');
         });
 }
 
@@ -46,7 +46,7 @@ function acceptFriendRequest(requestId) {
             }
         })
         .catch(error => {
-            console.error('Erreur lors de l\'acceptation de la demande d\'ami:', error);
+            alert('Erreur lors de l\'acceptation de la demande d\'ami:');
         });
 }
 
@@ -72,7 +72,7 @@ function declineFriendRequest(requestId) {
             }
         })
         .catch(error => {
-            console.error('Erreur lors du refus de la demande d\'ami:', error);
+            alert('Erreur lors du refus de la demande d\'ami');
         });
 }
 
@@ -129,6 +129,6 @@ function loadFriendsList() {
             });
         })
         .catch(error => {
-            console.error('Erreur lors de la récupération de la liste des amis:', error);
+            alert('Erreur lors de la récupération de la liste des amis');
         });
 }

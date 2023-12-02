@@ -23,7 +23,7 @@ function playPong() {
 
         })
         .catch(error => {
-            console.error('Error:', error);
+            alert('Error');
         });
 }
 
@@ -49,7 +49,7 @@ function quitPong3D() {
             navigateTo('welcome');
         })
         .catch(error => {
-            console.error('Error:', error);
+            alert('Error');
         });
 }
 

@@ -46,7 +46,7 @@ function openWebSocketConnection() {
                 console.log('Mise à jour du socket_id réussie:', result);
             })
             .catch(error => {
-                console.error('Erreur lors de la mise à jour du socket_id:', error);
+                alert('Erreur lors de la mise à jour du socket_id');
             });
     }
 
@@ -118,25 +118,6 @@ function openGameWebSocketConnection() {
                     startPongGame(data.game_id);
                 }
 
-                if (data.type === 'paddle_position') {
-                    console.log("data paddle_position: ", data)
-                    window.updateOpponentPaddlePosition(data.x);
-                }
-
-                if (data.type === 'ball_position') {
-                    console.log("ball postion ok...")
-                    console.log("data ball: ", data.ball)
-                    const updateEvent = new CustomEvent('ballUpdate', { detail: data.ball });
-                    window.dispatchEvent(updateEvent);
-                }
-                // if (data.type === 'paddle_position') {
-                //     updateOpponentPaddlePosition(data.x);
-                // }
-
-
-                // Gérer d'autres types de messages spécifiques au jeu
-                // ...
-
             } catch (error) {
                 console.error('Erreur de parsing JSON dans le jeu:', error);
                 reject(error); // Rejeter la promesse en cas d'erreur
@@ -190,14 +171,6 @@ function updateGameSocketId(Gamesocket_Id) {
             console.log('Mise à jour du game_socket_id réussie:', result);
         })
         .catch(error => {
-            console.error('Erreur lors de la mise à jour du game_socket_id:', error);
+            alert('Erreur lors de la mise à jour du game_socket_id');
         });
 }
-
-// function updateOpponentPaddlePosition(xPosition) {
-//     // Assurez-vous que la position X reçue est dans les limites du terrain de jeu
-//     // Mettez à jour la position X du paddle de l'adversaire
-//     opponentPaddle.position.x = xPosition;
-// }
-// Appelez cette fonction au lancement du jeu
-// openGameWebSocketConnection();

@@ -21,7 +21,7 @@ function showWelcome() {
             document.getElementById('user-avatar').src = avatarUrl;
         })
         .catch(error => {
-            console.error('Error fetching avatar:', error);
+            alert('Error fetching avatar');
             document.getElementById('user-avatar').src = '/media/avatars/default.png';
         });
 
@@ -95,7 +95,7 @@ function searchUser() {
             openSearchResultsModal();
         })
         .catch(error => {
-            console.error('Erreur lors de la recherche de l\'utilisateur:', error);
+            alert('Erreur lors de la recherche de l\'utilisateur');
         });
 }
 
@@ -162,6 +162,6 @@ function showPendingFriendRequests() {
             });
         })
         .catch(error => {
-            console.error('Erreur lors de la récupération des demandes d\'ami:', error);
+            alert('Erreur lors de la récupération des demandes d\'ami');
         });
 }

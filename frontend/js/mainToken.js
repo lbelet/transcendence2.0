@@ -26,7 +26,7 @@ function refreshToken() {
             localStorage.setItem('access_token', data.access);
         })
         .catch(error => {
-            console.error('Error refreshing token:', error);
+            alert('Error refreshing token');
         });
 }
 
@@ -53,6 +53,6 @@ function verifyToken() {
             console.log('Token is valid');
         })
         .catch(error => {
-            console.error('Invalid token:', error);
+            alert('Invalid token');
         });
 }

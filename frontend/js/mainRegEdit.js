@@ -30,7 +30,7 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
                 navigateTo('login');
             })
             .catch(error => {
-                console.error('Registration error:', error);
+                alert('Erreur dans le formulaire');
             });
     } else {
         alert('Passwords do not match!');
@@ -46,6 +46,8 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
     const newEmail = document.getElementById('newEmail').value
     const newUsername = document.getElementById('newUsername').value
     const newFirstname = document.getElementById('newFirstname').value
+    const currentPassword = document.getElementById('currentPassword').value
+    const newPassword = document.getElementById('newPassword').value
 
     fetch('/api/user/update', {
         method: 'POST',
@@ -59,7 +61,9 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
             twoFactorMethod: selectedTwoFactorMethod,
             language: selectedLanguage, // Include the selected language in the request
             email: newEmail,
-            firstname: newFirstname
+            firstname: newFirstname,
+            oldPassword: currentPassword,
+            newPassword: newPassword
         })
     })
         .then(response => {
@@ -74,7 +78,7 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
             navigateTo('welcome');
         })
         .catch(error => {
-            console.error('Error updating 2FA preference:', error);
+            // console.error('Error updating 2FA preference:', error);
             alert('Error updating 2FA preference. Please try again.');
         });
 });
@@ -124,7 +128,7 @@ function updateUserLanguage(language) {
         // Optionnel : recharger la page ou mettre à jour l'interface utilisateur pour refléter le changement de langue
     })
     .catch(error => {
-        console.error('Error updating language preference:', error);
+        alert('Error updating language preference');
     });
 }
 

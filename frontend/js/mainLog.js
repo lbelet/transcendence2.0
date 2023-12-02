@@ -15,47 +15,49 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
             password: password,
         })
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            localStorage.setItem('username', username);
+        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(obj => {
+            if (obj.status === 200) {
+                localStorage.setItem('username', username);
 
-            if (data['2fa_required']) {
-                if (data['2fa_method'] === 'qr') {
-                    const qrCodeImgSrc = data['qr_code_img'];
-                    document.getElementById('qr-code-img').src = qrCodeImgSrc;
-                    showQrTwoFactorForm();
+                if (obj.body['2fa_required']) {
+                    if (obj.body['2fa_method'] === 'qr') {
+                        const qrCodeImgSrc = obj.body['qr_code_img'];
+                        document.getElementById('qr-code-img').src = qrCodeImgSrc;
+                        showQrTwoFactorForm();
+                    } else {
+                        showTwoFactorForm();
+                    }
                 } else {
-                    showTwoFactorForm();
+                    console.log('Login successful:', obj.body);
+                    localStorage.setItem('access_token', obj.body.access);
+                    localStorage.setItem('refresh_token', obj.body.refresh);
+                    localStorage.setItem('language', obj.body.language);
+
+                    const burgerMenu = document.getElementById('bMenu');
+                    burgerMenu.classList.remove('hidden');
+
+                    const searchingBar = document.getElementById('searchU');
+                    searchingBar.classList.remove('hidden');
+
+                    console.log("Burger menu should be visible now");
+
+                    loadTranslations(obj.body.language);
+                    showWelcome();
+                    openWebSocketConnection();
                 }
             } else {
-                console.log('Login successful:', data);
-                localStorage.setItem('access_token', data.access);
-                localStorage.setItem('refresh_token', data.refresh);
-                localStorage.setItem('language', data.language);
-                // Après une connexion réussie
-                const burgerMenu = document.getElementById('bMenu');
-                burgerMenu.classList.remove('hidden');
-
-                const searchingBar = document.getElementById('searchU');
-                searchingBar.classList.remove('hidden');
-
-                console.log("Burger menu should be visible now");
-
-
-                loadTranslations(data.language); // Charger les traductions pour la langue récupérée
-                showWelcome();
-                openWebSocketConnection();
+                // Afficher le message d'erreur renvoyé par le serveur
+                alert(obj.body.error);
             }
         })
         .catch(error => {
-            console.error('Login error:', error);
+            // Gérer les erreurs de réseau ou autres erreurs imprévues
+            // console.error('Error:', error);
+            alert('Une erreur est survenue lors de la tentative de connexion.');
         });
 });
+
 
 
 function logout() {
@@ -89,7 +91,7 @@ function logout() {
 
             const burgerMenu = document.getElementById('bMenu');
             burgerMenu.classList.add('hidden');
-            
+
             const burgerMenuContent = document.getElementById('burgerMenuContent');
             burgerMenuContent.classList.add('hidden');
 
@@ -101,6 +103,6 @@ function logout() {
             navigateTo('home');
         })
         .catch(error => {
-            console.error('Erreur lors de la déconnexion:', error);
+            alert('Erreur lors de la déconnexion');
         });
 }

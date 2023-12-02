@@ -3,7 +3,7 @@ from django.db.models import Q
 import json
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, update_session_auth_hash
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -193,6 +193,9 @@ def update_user(request):
     username = data.get('username')
     firstname = data.get('firstname')
 
+    old_password = data.get('oldPassword')
+    new_password = data.get('newPassword')
+
     user = request.user
     user.two_factor_method = two_factor_method
     user.language = language  # Update the user's language preference
@@ -202,6 +205,22 @@ def update_user(request):
         user.username = username
     if firstname:
         user.first_name = firstname
+
+    if old_password and new_password:
+        # Vérifiez d'abord que l'ancien mot de passe est correct
+        if not user.check_password(old_password):
+            return JsonResponse({'error': 'L’ancien mot de passe est incorrect'}, status=400)
+
+        # Mettre à jour vers le nouveau mot de passe
+        user.set_password(new_password)
+        # user.save()
+
+        # Mettez à jour la session d'authentification pour ne pas déconnecter l'utilisateur
+        update_session_auth_hash(request, user)
+
+        # Vous pouvez ajouter une réponse pour indiquer la réussite de la mise à jour du mot de passe
+        return JsonResponse({'success': 'Mot de passe mis à jour avec succès'}, status=200)
+
 
     if two_factor_method == 'qr':
         if not user.totp_secret:
