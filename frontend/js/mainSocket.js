@@ -6,7 +6,7 @@ function openWebSocketConnection() {
     let wsPort = window.location.port ? `:${window.location.port}` : '';
     // let wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     let websocket = new WebSocket(`wss://${wsHost}${wsPort}/ws/notifications/`);
-    
+
     websocket.onopen = function (event) {
         console.log('WebSocket ouvert :', event);
     };
@@ -85,6 +85,7 @@ function openWebSocketConnection() {
 
 // ----------------------------------------------------------------------------------------------------
 // let gameWebsocket;
+// import { paddle1, paddle2, ball } from './pongGame.js';
 
 function openGameWebSocketConnection() {
     return new Promise((resolve, reject) => {
@@ -95,41 +96,45 @@ function openGameWebSocketConnection() {
 
         gameWebsocket.onopen = function (event) {
             console.log('WebSocket de jeu ouvert :', event);
-            resolve(); // Résoudre la promesse ici
+            resolve();
         };
 
         gameWebsocket.onmessage = function (event) {
             console.log('Message reçu du jeu :', event.data);
             try {
                 const data = JSON.parse(event.data);
-
                 console.log("data gamesocket: ", data);
+                console.log("data type: ", data.type)
 
-                if (data.game_socket_id) {
-                    console.log('Game Socket ID reçu:', data.game_socket_id);
-                    updateGameSocketId(data.game_socket_id);
-                    localStorage.setItem('gameSocket_ID', data.game_socket_id);
-                    resolve(); // Résoudre la promesse ici
-                }
-
-                // Gestion du démarrage de la partie de Pong
                 if (data.type === 'game_start') {
                     console.log('La partie de Pong commence, game_id:', data.game_id);
                     startPongGame(data.game_id);
                 }
-
+                else if (data.type === 'game_update') {
+                    console.log("game_update ok")
+                    // Appliquer les mises à jour de l'état du jeu
+                    applyGameState(data.game_state);
+                }
             } catch (error) {
                 console.error('Erreur de parsing JSON dans le jeu:', error);
-                reject(error); // Rejeter la promesse en cas d'erreur
+                reject(error);
             }
         };
 
         gameWebsocket.onerror = function (error) {
             console.log('Erreur WebSocket de jeu:', error);
-            reject(error); // Rejeter la promesse en cas d'erreur
+            reject(error);
         };
     });
 }
+
+function applyGameState(newGameState) {
+    if (window.updateGameFromState) {
+        window.updateGameFromState(newGameState);
+    }
+}
+
+
 
 
 function startPongGame(gameId) {

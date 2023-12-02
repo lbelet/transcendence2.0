@@ -29,6 +29,13 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
 class GameConsumer(AsyncWebsocketConsumer):
     # game_id = None  # Initialisé à None
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.game_state = {
+            'paddle1': {'x': 0},
+            'paddle2': {'x': 0},
+            'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 0}
+        }
 
     async def connect(self):
         await self.accept()
@@ -62,6 +69,39 @@ class GameConsumer(AsyncWebsocketConsumer):
                 "status": "added_to_game",
                 "game_id": self.game_id
             }))
+        
+        if data.get('type') == 'paddle_move':
+        # Exemple de mouvement simple : déplacement horizontal
+            move_amount = 2  # Ajustez selon les besoins
+
+            if data['action'] == 'move_right_paddle1':
+                self.game_state['paddle1']['x'] += move_amount
+            elif data['action'] == 'move_left_paddle1':
+                self.game_state['paddle1']['x'] -= move_amount
+            elif data['action'] == 'move_right_paddle2':
+                self.game_state['paddle2']['x'] += move_amount
+            elif data['action'] == 'move_left_paddle2':
+                self.game_state['paddle2']['x'] -= move_amount
+
+        # Envoyer l'état mis à jour
+        await self.channel_layer.group_send(
+            f'pong_game_{self.game_id}',
+            {
+                'type': 'send_game_update',
+                'game_state': self.get_game_state()
+            }
+        )
+
+    async def send_game_update(self, event):
+        # Envoi de l'état mis à jour du jeu aux clients
+        await self.send(text_data=json.dumps({
+            'type': 'game_update',  # Indiquer le type de message
+            'game_state': event['game_state']  # Ajouter l'état du jeu
+        }))
+
+    def get_game_state(self):
+        return self.game_state
+
 
     async def game_start(self, event):
         await self.send(text_data=json.dumps({

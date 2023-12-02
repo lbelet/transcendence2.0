@@ -7,8 +7,15 @@ import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 
 const scene = new THREE.Scene();
 
-const paddleMaterial = new THREE.MeshStandardMaterial({
+const paddleMaterial1 = new THREE.MeshStandardMaterial({
     color: 0xffa500,
+    emissive: 0xff8c00,
+    emissiveIntensity: 0.5,
+    wireframe: true
+});
+
+const paddleMaterial2 = new THREE.MeshStandardMaterial({
+    color: 0x000000,
     emissive: 0xff8c00,
     emissiveIntensity: 0.5,
     wireframe: true
@@ -16,14 +23,16 @@ const paddleMaterial = new THREE.MeshStandardMaterial({
 
 // Raquette 1
 const paddleGeo = new THREE.BoxGeometry(6, 1, 1);
-const paddle1 = new THREE.Mesh(paddleGeo, paddleMaterial);
+const paddle1 = new THREE.Mesh(paddleGeo, paddleMaterial1);
+window.paddle1 = paddle1;
 paddle1.position.set(0, 0, 14);
 scene.add(paddle1);
 
 // Raquette 2
-const opponentPaddle = new THREE.Mesh(paddleGeo, paddleMaterial);
-opponentPaddle.position.set(0, 0, -14);
-scene.add(opponentPaddle);
+const paddle2 = new THREE.Mesh(paddleGeo, paddleMaterial2);
+window.paddle2 = paddle2;
+paddle2.position.set(0, 0, -14);
+scene.add(paddle2);
 
 // Balle
 const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
@@ -33,6 +42,7 @@ const ballMaterial = new THREE.MeshStandardMaterial({
     emissiveIntensity: 0.5
 });
 const ball = new THREE.Mesh(ballGeometry, ballMaterial);
+window.ball = ball;
 ball.position.set(0, 0, 0);
 scene.add(ball);
 
@@ -68,9 +78,26 @@ const wall2 = new THREE.Mesh(wallGeometry, wallMaterial);
 wall2.position.set(-10, 0, 0);
 scene.add(wall2);
 
+const playerRole = localStorage.getItem('playerRole');
+let paddleUser;
+
+console.log("playerRole: ", playerRole)
+
+
 // Caméra
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 5, 24);
+// camera.position.set(0, 5, 24);
+
+if (playerRole == 1) {
+    paddleUser = paddle1;
+    console.log("paddleUser: ", paddleUser)
+    camera.position.set(0, 5, 24); // Position de la caméra pour le joueur 1
+} else if (playerRole == 2) {
+    paddleUser = paddle2;
+    console.log("paddleUser: ", paddleUser)
+    camera.position.set(0, 5, -24); // Position inversée de la caméra pour le joueur 2
+    camera.rotation.y = Math.PI;
+}
 
 // Renderer
 const canvas = document.getElementById('pong-canvas');
@@ -101,12 +128,40 @@ outlinePass.edgeGlow = 1.0;
 outlinePass.edgeThickness = 3;
 outlinePass.visibleEdgeColor.set('#00ff00');
 outlinePass.hiddenEdgeColor.set('#ff0000');
-outlinePass.selectedObjects = [paddle1, opponentPaddle, wall1, wall2];
+outlinePass.selectedObjects = [paddle1, paddle2, wall1, wall2];
 composer.addPass(outlinePass);
 
 // Ajout de lumière
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
+
+document.addEventListener('keydown', (event) => {
+    if (gameWebsocket && gameWebsocket.readyState === WebSocket.OPEN) {
+        let action;
+        if (event.key === "ArrowRight") {
+            action = paddleUser == paddle1 ? 'move_right_paddle1' : 'move_right_paddle2';
+        } else if (event.key === "ArrowLeft") {
+            action = paddleUser == paddle1 ? 'move_left_paddle1' : 'move_left_paddle2';
+        }
+
+        if (action) {
+            gameWebsocket.send(JSON.stringify({ type: 'paddle_move', action }));
+        }
+    }
+});
+
+window.updateGameFromState  = function(newGameState) {
+    if (newGameState.paddle1) {
+        paddle1.position.x = newGameState.paddle1.x;
+    }
+    if (newGameState.paddle2) {
+        paddle2.position.x = newGameState.paddle2.x;
+    }
+    if (newGameState.ball) {
+        ball.position.set(newGameState.ball.x, newGameState.ball.y, newGameState.ball.z);
+    }
+    // D'autres mises à jour peuvent être ajoutées ici si nécessaire
+};
 
 function animate() {
     requestAnimationFrame(animate);
