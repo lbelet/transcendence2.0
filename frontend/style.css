@@ -42,6 +42,10 @@ body {
     
   }
 
+  .custom-navbar .hidden {
+    display: none;
+  }
+
   .navbar-nav .nav-item {
     margin-right: 20px;
   }
@@ -288,17 +292,25 @@ body {
   cursor: pointer;
 }
 
+.header {
+  display: block;
+}
+
+.header.hidden {
+  display: none;
+}
+
 /* .search-container {
   display: flex;
   align-items: center;
   margin-right: 10px; /* Ajuster selon vos besoins */
 /* } */
 
-/*.search-container.hidden{
+/* .search-container.hidden{
   display: none;
-}
+} */
 
-.search-container input {
+/* .search-container input {
   background-color:rgb(47, 47, 47);
   padding: 5px;
   margin-right: 5px;

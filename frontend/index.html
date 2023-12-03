@@ -5,42 +5,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transcendence</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link href="style.css" rel="stylesheet">
 </head>
 
- <body>
+<body>
     <div class="container d-flex flex-column vh-100">
-        <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+        <nav class="navbar navbar-expand-lg navbar-dark custom-navbar hidden" id="navBarBis">
             <!-- Brand -->
             <a class="navbar-brand" href="#">Transcendence</a>
-        
-            <!-- Toggler/collapsible Button -->
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupported" aria-controls="navbarSupported" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        
-            <!-- Navbar links -->
-            <div class="collapse navbar-collapse" id="navbarSupported">
-                <!-- Search Form -->
-                <form class="form-inline my-2 my-lg-0">
-                    <input class="trans_nav_form-control mr-sm-2" type="text" placeholder="Rechercher Utilisateur" id="search-username">
-                    <button class="trans_nav_button my-2 my-sm-0" type="button" onclick="searchUser()">Search</button>
-                </form>
-        
-                <!-- Language Selection -->
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownLang" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Languages
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdownLang">
-                            <a class="dropdown-item" href="#" onclick="updateUserLanguage('fr')">Français</a>
-                            <a class="dropdown-item" href="#" onclick="updateUserLanguage('de')">Deutsch</a>
-                            <a class="dropdown-item" href="#" onclick="updateUserLanguage('blr')">Belarusian</a>
-                            <a class="dropdown-item" href="#" onclick="updateUserLanguage('en')">English</a>
-                        </div>
-                        <!-- <div class="hidden" id="burgerMenuContent">
+            <!-- <div class="hidden" id="headerBis"> -->
+                <!-- Toggler/collapsible Button -->
+                <button class="navbar-toggler hidden" type="button" data-toggle="collapse"
+                    data-target="#navbarSupported" aria-controls="navbarSupported" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navbar links -->
+                <div class="collapse navbar-collapse" id="navbarSupported">
+                    <!-- Search Form -->
+                    <form class="form-inline my-2 my-lg-0">
+                        <input class="trans_nav_form-control mr-sm-2" type="text" placeholder="Rechercher Utilisateur"
+                            id="search-username">
+                        <button class="trans_nav_button my-2 my-sm-0" type="button"
+                            onclick="searchUser()">Search</button>
+                    </form>
+
+                    <!-- Language Selection -->
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownLang" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Languages
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownLang">
+                                <a class="dropdown-item" href="#" onclick="updateUserLanguage('fr')">Français</a>
+                                <a class="dropdown-item" href="#" onclick="updateUserLanguage('de')">Deutsch</a>
+                                <a class="dropdown-item" href="#" onclick="updateUserLanguage('blr')">Belarusian</a>
+                                <a class="dropdown-item" href="#" onclick="updateUserLanguage('en')">English</a>
+                            </div>
+                            <!-- <div class="hidden" id="burgerMenuContent">
                             <div class="language-selection">
                                 <button onclick="updateUserLanguage('fr')">fr</button>
                                 <button onclick="updateUserLanguage('de')">de</button>
@@ -50,24 +56,25 @@
                             <button class="btn btn-primary" onclick="openEditUserModal()">Modifier le Profil</button>
                             <button class="btn btn-primary" onclick="logout()">Déconnexion</button>
                         </div> -->
-                    </li>
-        
-                    <!-- User Profile and Logout -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="openEditUserModal()">Modifier le Profil</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="logout()">Déconnexion</a>
-                    </li>
-                </ul>
-            </div>
+                        </li>
+
+                        <!-- User Profile and Logout -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="openEditUserModal()">Modifier le Profil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="logout()">Déconnexion</a>
+                        </li>
+                    </ul>
+                </div>
+            <!-- </div> -->
         </nav>
 
-    <!-- Canvas for particle animation -->
-    <canvas id="canvas1"></canvas>
+        <!-- Canvas for particle animation -->
+        <!-- <canvas id="canvas1"></canvas> -->
 
-    <!-- Home Section -->
-    <!-- <div class="container-fluid d-flex min-vh-100"> -->
+        <!-- Home Section -->
+        <!-- <div class="container-fluid d-flex min-vh-100"> -->
 
         <div class="row flex-grow-1">
             <div class="col d-flex align-items-end">
@@ -80,7 +87,7 @@
                             <button class="trans_button" onclick="showRegisterForm()">Créer un compte</button>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -108,67 +115,67 @@
                 </div>
             </div>
         </div>
-            <!-- </div> -->
+        <!-- </div> -->
 
-            <!-- Register Section -->
-            <!-- <div class="container"> -->
-                <!-- <div class="row align-self-center button-container"> -->
-                <!-- <div class="col-lg-4"> -->
-                <div id="register-section" class="hidden">
-                    <h2 class="text-center" style="color: #ffffff;">Créer un compte</h2>
-                    <form id="registerForm" enctype="multipart/form-data">
-                        <div class="form-group text-center">
-                            <label for="username">Nom d'utilisateur</label>
-                            <input type="text" class="form-control" id="username" required>
-                        </div>
-                        <div class="form-group text-center">
-                            <label for="firstname" class="form-label">Prénom</label>
-                            <input type="text" class="form-control" id="firstname" required>
-                        </div>
-                        <div class="form-group text-center">
-                            <label for="lastname">Nom</label>
-                            <input type="text" class="form-control" id="lastname" required>
-                        </div>
-                        <div class="form-group text-center">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" required>
-                        </div>
-                        <div class="form-group text-center">
-                            <label for="password">Mot de passe</label>
-                            <input type="password" class="form-control" id="password" required>
-                        </div>
-                        <div class="form-group text-center">
-                            <label for="retypePassword">Retaper le mot de passe</label>
-                            <input type="password" class="form-control" id="retypePassword" required>
-                        </div>
-                        <div class="form-group text-center">
-                            <label for="avatar">Avatar</label>
-                            <input type="file" class="form-control" id="avatar" accept="image/*">
-                            <small class="form-text text-muted">Laissez ce champ vide pour utiliser l'avatar par
-                                défaut.</small>
-                        </div>
-                        <button type="submit" class="btn btn-outline-secondary">Créer</button>
-                    </form>
-                </div>
-            <!-- </div> -->
-
-            <!-- Welcome Section -->
-            <div id="welcome-section" class="hidden">
-                <h2 data-key="welcome">Bienvenue sur Mon Site</h2>
-                <img id="user-avatar" src="" alt="User Avatar" style="width: 100px; height: 100px;">
-                <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
-
-                <!-- Welcome Buttons -->
-                <button class="btn btn-primary" onclick="showGameForm()">Game</button>
-                <button class="btn btn-primary" onclick="showFriendsModal()">Amis</button>
-                <div id="pending-requests-container"></div>
-            </div>
-
-    <!-- Register Section -->
-    <div class="container">
-    <!-- <div class="row align-self-center button-container"> -->
+        <!-- Register Section -->
+        <!-- <div class="container"> -->
+        <!-- <div class="row align-self-center button-container"> -->
         <!-- <div class="col-lg-4"> -->
         <div id="register-section" class="hidden">
+            <h2 class="text-center" style="color: #ffffff;">Créer un compte</h2>
+            <form id="registerForm" enctype="multipart/form-data">
+                <div class="form-group text-center">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" class="form-control" id="username" required>
+                </div>
+                <div class="form-group text-center">
+                    <label for="firstname" class="form-label">Prénom</label>
+                    <input type="text" class="form-control" id="firstname" required>
+                </div>
+                <div class="form-group text-center">
+                    <label for="lastname">Nom</label>
+                    <input type="text" class="form-control" id="lastname" required>
+                </div>
+                <div class="form-group text-center">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="form-group text-center">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <div class="form-group text-center">
+                    <label for="retypePassword">Retaper le mot de passe</label>
+                    <input type="password" class="form-control" id="retypePassword" required>
+                </div>
+                <div class="form-group text-center">
+                    <label for="avatar">Avatar</label>
+                    <input type="file" class="form-control" id="avatar" accept="image/*">
+                    <small class="form-text text-muted">Laissez ce champ vide pour utiliser l'avatar par
+                        défaut.</small>
+                </div>
+                <button type="submit" class="btn btn-outline-secondary">Créer</button>
+            </form>
+        </div>
+        <!-- </div> -->
+
+        <!-- Welcome Section -->
+        <div id="welcome-section" class="hidden">
+            <h2 data-key="welcome">Bienvenue sur Mon Site</h2>
+            <img id="user-avatar" src="" alt="User Avatar" style="width: 100px; height: 100px;">
+            <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
+
+            <!-- Welcome Buttons -->
+            <button class="btn btn-primary" onclick="showGameForm()">Game</button>
+            <button class="btn btn-primary" onclick="showFriendsModal()">Amis</button>
+            <div id="pending-requests-container"></div>
+        </div>
+
+        <!-- Register Section -->
+        <div class="container">
+            <!-- <div class="row align-self-center button-container"> -->
+            <!-- <div class="col-lg-4"> -->
+            <!-- <div id="register-section" class="hidden">
             <h2 class="text-center" style="color: #ffffff;">Créer un compte</h2>
             <form id="registerForm" enctype="multipart/form-data">
                 <div class="form-group text-center">
@@ -203,164 +210,169 @@
                 <button type="submit" class="btn btn-outline-secondary">Créer</button>
             </form>
         </div>
-    </div>
-<!-- </div> -->
-<!-- </div>
+    </div> -->
+            <!-- </div> -->
+            <!-- </div>
 </div> -->
 
-    <!-- Welcome Section -->
-    <!-- <div class="container"> -->
-    <!-- Welcome Section -->
-    <div id="welcome-section" class="hidden">
-        <h2 data-key="welcome">Bienvenue sur Mon Site</h2>
-        <img id="user-avatar" src="" alt="User Avatar" style="width: 100px; height: 100px;">
-        <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
+            <!-- Welcome Section -->
+            <!-- <div class="container"> -->
+            <!-- Welcome Section -->
+            <div id="welcome-section" class="hidden">
+                <h2 data-key="welcome">Bienvenue sur Mon Site</h2>
+                <img id="user-avatar" src="" alt="User Avatar" style="width: 100px; height: 100px;">
+                <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
 
-        <!-- Welcome Buttons -->
-        <button class="btn btn-primary" onclick="showGameForm()">Game</button>
-        <button class="btn btn-primary" onclick="showFriendsModal()">Amis</button>
-        <div id="pending-requests-container"></div>
-    </div>
-
-    <!-- Modale affichage des amis -->
-    <div id="friendsModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span class="close" onclick="closeFriendsModal()">&times;</span>
-            <h2>Liste des Amis</h2>
-            <div id="friends-list-container"></div>
-        </div>
-    </div>
-
-    <!-- Two-Factor Authentication Section -->
-    <div id="email-two-factor-section" class="hidden">
-        <h2>Two-Factor Authentication</h2>
-        <form id="EmailTwoFactorForm">
-            <div class="form-group">
-                <label for="twoFactorCode">2FA Code</label>
-                <input type="text" class="form-control" id="twoFactorCode" required>
+                <!-- Welcome Buttons -->
+                <button class="btn btn-primary" onclick="showGameForm()">Game</button>
+                <button class="btn btn-primary" onclick="showFriendsModal()">Amis</button>
+                <div id="pending-requests-container"></div>
             </div>
-            <button type="submit" class="btn btn-primary">Verify</button>
-        </form>
-    </div>
 
-    <!-- QR Two-Factor Authentication Section -->
-    <div id="qr-two-factor-section" class="hidden">
-        <h2>QR Two-Factor Authentication</h2>
-        <p>Scan the QR Code with your 2FA app and enter the code below.</p>
-        <!-- QR Code Image -->
-        <img id="qr-code-img" src="" alt="QR Code" class="mb-3">
-        <!-- QR Two-Factor Form -->
-        <form id="qrTwoFactorForm">
-            <div class="form-group">
-                <label for="qrTwoFactorCode">2FA Code</label>
-                <input type="text" class="form-control" id="qrTwoFactorCode" required>
+            <!-- Modale affichage des amis -->
+            <div id="friendsModal" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <span class="close" onclick="closeFriendsModal()">&times;</span>
+                    <h2>Liste des Amis</h2>
+                    <div id="friends-list-container"></div>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Verify</button>
-        </form>
-    </div>
 
-    <!-- Game Section -->
-    <div id="game-section" class="hidden">
-        <h2>Bienvenue sur la page de jeu</h2>
-        <p>Bienvenue, <span id="user-name-game"></span>!</p>
-        <button class="btn btn-primary" onclick="playPong()">practice playing Pong</button>
-        <button class="btn btn-primary" onclick="joinGameQueue()">Rejoindre la partie</button>
+            <!-- Two-Factor Authentication Section -->
+            <div id="email-two-factor-section" class="hidden">
+                <h2>Two-Factor Authentication</h2>
+                <form id="EmailTwoFactorForm">
+                    <div class="form-group">
+                        <label for="twoFactorCode">2FA Code</label>
+                        <input type="text" class="form-control" id="twoFactorCode" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Verify</button>
+                </form>
+            </div>
 
-    </div>
+            <!-- QR Two-Factor Authentication Section -->
+            <div id="qr-two-factor-section" class="hidden">
+                <h2>QR Two-Factor Authentication</h2>
+                <p>Scan the QR Code with your 2FA app and enter the code below.</p>
+                <!-- QR Code Image -->
+                <img id="qr-code-img" src="" alt="QR Code" class="mb-3">
+                <!-- QR Two-Factor Form -->
+                <form id="qrTwoFactorForm">
+                    <div class="form-group">
+                        <label for="qrTwoFactorCode">2FA Code</label>
+                        <input type="text" class="form-control" id="qrTwoFactorCode" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Verify</button>
+                </form>
+            </div>
 
-    <div id="pong-section" class="hidden">
-        <h2>Pong 3D</h2>
-        <button class="btn btn-primary" onclick="quitPong3D()">Quitter</button>
-        <canvas id="pong-canvas"></canvas>
-    </div>
+            <!-- Game Section -->
+            <div id="game-section" class="hidden">
+                <h2>Bienvenue sur la page de jeu</h2>
+                <p>Bienvenue, <span id="user-name-game"></span>!</p>
+                <button class="btn btn-primary" onclick="playPong()">practice playing Pong</button>
+                <button class="btn btn-primary" onclick="joinGameQueue()">Rejoindre la partie</button>
+
+            </div>
+
+            <div id="pong-section" class="hidden">
+                <h2>Pong 3D</h2>
+                <button class="btn btn-primary" onclick="quitPong3D()">Quitter</button>
+                <canvas id="pong-canvas"></canvas>
+            </div>
 
 
-    <div id="searchResultsModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeSearchResultsModal()">&times;</span>
-            <h2>Résultats de la Recherche</h2>
-            <div id="search-results"></div>
-        </div>
-    </div>
-
-    <!-- Modal pour la modification du profil -->
-    <div id="editUserModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeEditUserModal()">&times;</span>
-            <h2>Modifier le profil</h2>
-            <form id="editUserForm">
-                <div class="form-group">
-                    <label for="currentUsername">Username actuel:</label>
-                    <span id="currentUsername">Username</span> <!-- L'email actuel ici -->
+            <div id="searchResultsModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeSearchResultsModal()">&times;</span>
+                    <h2>Résultats de la Recherche</h2>
+                    <div id="search-results"></div>
                 </div>
-                <div class="form-group">
-                    <label for="newUsername">Nouveau username:</label>
-                    <input type="username" class="form-control" id="newUsername" placeholder="Entrez le nouveau username">
-                </div>
+            </div>
 
-                <div class="form-group">
-                    <label for="currentFirstName">firstname actuel:</label>
-                    <span id="currentFirstName">firstname</span> <!-- L'email actuel ici -->
-                </div>
-                <div class="form-group">
-                    <label for="newFirstname">Nouveau firstname:</label>
-                    <input type="firstname" class="form-control" id="newFirstname" placeholder="Entrez le nouveau firstname">
-                </div>
+            <!-- Modal pour la modification du profil -->
+            <div id="editUserModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeEditUserModal()">&times;</span>
+                    <h2>Modifier le profil</h2>
+                    <form id="editUserForm">
+                        <div class="form-group">
+                            <label for="currentUsername">Username actuel:</label>
+                            <span id="currentUsername">Username</span> <!-- L'email actuel ici -->
+                        </div>
+                        <div class="form-group">
+                            <label for="newUsername">Nouveau username:</label>
+                            <input type="username" class="form-control" id="newUsername"
+                                placeholder="Entrez le nouveau username">
+                        </div>
 
-                <div class="form-group">
-                    <label for="currentEmail">Email Actuel:</label>
-                    <span id="currentEmail">email@example.com</span> <!-- L'email actuel ici -->
-                </div>
-                <div class="form-group">
-                    <label for="newEmail">Nouvel Email:</label>
-                    <input type="email" class="form-control" id="newEmail" placeholder="Entrez le nouvel email">
-                </div>
-                <!-- <button type="button" class="btn btn-primary" onclick="updateEmail()">Modifier Email</button> -->
-    
-                <div class="form-group">
-                    <label for="twoFactorMethod">Choose 2FA Method:</label>
-                    <select class="form-control" id="twoFactorMethod">
-                        <option value="none">Aucune</option>
-                        <option value="email">Email</option>
-                        <option value="qr">QR Code</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="language">Language:</label>
-                    <select class="form-control" id="language">
-                        <option value="fr">Français</option>
-                        <option value="blr">Bielorusse</option>
-                        <option value="en">English</option>
-                        <option value="de">Deutsch</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-            </form>
-        </div>
-    </div>
+                        <div class="form-group">
+                            <label for="currentFirstName">firstname actuel:</label>
+                            <span id="currentFirstName">firstname</span> <!-- L'email actuel ici -->
+                        </div>
+                        <div class="form-group">
+                            <label for="newFirstname">Nouveau firstname:</label>
+                            <input type="firstname" class="form-control" id="newFirstname"
+                                placeholder="Entrez le nouveau firstname">
+                        </div>
 
-    <script src="js/script.js"></script>
-    <!-- <script src="path/to/jquery.js"></script> -->
-    <script src="js/delay.js"></script>
-    <script src="js/main.js"></script>
-    <script type="module" src="/js/pongGame.js"></script>
-    <script src="js/mainPong.js"></script>
-    <script src="js/mainWelcome.js"></script>
-    <script src="js/mainSocket.js"></script>
-    <script src="js/mainFriends.js"></script>
-    <script src="js/main2FA-JWT.js"></script>
-    <script src="js/mainToken.js"></script>
-    <script src="js/mainNavig.js"></script>
-    <script src="js/mainLog.js"></script>
-    <script src="js/mainRegEdit.js"></script>
+                        <div class="form-group">
+                            <label for="currentEmail">Email Actuel:</label>
+                            <span id="currentEmail">email@example.com</span> <!-- L'email actuel ici -->
+                        </div>
+                        <div class="form-group">
+                            <label for="newEmail">Nouvel Email:</label>
+                            <input type="email" class="form-control" id="newEmail" placeholder="Entrez le nouvel email">
+                        </div>
+                        <!-- <button type="button" class="btn btn-primary" onclick="updateEmail()">Modifier Email</button> -->
 
-<!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+                        <div class="form-group">
+                            <label for="twoFactorMethod">Choose 2FA Method:</label>
+                            <select class="form-control" id="twoFactorMethod">
+                                <option value="none">Aucune</option>
+                                <option value="email">Email</option>
+                                <option value="qr">QR Code</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="language">Language:</label>
+                            <select class="form-control" id="language">
+                                <option value="fr">Français</option>
+                                <option value="blr">Bielorusse</option>
+                                <option value="en">English</option>
+                                <option value="de">Deutsch</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                    </form>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+            <script src="js/script.js"></script>
+            <!-- <script src="path/to/jquery.js"></script> -->
+            <script src="js/delay.js"></script>
+            <script src="js/main.js"></script>
+            <script type="module" src="/js/pongGame.js"></script>
+            <script src="js/mainPong.js"></script>
+            <script src="js/mainWelcome.js"></script>
+            <script src="js/mainSocket.js"></script>
+            <script src="js/mainFriends.js"></script>
+            <script src="js/main2FA-JWT.js"></script>
+            <script src="js/mainToken.js"></script>
+            <script src="js/mainNavig.js"></script>
+            <script src="js/mainLog.js"></script>
+            <script src="js/mainRegEdit.js"></script>
+
+            <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
 </body>
 
 </html>
 
-    <!-- Login Section -->
-    <!-- <style>
+<!-- Login Section -->
+<!-- <style>
     .form-label {
         text-align: center;
     }

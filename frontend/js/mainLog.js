@@ -1,4 +1,7 @@
-
+// document.addEventListener('DOMContentLoaded', (event) => {
+//     var monCollapse = document.getElementById('navbarSupported');
+//     window.bsCollapse = new bootstrap.Collapse(monCollapse, { toggle: false });
+// });
 
 document.getElementById('loginForm').addEventListener('submit', function (event) {
     event.preventDefault();
@@ -38,13 +41,15 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                 localStorage.setItem('refresh_token', data.refresh);
                 localStorage.setItem('language', data.language);
                 // Après une connexion réussie
-                const burgerMenu = document.getElementById('bMenu');
-                burgerMenu.classList.remove('hidden');
+                // const burgerMenu = document.getElementById('bMenu');
+                // burgerMenu.classList.remove('hidden');
 
-                const searchingBar = document.getElementById('searchU');
-                searchingBar.classList.remove('hidden');
+                // const searchingBar = document.getElementById('searchU');
+                // searchingBar.classList.remove('hidden');
 
-                console.log("Burger menu should be visible now");
+                const navigBar = document.getElementById('navBarBis');
+                navigBar.classList.remove('hidden');
+
 
 
                 loadTranslations(data.language); // Charger les traductions pour la langue récupérée
@@ -87,16 +92,17 @@ function logout() {
             localStorage.removeItem('language');
             localStorage.removeItem('gameSocket_ID');
 
-            const burgerMenu = document.getElementById('bMenu');
-            burgerMenu.classList.add('hidden');
+            // const burgerMenu = document.getElementById('bMenu');
+            // burgerMenu.classList.add('hidden');
             
-            const burgerMenuContent = document.getElementById('burgerMenuContent');
-            burgerMenuContent.classList.add('hidden');
+            // const burgerMenuContent = document.getElementById('burgerMenuContent');
+            // burgerMenuContent.classList.add('hidden');
 
-            const searchingBar = document.getElementById('searchU');
-            searchingBar.classList.add('hidden');
+            // const searchingBar = document.getElementById('searchU');
+            // searchingBar.classList.add('hidden');
 
-            console.log("Burger menu should be hidden now");
+            const navigBar = document.getElementById('navBarBis');
+            navigBar.classList.add('hidden');
 
             navigateTo('home');
         })

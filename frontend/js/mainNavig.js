@@ -29,6 +29,7 @@ function hideAllSections() {
     document.getElementById('email-two-factor-section').classList.add('hidden');
     document.getElementById('pong-section').classList.add('hidden');
     document.getElementById('qr-two-factor-section').classList.add('hidden');
+    // document.getElementById('navBarBis').classList.add('hidden');
 }
 
 function navigateTo(sectionId) {
@@ -39,6 +40,7 @@ function navigateTo(sectionId) {
     }
     console.log("Navigating to:", sectionId);
     hideAllSections();
+    // document.getElementById('navBarBis').remove('hidden');
     document.getElementById(sectionId + '-section').classList.remove('hidden');
 
     if (!window.location.pathname.endsWith(`/${sectionId}`)) {
@@ -47,44 +49,44 @@ function navigateTo(sectionId) {
     }
 }
 
-function toggleMenu() {
-    const burgerMenuContent = document.getElementById('burgerMenuContent');
+// function toggleMenu() {
+//     const burgerMenuContent = document.getElementById('burgerMenuContent');
 
-    if (burgerMenuContent.classList.contains('hidden')) {
-        burgerMenuContent.classList.remove('hidden');
-        console.log("plus hidden....")
-    } else {
-        burgerMenuContent.classList.add('hidden');
-        console.log("de nouveau hidden....")
-    }
-}
+//     if (burgerMenuContent.classList.contains('hidden')) {
+//         burgerMenuContent.classList.remove('hidden');
+//         console.log("plus hidden....")
+//     } else {
+//         burgerMenuContent.classList.add('hidden');
+//         console.log("de nouveau hidden....")
+//     }
+// }
 
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Ajouter l'écouteur d'événement au document entier
-    document.addEventListener('click', (event) => {
-        const burgerMenuContent = document.getElementById('burgerMenuContent');
-        const burgerMenu = document.getElementById('bMenu');
+// document.addEventListener('DOMContentLoaded', () => {
+//     // Ajouter l'écouteur d'événement au document entier
+//     document.addEventListener('click', (event) => {
+//         // const burgerMenuContent = document.getElementById('burgerMenuContent');
+//         // const burgerMenu = document.getElementById('bMenu');
 
-        // Vérifier si le clic est en dehors du burgerMenuContent et si le menu est ouvert
-        if (!burgerMenu.contains(event.target) && !burgerMenuContent.contains(event.target) && !burgerMenuContent.classList.contains('hidden')) {
-            burgerMenuContent.classList.add('hidden');
-        }
-    });
-});
+//         // Vérifier si le clic est en dehors du burgerMenuContent et si le menu est ouvert
+//         if (!burgerMenu.contains(event.target) && !burgerMenuContent.contains(event.target) && !burgerMenuContent.classList.contains('hidden')) {
+//             burgerMenuContent.classList.add('hidden');
+//         }
+//     });
+// });
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Ajouter l'écouteur d'événement au document entier
-    document.addEventListener('click', (event) => {
-        const burgerMenuContent = document.getElementById('burgerMenuContent');
-        const burgerMenu = document.getElementById('bMenu');
+// document.addEventListener('DOMContentLoaded', () => {
+//     // Ajouter l'écouteur d'événement au document entier
+//     document.addEventListener('click', (event) => {
+//         const burgerMenuContent = document.getElementById('burgerMenuContent');
+//         const burgerMenu = document.getElementById('bMenu');
 
-        // Vérifier si le clic est en dehors du burgerMenuContent et si le menu est ouvert
-        if (!burgerMenu.contains(event.target) && !burgerMenuContent.contains(event.target) && !burgerMenuContent.classList.contains('hidden')) {
-            burgerMenuContent.classList.add('hidden');
-        }
-    });
-});
+//         // Vérifier si le clic est en dehors du burgerMenuContent et si le menu est ouvert
+//         if (!burgerMenu.contains(event.target) && !burgerMenuContent.contains(event.target) && !burgerMenuContent.classList.contains('hidden')) {
+//             burgerMenuContent.classList.add('hidden');
+//         }
+//     });
+// });
 
 function isValidToken() {
     const token = localStorage.getItem('access_token');
