@@ -11,18 +11,19 @@ const paddleMaterial1 = new THREE.MeshStandardMaterial({
     color: 0xffa500,
     emissive: 0xff8c00,
     emissiveIntensity: 0.5,
-    wireframe: true
+    wireframe: false
 });
 
 const paddleMaterial2 = new THREE.MeshStandardMaterial({
     color: 0x000000,
     emissive: 0xff8c00,
     emissiveIntensity: 0.5,
-    wireframe: true
+    wireframe: false
 });
 
 // Raquette 1
 const paddleGeo = new THREE.BoxGeometry(6, 1, 1);
+
 const paddle1 = new THREE.Mesh(paddleGeo, paddleMaterial1);
 window.paddle1 = paddle1;
 paddle1.position.set(0, 0, 14);
@@ -35,15 +36,15 @@ paddle2.position.set(0, 0, -14);
 scene.add(paddle2);
 
 // Balle
-const ballGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+const ballGeometry = new THREE.SphereGeometry(1, 32, 32);
 const ballMaterial = new THREE.MeshStandardMaterial({
     color: 0x000000,
-    emissive: 0xffffff,
-    emissiveIntensity: 0.5
+    // emissive: 0xffffff,
+    emissiveIntensity: 0
 });
 const ball = new THREE.Mesh(ballGeometry, ballMaterial);
 window.ball = ball;
-ball.position.set(0, 0, 0);
+ball.position.set(0, 1, 0);
 scene.add(ball);
 
 // Ajout d'un plan (sol)
@@ -127,8 +128,8 @@ outlinePass.edgeStrength = 5;
 outlinePass.edgeGlow = 1.0;
 outlinePass.edgeThickness = 3;
 outlinePass.visibleEdgeColor.set('#00ff00');
-outlinePass.hiddenEdgeColor.set('#ff0000');
-outlinePass.selectedObjects = [paddle1, paddle2, wall1, wall2];
+// outlinePass.hiddenEdgeColor.set('#ff0000');
+outlinePass.selectedObjects = [paddle1, paddle2, wall1, wall2, ball];
 composer.addPass(outlinePass);
 
 // Ajout de lumière
@@ -136,7 +137,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 document.addEventListener('keydown', (event) => {
-    if (gameWebsocket && gameWebsocket.readyState === WebSocket.OPEN) {
+    if (typeof gameWebsocket !== 'undefined' && gameWebsocket.readyState === WebSocket.OPEN) {
         let action;
         if (event.key === "ArrowRight") {
             action = paddleUser == paddle1 ? 'move_right_paddle1' : 'move_right_paddle2';
@@ -158,7 +159,7 @@ window.updateGameFromState  = function(newGameState) {
         paddle2.position.x = newGameState.paddle2.x;
     }
     if (newGameState.ball) {
-        ball.position.set(newGameState.ball.x, newGameState.ball.y, newGameState.ball.z);
+        ball.position.set(newGameState.ball.x, 1, newGameState.ball.z);
     }
     // D'autres mises à jour peuvent être ajoutées ici si nécessaire
 };

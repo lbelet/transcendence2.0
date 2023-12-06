@@ -423,6 +423,19 @@ def api_outGame(request):
     user.game_socket_id = "NONE"
     user.save()
 
+    game_id = request.data.get('game_id')  # Récupérer l'ID de la partie de la requête
+    group_name = f'pong_game_{game_id}'
+
+    # Envoyer un message au groupe pour arrêter la partie
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        {
+            'type': 'end_game',  # Vous devrez gérer ce type dans GameConsumer
+            'game_id': game_id
+        }
+    )
+
     return JsonResponse({'message': 'quitter le jeu réussie'}, status=200)
 
 

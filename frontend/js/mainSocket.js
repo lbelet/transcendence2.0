@@ -96,7 +96,7 @@ function openGameWebSocketConnection() {
 
         gameWebsocket.onopen = function (event) {
             console.log('WebSocket de jeu ouvert :', event);
-            resolve();
+            // resolve();
         };
 
         gameWebsocket.onmessage = function (event) {
@@ -104,7 +104,12 @@ function openGameWebSocketConnection() {
             try {
                 const data = JSON.parse(event.data);
                 console.log("data gamesocket: ", data);
-                console.log("data type: ", data.type)
+                console.log("data type: ", data.type);
+
+                if (data.game_socket_id) {
+                    console.log('Game Socket ID reçu:', data.game_socket_id);
+                    resolve(data.game_socket_id);  // Résoudre avec game_socket_id
+                }
 
                 if (data.type === 'game_start') {
                     console.log('La partie de Pong commence, game_id:', data.game_id);
@@ -162,20 +167,20 @@ function sendGameIdToWebSocket(gameId) {
 }
 
 
-function updateGameSocketId(Gamesocket_Id) {
-    fetch('/api/update_GameSocket_id/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        },
-        body: JSON.stringify({ game_socket_id: Gamesocket_Id })
-    })
-        .then(response => response.json())
-        .then(result => {
-            console.log('Mise à jour du game_socket_id réussie:', result);
-        })
-        .catch(error => {
-            alert('Erreur lors de la mise à jour du game_socket_id');
-        });
-}
+// function updateGameSocketId(Gamesocket_Id) {
+//     fetch('/api/update_GameSocket_id/', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+//         },
+//         body: JSON.stringify({ game_socket_id: Gamesocket_Id })
+//     })
+//         .then(response => response.json())
+//         .then(result => {
+//             console.log('Mise à jour du game_socket_id réussie:', result);
+//         })
+//         .catch(error => {
+//             alert('Erreur lors de la mise à jour du game_socket_id');
+//         });
+// }

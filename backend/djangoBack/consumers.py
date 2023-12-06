@@ -36,28 +36,34 @@ class GameConsumer(AsyncWebsocketConsumer):
             'paddle2': {'x': 0},
             'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 0}
         }
+        print("game state: ", self.game_state)
 
     async def connect(self):
         await self.accept()
         await self.send(text_data=json.dumps({"game_socket_id": self.channel_name}))
 
     async def disconnect(self, close_code):
+        self.game_active = False
         if self.game_id:
             await self.channel_layer.group_discard(
                 f'pong_game_{self.game_id}',
                 self.channel_name
             )
-        self.game_active = False
+        # self.game_active = False
 
     async def game_loop(self):
         while self.game_active:
-            self.update_ball_position()
-            await self.update_game_state()
+            print("game loop ok")
+            # self.update_ball_position()
+            # await self.update_game_state()
             await asyncio.sleep(0.05)  # Attente de 100ms entre chaque mise à jour
 
     async def receive(self, text_data):
         data = json.loads(text_data)
         print("Message reçu dans GameConsumer: ", data)
+
+        # if data.get('type') == 'game_start':
+        #     await self.game_start(data)
 
         if 'game_id' in data:
             self.game_id = data['game_id']
@@ -82,7 +88,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.game_state['paddle2']['x'] += move_amount
             elif data['action'] == 'move_left_paddle2':
                 self.game_state['paddle2']['x'] -= move_amount
-
         # Envoyer l'état mis à jour
         await self.channel_layer.group_send(
             f'pong_game_{self.game_id}',
@@ -110,4 +115,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         }))
         self.game_active = True
         asyncio.create_task(self.game_loop())
+
+    async def end_game(self, event):
+        # Arrêter la boucle de jeu
+        self.game_active = False
 

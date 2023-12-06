@@ -28,13 +28,15 @@ function playPong() {
 }
 
 function quitPong3D() {
+    const gameId = localStorage.getItem('currentGameId');  // Récupérer l'ID de la partie
+
     fetch('/api/api_outGame/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         },
-        body: JSON.stringify({}) // Si vous avez des données à envoyer, sinon vous pouvez omettre cette ligne
+        body: JSON.stringify({ game_id: gameId })  // Envoyer l'ID de la partie dans le corps de la requête
     })
         .then(response => {
             if (!response.ok) {
@@ -44,8 +46,8 @@ function quitPong3D() {
         })
         .then(data => {
             console.log('Success:', data);
-            // document.dispatchEvent(new Event("startPongGame"));
-            document.dispatchEvent(new Event("stopPongGame"));
+            localStorage.removeItem('currentGameId');
+            localStorage.removeItem('playerRole');
             navigateTo('welcome');
         })
         .catch(error => {
@@ -66,12 +68,15 @@ function showGameForm() {
 async function joinGameQueue() {
     try {
         // Attendre l'ouverture de la connexion WebSocket et la réception du game_socket_id
-        await openGameWebSocketConnection();
-
-        const gameSocketId = localStorage.getItem('gameSocket_ID');
+        const gameSocketId = await openGameWebSocketConnection();
         console.log("gameSocketID: ", gameSocketId);
 
-        // Envoyer la requête POST pour rejoindre la file d'attente
+        localStorage.setItem('gameSocket_ID', gameSocketId)
+        // const gameSocketId = localStorage.getItem('gameSocket_ID');
+        console.log("gameSocketID: ", localStorage.getItem('gameSocket_ID'));
+        await updateGameSocketId(gameSocketId);
+
+        // Envoyer la requête POST pourz rejoindre la file d'attente
         const response = await fetch('/api/join_game_queue/', {
             method: 'POST',
             headers: {
@@ -98,5 +103,23 @@ async function joinGameQueue() {
     }
 }
 
+
+async function updateGameSocketId(Gamesocket_Id) {
+    fetch('/api/update_GameSocket_id/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({ game_socket_id: Gamesocket_Id })
+    })
+        .then(response => response.json())
+        .then(result => {
+            console.log('Mise à jour du game_socket_id réussie:', result);
+        })
+        .catch(error => {
+            alert('Erreur lors de la mise à jour du game_socket_id');
+        });
+}
 
 
