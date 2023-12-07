@@ -64,6 +64,11 @@ function showGameForm() {
 }
 
 // document.getElementById('joinGameButton').addEventListener('click', joinGameQueue);
+// function updatePlayerRole(newRole) {
+//     localStorage.setItem('playerRole', newRole);
+//     document.dispatchEvent(new CustomEvent('playerRoleChanged', { detail: newRole }));
+// }
+
 
 async function joinGameQueue() {
     try {
@@ -93,6 +98,7 @@ async function joinGameQueue() {
             localStorage.setItem('currentGameId', data.game_id);
             sendGameIdToWebSocket(data.game_id);
             localStorage.setItem('playerRole', data.player_role);  // Stocker le rôle du joueur
+            // updatePlayerRole(data.player_role);  // Mettre à jour le rôle du joueur
             if (data.message.includes('Partie en cours')) {
                 console.log("partie en cours ok")
                 startPongGame(data.game_id);
