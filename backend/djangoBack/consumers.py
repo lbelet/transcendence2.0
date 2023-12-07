@@ -34,7 +34,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.game_state = {
             'paddle1': {'x': 0},
             'paddle2': {'x': 0},
-            'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 0}
+            'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 1}
         }
         print("game state: ", self.game_state)
 
@@ -88,6 +88,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 self.game_state['paddle2']['x'] += move_amount
             elif data['action'] == 'move_left_paddle2':
                 self.game_state['paddle2']['x'] -= move_amount
+            
+            self.game_state['ball']['z'] += self.game_state['ball']['dz']
         # Envoyer l'état mis à jour
         await self.channel_layer.group_send(
             f'pong_game_{self.game_id}',
