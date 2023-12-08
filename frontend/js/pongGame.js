@@ -26,13 +26,13 @@ const paddleGeo = new THREE.BoxGeometry(6, 1, 1);
 
 const paddle1 = new THREE.Mesh(paddleGeo, paddleMaterial1);
 window.paddle1 = paddle1;
-paddle1.position.set(0, 0, 14);
+paddle1.position.set(0, 0, -14);
 scene.add(paddle1);
 
 // Raquette 2
 const paddle2 = new THREE.Mesh(paddleGeo, paddleMaterial2);
 window.paddle2 = paddle2;
-paddle2.position.set(0, 0, -14);
+paddle2.position.set(0, 0, 14);
 scene.add(paddle2);
 
 // Balle
@@ -79,26 +79,11 @@ const wall2 = new THREE.Mesh(wallGeometry, wallMaterial);
 wall2.position.set(-10, 0, 0);
 scene.add(wall2);
 
-const playerRole = localStorage.getItem('playerRole');
 let paddleUser;
-
-console.log("playerRole: ", playerRole)
-
 
 // Caméra
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-// camera.position.set(0, 5, 24);
-
-if (playerRole == 1) {
-    paddleUser = paddle1;
-    console.log("paddleUser: ", paddleUser)
-    camera.position.set(0, 5, 24); // Position de la caméra pour le joueur 1
-} else if (playerRole == 2) {
-    paddleUser = paddle2;
-    console.log("paddleUser: ", paddleUser)
-    camera.position.set(0, 5, -24); // Position inversée de la caméra pour le joueur 2
-    camera.rotation.y = Math.PI;
-}
+camera.position.set(0, 5, 24);
 
 // Renderer
 const canvas = document.getElementById('pong-canvas');
@@ -163,6 +148,20 @@ window.updateGameFromState  = function(newGameState) {
     }
     // D'autres mises à jour peuvent être ajoutées ici si nécessaire
 };
+
+window.setPlayerRole = function() {
+    const playerRole = localStorage.getItem('playerRole');
+    if (playerRole == 1) {
+        paddleUser = paddle1;
+        console.log("playerRole: ", playerRole)
+        camera.position.set(0, 5, -24); // Position inversée de la caméra pour le joueur 2
+        camera.rotation.y = Math.PI;
+    } else if (playerRole == 2) {
+        paddleUser = paddle2;
+        console.log("playerRole: ", playerRole)
+        camera.position.set(0, 5, 24); // Position inversée de la caméra pour le joueur 2
+    }
+}
 
 function animate() {
     requestAnimationFrame(animate);

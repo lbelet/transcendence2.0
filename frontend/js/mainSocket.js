@@ -140,21 +140,12 @@ function applyGameState(newGameState) {
 }
 
 
-
-
 function startPongGame(gameId) {
     // Logique pour initialiser et démarrer la partie de Pong
     console.log('Démarrage de la partie de Pong avec l\'ID :', gameId);
-
-    // Afficher la section de jeu (s'assurer que l'élément est correctement référencé)
-    // document.getElementById('pong-section').classList.remove('hidden');
-    document.dispatchEvent(new Event("startPongGame"));
     navigateTo('pong')
 
-    // Initialiser les positions des raquettes, de la balle, etc.
-    // Cette partie dépend de la manière dont votre jeu est structuré.
-    // Vous devrez probablement synchroniser l'état du jeu avec le serveur
-    // et initialiser les éléments de jeu comme les raquettes et la balle.
+    window.setPlayerRole();
 }
 
 function sendGameIdToWebSocket(gameId) {
@@ -166,21 +157,3 @@ function sendGameIdToWebSocket(gameId) {
     }
 }
 
-
-// function updateGameSocketId(Gamesocket_Id) {
-//     fetch('/api/update_GameSocket_id/', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-//         },
-//         body: JSON.stringify({ game_socket_id: Gamesocket_Id })
-//     })
-//         .then(response => response.json())
-//         .then(result => {
-//             console.log('Mise à jour du game_socket_id réussie:', result);
-//         })
-//         .catch(error => {
-//             alert('Erreur lors de la mise à jour du game_socket_id');
-//         });
-// }

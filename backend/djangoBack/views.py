@@ -477,22 +477,3 @@ def update_language(request):
     else:
         return JsonResponse({'error': 'No language provided'}, status=400)
 
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def update_email(request):
-#     user = request.user
-#     print("user : ", user)
-#     data = json.loads(request.body)
-#     print("data : ", data)
-
-#     new_email = data.get('email')
-#     print("new email : ", new_email)
-
-#     if new_email:
-#         user.email = new_email
-#         user.save()
-#         return JsonResponse({'status': 'success', 'message': 'Email mis à jour'})
-#     else:
-#         return JsonResponse({'error': 'email '}, status=400)
-
-
