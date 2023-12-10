@@ -33,7 +33,7 @@ document.getElementById('EmailTwoFactorForm').addEventListener('submit', functio
             const searchingBar = document.getElementById('searchU');
             searchingBar.classList.remove('hidden');
 
-            console.log("Burger menu should be visible now");
+            // console.log("Burger menu should be visible now");
 
             showWelcome();
             openWebSocketConnection();
@@ -79,7 +79,7 @@ document.getElementById('qrTwoFactorForm').addEventListener('submit', function (
             const searchingBar = document.getElementById('searchU');
             searchingBar.classList.remove('hidden');
 
-            console.log("Burger menu should be visible now");
+            // console.log("Burger menu should be visible now");
 
             showWelcome();
             openWebSocketConnection();

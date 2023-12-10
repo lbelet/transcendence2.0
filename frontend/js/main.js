@@ -10,7 +10,7 @@ window.onload = function () {
 
 // Handling browser back and forward navigation events
 window.onpopstate = function (event) {
-    console.log("Popstate event:", event.state);
+    // console.log("Popstate event:", event.state);
     if (event.state && event.state.section) {
         navigateTo(event.state.section);
     } else {

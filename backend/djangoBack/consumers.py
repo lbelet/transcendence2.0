@@ -2,8 +2,10 @@
 
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
-# from django.contrib.auth import get_user_model
 import json
+# from asgiref.sync import sync_to_async
+
+# from djangoBack.models import PongGame
 
 
 class NotificationConsumer(AsyncWebsocketConsumer):
@@ -23,20 +25,20 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.send(event["text"])
 
 
-# import asyncio
-# from channels.generic.websocket import AsyncWebsocketConsumer
-# import json
-
 class GameConsumer(AsyncWebsocketConsumer):
+
+    players_connected = {}  # Dictionnaire pour suivre les joueurs connectés
+
     # game_id = None  # Initialisé à None
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.game_state = {
+        self.paddles_state = {
             'paddle1': {'x': 0},
-            'paddle2': {'x': 0},
+            'paddle2': {'x': 0}
+        }
+        self.ball_state = {
             'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 1}
         }
-        print("game state: ", self.game_state)
 
     async def connect(self):
         await self.accept()
@@ -49,21 +51,24 @@ class GameConsumer(AsyncWebsocketConsumer):
                 f'pong_game_{self.game_id}',
                 self.channel_name
             )
-        # self.game_active = False
 
     async def game_loop(self):
         while self.game_active:
-            print("game loop ok")
-            # self.update_ball_position()
-            # await self.update_game_state()
+            # print("game loop ok")
+            self.update_ball_position()
+            # Envoyer l'état mis à jour à tous les clients dans le groupe
+            await self.channel_layer.group_send(
+                f'pong_game_{self.game_id}',
+                {
+                    'type': 'send_ball_update',
+                    'ball_state': self.get_ball_state()
+                }
+            )
             await asyncio.sleep(0.05)  # Attente de 100ms entre chaque mise à jour
 
     async def receive(self, text_data):
         data = json.loads(text_data)
         print("Message reçu dans GameConsumer: ", data)
-
-        # if data.get('type') == 'game_start':
-        #     await self.game_start(data)
 
         if 'game_id' in data:
             self.game_id = data['game_id']
@@ -71,52 +76,120 @@ class GameConsumer(AsyncWebsocketConsumer):
                 f'pong_game_{self.game_id}',
                 self.channel_name
             )
+            print(f"Utilisateur ajouté au groupe: pong_game_{self.game_id}, channel_name: {self.channel_name}")
+            # await self.check_and_send_game_start(self.game_id)
+
             await self.send(text_data=json.dumps({
                 "status": "added_to_game",
                 "game_id": self.game_id
             }))
+            self.mark_player_joined(self.game_id, self.channel_name)
+            if self.both_players_joined(self.game_id):
+                # Envoyer game_start si les deux joueurs ont rejoint
+                await self.send_game_start()
         
         if data.get('type') == 'paddle_move':
         # Exemple de mouvement simple : déplacement horizontal
             move_amount = 2  # Ajustez selon les besoins
 
             if data['action'] == 'move_right_paddle1':
-                self.game_state['paddle1']['x'] += move_amount
+                self.paddles_state['paddle1']['x'] += move_amount
             elif data['action'] == 'move_left_paddle1':
-                self.game_state['paddle1']['x'] -= move_amount
+                self.paddles_state['paddle1']['x'] -= move_amount
             elif data['action'] == 'move_right_paddle2':
-                self.game_state['paddle2']['x'] += move_amount
+                self.paddles_state['paddle2']['x'] += move_amount
             elif data['action'] == 'move_left_paddle2':
-                self.game_state['paddle2']['x'] -= move_amount
-            
-            self.game_state['ball']['z'] += self.game_state['ball']['dz']
+                self.paddles_state['paddle2']['x'] -= move_amount
         # Envoyer l'état mis à jour
         await self.channel_layer.group_send(
             f'pong_game_{self.game_id}',
             {
-                'type': 'send_game_update',
-                'game_state': self.get_game_state()
+                'type': 'send_paddles_update',
+                'paddles_state': self.get_paddles_state()
             }
         )
 
-    async def send_game_update(self, event):
+    # async def check_and_send_game_start(self, game_id):
+    #     # Essayez d'envoyer game_start pendant un certain temps
+    #     for _ in range(4):  # 50 tentatives, chaque 0.5 seconde
+    #         game = await self.get_game(game_id)
+    #         if game.player_one_channel_name and game.player_two_channel_name:
+    #             # Envoyer game_start à tous les joueurs dans le groupe
+    #             await self.channel_layer.group_send(
+    #                 f'pong_game_{game_id}',
+    #                 {
+    #                     'type': 'game_start',
+    #                     'game_id': game_id
+    #                 }
+    #             )
+    #             print("Game start sent to group.")
+    #             break
+    #         await asyncio.sleep(0.5)
+
+    # def get_game(self, game_id):
+    #     game = (PongGame.objects.get)(id=game_id)
+    #     return game
+
+    def mark_player_joined(self, game_id, channel_name):
+        if game_id not in self.players_connected:
+            self.players_connected[game_id] = set()
+        self.players_connected[game_id].add(channel_name)
+
+    def both_players_joined(self, game_id):
+        return game_id in self.players_connected and len(self.players_connected[game_id]) == 2
+
+    async def send_paddles_update(self, event):
         # Envoi de l'état mis à jour du jeu aux clients
         await self.send(text_data=json.dumps({
-            'type': 'game_update',  # Indiquer le type de message
-            'game_state': event['game_state']  # Ajouter l'état du jeu
+            'type': 'paddles_update',  # Indiquer le type de message
+            'paddles_state': event['paddles_state']  # Ajouter l'état du jeu
         }))
 
-    def get_game_state(self):
-        return self.game_state
+    async def send_ball_update(self, event):
+        # Envoi de l'état mis à jour du jeu aux clients
+        await self.send(text_data=json.dumps({
+            'type': 'ball_update',  # Indiquer le type de message
+            'ball_state': event['ball_state']  # Ajouter l'état du jeu
+        }))
+        
+    def update_ball_position(self):
+        # Mettre à jour la position de la balle ici
+        self.ball_state['ball']['z'] += self.ball_state['ball']['dz']
 
+    def get_paddles_state(self):
+        print("paddles state: ", self.paddles_state)
+        return self.paddles_state
+    
+    def get_ball_state(self):
+        return self.ball_state
+    
+    async def send_game_start(self):
+        # Envoyer game_start à tous les joueurs dans le groupe
+        await self.channel_layer.group_send(
+            f'pong_game_{self.game_id}',
+            {
+                'type': 'game_start',
+                'game_id': self.game_id
+            }
+        )
+        print("Game start sent to group.")
+        self.game_active = True
+        asyncio.create_task(self.game_loop())
 
     async def game_start(self, event):
+        # self.paddles_state = {
+        #     'paddle1': {'x': 0},
+        #     'paddle2': {'x': 0}
+        # }
+        # self.ball_state = {
+        #     'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 1}
+        # }
         await self.send(text_data=json.dumps({
             'type': 'game_start',
             'game_id': event['game_id']
         }))
-        self.game_active = True
-        asyncio.create_task(self.game_loop())
+        # self.game_active = True
+        # asyncio.create_task(self.game_loop())
 
     async def end_game(self, event):
         # Arrêter la boucle de jeu

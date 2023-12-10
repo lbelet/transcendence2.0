@@ -33,16 +33,16 @@ function hideAllSections() {
 
 function navigateTo(sectionId) {
     if (!isValidToken() && sectionId !== 'login' && sectionId !== 'home' && sectionId !== 'register') {
-        console.log("Redirection vers la page de connexion");
+        // console.log("Redirection vers la page de connexion");
         navigateTo('home');
         return;
     }
-    console.log("Navigating to:", sectionId);
+    // console.log("Navigating to:", sectionId);
     hideAllSections();
     document.getElementById(sectionId + '-section').classList.remove('hidden');
 
     if (!window.location.pathname.endsWith(`/${sectionId}`)) {
-        console.log("Updating state to:", sectionId);
+        // console.log("Updating state to:", sectionId);
         window.history.pushState({ section: sectionId }, '', `/${sectionId}`);
     }
 }
@@ -52,10 +52,10 @@ function toggleMenu() {
 
     if (burgerMenuContent.classList.contains('hidden')) {
         burgerMenuContent.classList.remove('hidden');
-        console.log("plus hidden....")
+        // console.log("plus hidden....")
     } else {
         burgerMenuContent.classList.add('hidden');
-        console.log("de nouveau hidden....")
+        // console.log("de nouveau hidden....")
     }
 }
 

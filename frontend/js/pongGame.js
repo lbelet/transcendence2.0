@@ -137,16 +137,20 @@ document.addEventListener('keydown', (event) => {
 });
 
 window.updateGameFromState  = function(newGameState) {
+    console.log("Mise à jour de l'état des raquettes reçue:", newGameState);
     if (newGameState.paddle1) {
         paddle1.position.x = newGameState.paddle1.x;
     }
     if (newGameState.paddle2) {
         paddle2.position.x = newGameState.paddle2.x;
     }
-    if (newGameState.ball) {
-        ball.position.set(newGameState.ball.x, 1, newGameState.ball.z);
+};
+
+window.updateBallFromState  = function(newBallState) {
+
+    if (newBallState.ball) {
+        ball.position.set(newBallState.ball.x, 1, newBallState.ball.z);
     }
-    // D'autres mises à jour peuvent être ajoutées ici si nécessaire
 };
 
 window.setPlayerRole = function() {

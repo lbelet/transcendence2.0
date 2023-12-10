@@ -26,6 +26,9 @@ from djangoBack.helpers import (
     retrieve_stored_2fa_code
 )
 
+# import time
+
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -45,15 +48,18 @@ def join_game_queue(request):
         game_waiting.status = 'playing'
         game_waiting.save()
 
-        # Notifier les deux joueurs que la partie peut commencer
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            'pong_game_{}'.format(game_waiting.id),
-            {
-                'type': 'game_start',
-                'game_id': game_waiting.id
-            }
-        )
+        # check_and_send_game_start(game_waiting.id)
+
+
+        # # Notifier les deux joueurs que la partie peut commencer
+        # channel_layer = get_channel_layer()
+        # async_to_sync(channel_layer.group_send)(
+        #     'pong_game_{}'.format(game_waiting.id),
+        #     {
+        #         'type': 'game_start',
+        #         'game_id': game_waiting.id
+        #     }
+        # )
         return JsonResponse({'message': 'Partie en cours', 'game_id': game_waiting.id, 'status': 'playing', 'player_role': 2})
     else:
         # S'il n'y a pas de partie en attente, créer une nouvelle partie
@@ -65,6 +71,23 @@ def join_game_queue(request):
 
         return JsonResponse({'message': 'Vous êtes en file d attente pour une nouvelle partie', 'game_id': new_game.id, 'player_role': 1})
 
+# def check_and_send_game_start(game_id):
+#     # Essayez d'envoyer game_start pendant un certain temps (par exemple, 10 secondes)
+#     for _ in range(50):  # 20 tentatives, chaque 0.5 seconde
+#         game = PongGame.objects.filter(id=game_id).first()
+#         if game.player_one_channel_name and game.player_two_channel_name:
+#             # Envoyer game_start à tous les joueurs
+#             channel_layer = get_channel_layer()
+#             async_to_sync(channel_layer.group_send)(
+#                 f'pong_game_{game_id}',
+#                 {
+#                     'type': 'game_start',
+#                     'game_id': game_id
+#                 }
+#             )
+#             print("ok check_and_send_game_start good")
+#             break
+#         time.sleep(0.5)  # Attendre 0.5 seconde avant de réessayer
 
 @api_view(['POST'])
 @csrf_exempt

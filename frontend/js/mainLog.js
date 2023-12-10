@@ -29,7 +29,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                         showTwoFactorForm();
                     }
                 } else {
-                    console.log('Login successful:', obj.body);
+                    // console.log('Login successful:', obj.body);
                     localStorage.setItem('access_token', obj.body.access);
                     localStorage.setItem('refresh_token', obj.body.refresh);
                     localStorage.setItem('language', obj.body.language);
@@ -40,7 +40,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     const searchingBar = document.getElementById('searchU');
                     searchingBar.classList.remove('hidden');
 
-                    console.log("Burger menu should be visible now");
+                    // console.log("Burger menu should be visible now");
 
                     loadTranslations(obj.body.language);
                     showWelcome();

@@ -71,7 +71,7 @@ function searchUser() {
 
                     // Avatar de l'utilisateur
                     if (user.avatarUrl) {
-                        console.log("avatar search user: ", user.avatarUrl);
+                        // console.log("avatar search user: ", user.avatarUrl);
                         var userAvatar = document.createElement('img');
                         userAvatar.src = user.avatarUrl;
                         userAvatar.alt = 'Avatar de ' + user.username;
