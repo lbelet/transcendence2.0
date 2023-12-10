@@ -116,6 +116,7 @@ function openGameWebSocketConnection() {
                     console.log('!!!!La partie de Pong commence grace au sockets');
                     startPongGame(data.game_id);
                 }
+                
                 else if (data.type === 'paddles_update') {
                     console.log("paddles_update ok")
                     applyGameState(data.paddles_state);

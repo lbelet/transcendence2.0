@@ -87,8 +87,8 @@ class PongGame(models.Model):
     winner = models.ForeignKey(get_user_model(), related_name='game_winner', on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=10, choices=[('waiting', 'Waiting'), ('playing', 'Playing'), ('complete', 'Complete')], default='waiting')
     isPaused = models.BooleanField(default=False)
-    player_one_channel_name = models.CharField(max_length=255, blank=True, null=True)
-    player_two_channel_name = models.CharField(max_length=255, blank=True, null=True)
+    # player_one_channel_name = models.CharField(max_length=255, blank=True, null=True)
+    # player_two_channel_name = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         player_one_username = self.player_one.username if self.player_one else "No Player"

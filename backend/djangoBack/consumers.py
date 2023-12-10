@@ -28,17 +28,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 class GameConsumer(AsyncWebsocketConsumer):
 
     players_connected = {}  # Dictionnaire pour suivre les joueurs connectés
-
-    # game_id = None  # Initialisé à None
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.paddles_state = {
-            'paddle1': {'x': 0},
-            'paddle2': {'x': 0}
-        }
-        self.ball_state = {
-            'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 1}
-        }
+    game_states = {}  # Dictionnaire pour stocker l'état de chaque partie
 
     async def connect(self):
         await self.accept()
@@ -54,7 +44,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def game_loop(self):
         while self.game_active:
-            # print("game loop ok")
+            print("game loop ok")
             self.update_ball_position()
             # Envoyer l'état mis à jour à tous les clients dans le groupe
             await self.channel_layer.group_send(
@@ -64,7 +54,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'ball_state': self.get_ball_state()
                 }
             )
-            await asyncio.sleep(0.05)  # Attente de 100ms entre chaque mise à jour
+            await asyncio.sleep(0.10) 
 
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -91,15 +81,16 @@ class GameConsumer(AsyncWebsocketConsumer):
         if data.get('type') == 'paddle_move':
         # Exemple de mouvement simple : déplacement horizontal
             move_amount = 2  # Ajustez selon les besoins
+            game_state = self.game_states[self.game_id]
 
             if data['action'] == 'move_right_paddle1':
-                self.paddles_state['paddle1']['x'] += move_amount
+                game_state['paddles']['paddle1']['x'] += move_amount
             elif data['action'] == 'move_left_paddle1':
-                self.paddles_state['paddle1']['x'] -= move_amount
+                game_state['paddles']['paddle1']['x'] -= move_amount
             elif data['action'] == 'move_right_paddle2':
-                self.paddles_state['paddle2']['x'] += move_amount
+                game_state['paddles']['paddle2']['x'] += move_amount
             elif data['action'] == 'move_left_paddle2':
-                self.paddles_state['paddle2']['x'] -= move_amount
+                game_state['paddles']['paddle2']['x'] -= move_amount
         # Envoyer l'état mis à jour
         await self.channel_layer.group_send(
             f'pong_game_{self.game_id}',
@@ -108,27 +99,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 'paddles_state': self.get_paddles_state()
             }
         )
-
-    # async def check_and_send_game_start(self, game_id):
-    #     # Essayez d'envoyer game_start pendant un certain temps
-    #     for _ in range(4):  # 50 tentatives, chaque 0.5 seconde
-    #         game = await self.get_game(game_id)
-    #         if game.player_one_channel_name and game.player_two_channel_name:
-    #             # Envoyer game_start à tous les joueurs dans le groupe
-    #             await self.channel_layer.group_send(
-    #                 f'pong_game_{game_id}',
-    #                 {
-    #                     'type': 'game_start',
-    #                     'game_id': game_id
-    #                 }
-    #             )
-    #             print("Game start sent to group.")
-    #             break
-    #         await asyncio.sleep(0.5)
-
-    # def get_game(self, game_id):
-    #     game = (PongGame.objects.get)(id=game_id)
-    #     return game
 
     def mark_player_joined(self, game_id, channel_name):
         if game_id not in self.players_connected:
@@ -153,18 +123,29 @@ class GameConsumer(AsyncWebsocketConsumer):
         }))
         
     def update_ball_position(self):
-        # Mettre à jour la position de la balle ici
-        self.ball_state['ball']['z'] += self.ball_state['ball']['dz']
+        # Utilisez l'état de la partie spécifique
+        game_state = self.game_states[self.game_id]
+        game_state['ball']['z'] += game_state['ball']['dz']
 
     def get_paddles_state(self):
-        print("paddles state: ", self.paddles_state)
-        return self.paddles_state
-    
+        if self.game_id in self.game_states:
+            game_state = self.game_states[self.game_id]
+            return game_state['paddles']
+        else:
+            # Retourner un état par défaut ou gérer l'erreur
+            return {'paddle1': {'x': 5}, 'paddle2': {'x': 0}}
+
     def get_ball_state(self):
-        return self.ball_state
+        if self.game_id in self.game_states:
+            game_state = self.game_states[self.game_id]
+            return game_state['ball']
+        else:
+            # Retourner un état par défaut ou gérer l'erreur
+            return {'ball': {'x': -5, 'z': 0, 'dx': 0, 'dz': 1}}
+
     
     async def send_game_start(self):
-        # Envoyer game_start à tous les joueurs dans le groupe
+
         await self.channel_layer.group_send(
             f'pong_game_{self.game_id}',
             {
@@ -173,23 +154,27 @@ class GameConsumer(AsyncWebsocketConsumer):
             }
         )
         print("Game start sent to group.")
-        self.game_active = True
-        asyncio.create_task(self.game_loop())
 
     async def game_start(self, event):
-        # self.paddles_state = {
-        #     'paddle1': {'x': 0},
-        #     'paddle2': {'x': 0}
-        # }
-        # self.ball_state = {
-        #     'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 1}
-        # }
+        game_id = event['game_id']
+        if game_id not in self.game_states:
+            self.game_states[game_id] = {
+                'paddles': {
+                    'paddle1': {'x': 0},
+                    'paddle2': {'x': 0}
+                },
+                'ball': {
+                    'x': 0, 'z': 0, 'dx': 0, 'dz': 1
+                }
+            
+        }
+        self.game_active = True
+        self.game_id = game_id
+        asyncio.create_task(self.game_loop())
         await self.send(text_data=json.dumps({
             'type': 'game_start',
             'game_id': event['game_id']
         }))
-        # self.game_active = True
-        # asyncio.create_task(self.game_loop())
 
     async def end_game(self, event):
         # Arrêter la boucle de jeu
