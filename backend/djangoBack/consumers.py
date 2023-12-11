@@ -3,10 +3,6 @@
 import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-# from asgiref.sync import sync_to_async
-
-# from djangoBack.models import PongGame
-
 
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -19,7 +15,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         pass  # Traitez les données reçues ici
 
-        # Gestionnaire pour les messages 'websocket.send'
+    # Gestionnaire pour les messages 'websocket.send'
     async def websocket_send(self, event):
         # Envoyer le message au client WebSocket
         await self.send(event["text"])
@@ -121,11 +117,44 @@ class GameConsumer(AsyncWebsocketConsumer):
             'type': 'ball_update',  # Indiquer le type de message
             'ball_state': event['ball_state']  # Ajouter l'état du jeu
         }))
-        
+
     def update_ball_position(self):
-        # Utilisez l'état de la partie spécifique
         game_state = self.game_states[self.game_id]
-        game_state['ball']['ball']['z'] += game_state['ball']['ball']['dz']
+        ball = game_state['ball']['ball']
+        paddle1 = game_state['paddles']['paddle1']
+        paddle2 = game_state['paddles']['paddle2']
+
+        # Vitesse horizontale de base lorsque la balle touche les côtés de la raquette
+        base_horizontal_speed = 0.5  # Ajustez cette valeur selon vos besoins
+
+        # Mettre à jour la position de la balle
+        ball['x'] += ball['dx']
+        ball['z'] += ball['dz']
+
+        # Vérifier les collisions avec les raquettes
+        paddles_positions = [(paddle1, -14), (paddle2, 14)]
+        for paddle, z_position in paddles_positions:
+            if abs(ball['z'] - z_position) < 1:  # Seuil de collision
+                distance_x = ball['x'] - paddle['x']
+                if abs(distance_x) < 3:  # Largeur de la raquette est 6, donc 3 de chaque côté
+                    ball['dz'] *= -1  # Inverser la direction verticale
+
+                    # Ajuster la direction horizontale selon la zone de collision
+                    if distance_x < -1:  # Tiers gauche
+                        ball['dx'] = -base_horizontal_speed
+                    elif distance_x > 1:  # Tiers droit
+                        ball['dx'] = base_horizontal_speed
+                    else:  # Tiers central
+                        ball['dx'] = 0
+
+        # Vérifier les collisions avec les murs
+        if ball['x'] >= 9.8 or ball['x'] <= -9.8:
+            ball['dx'] *= -1  # Inverser la direction horizontale
+
+        # Mettre à jour l'état de la balle dans le dictionnaire de l'état du jeu
+        game_state['ball']['ball'] = ball
+
+
 
     def get_paddles_state(self):
         if self.game_id in self.game_states:
@@ -141,11 +170,10 @@ class GameConsumer(AsyncWebsocketConsumer):
             return game_state['ball']
         else:
             # Retourner un état par défaut ou gérer l'erreur
-            return {'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 1}}
+            return {'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 0.2}}
 
     
     async def send_game_start(self):
-
         await self.channel_layer.group_send(
             f'pong_game_{self.game_id}',
             {
