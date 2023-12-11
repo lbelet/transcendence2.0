@@ -41,7 +41,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def game_loop(self):
         while self.game_active:
             print("game loop ok")
-            self.update_ball_position()
+            await self.update_ball_position()
             # Envoyer l'état mis à jour à tous les clients dans le groupe
             await self.channel_layer.group_send(
                 f'pong_game_{self.game_id}',
@@ -118,7 +118,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             'ball_state': event['ball_state']  # Ajouter l'état du jeu
         }))
 
-    def update_ball_position(self):
+    async def update_ball_position(self):
         game_state = self.game_states[self.game_id]
         ball = game_state['ball']['ball']
         paddle1 = game_state['paddles']['paddle1']
@@ -131,28 +131,48 @@ class GameConsumer(AsyncWebsocketConsumer):
         ball['x'] += ball['dx']
         ball['z'] += ball['dz']
 
+        print('ball z: ', ball['z'])
+
+        if ball['z'] < -15 or ball['z'] > 15:  # Si la balle dépasse les raquettes
+            print('out')
+        # Réinitialiser la position de la balle et des raquettes
+            ball['x'], ball['z'] = 0, 0
+            ball['dx'], ball['dz'] = 0, 1  # Réinitialiser également la direction et la vitesse
+            paddle1['x'], paddle2['x'] = 0, 0  # Réinitialiser la position des raquettes
+                    # Envoyer l'état mis à jour des raquettes et de la balle à tous les clients
+            await self.channel_layer.group_send(
+                f'pong_game_{self.game_id}',
+                {
+                    'type': 'send_paddles_update',
+                    'paddles_state': self.get_paddles_state()
+                }
+            )
+        else:
         # Vérifier les collisions avec les raquettes
-        paddles_positions = [(paddle1, -14), (paddle2, 14)]
-        for paddle, z_position in paddles_positions:
-            if abs(ball['z'] - z_position) < 1:  # Seuil de collision
-                distance_x = ball['x'] - paddle['x']
-                if abs(distance_x) < 3:  # Largeur de la raquette est 6, donc 3 de chaque côté
-                    ball['dz'] *= -1  # Inverser la direction verticale
+            print('not out')
+            paddles_positions = [(paddle1, -14), (paddle2, 14)]
+            for paddle, z_position in paddles_positions:
+                if abs(ball['z'] - z_position) < 1:  # Seuil de collision
+                    distance_x = ball['x'] - paddle['x']
+                    if abs(distance_x) < 3:  # Largeur de la raquette est 6, donc 3 de chaque côté
+                        ball['dz'] *= -1  # Inverser la direction verticale
 
-                    # Ajuster la direction horizontale selon la zone de collision
-                    if distance_x < -1:  # Tiers gauche
-                        ball['dx'] = -base_horizontal_speed
-                    elif distance_x > 1:  # Tiers droit
-                        ball['dx'] = base_horizontal_speed
-                    else:  # Tiers central
-                        ball['dx'] = 0
+                        # Ajuster la direction horizontale selon la zone de collision
+                        if distance_x < -1:  # Tiers gauche
+                            ball['dx'] = -base_horizontal_speed
+                        elif distance_x > 1:  # Tiers droit
+                            ball['dx'] = base_horizontal_speed
+                        else:  # Tiers central
+                            ball['dx'] = 0
 
-        # Vérifier les collisions avec les murs
-        if ball['x'] >= 9.8 or ball['x'] <= -9.8:
-            ball['dx'] *= -1  # Inverser la direction horizontale
+            # Vérifier les collisions avec les murs
+            if ball['x'] >= 9.8 or ball['x'] <= -9.8:
+                ball['dx'] *= -1  # Inverser la direction horizontale
 
         # Mettre à jour l'état de la balle dans le dictionnaire de l'état du jeu
         game_state['ball']['ball'] = ball
+        game_state['paddles']['paddle1'] = paddle1
+        game_state['paddles']['paddle2'] = paddle2
 
 
 
