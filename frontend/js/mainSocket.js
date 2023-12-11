@@ -125,6 +125,10 @@ function openGameWebSocketConnection() {
                     console.log("ball_update ok")
                     applyBallState(data.ball_state);
                 }
+                else if (data.type === 'score_update') {
+                    window.updateScores(data.player1Score, data.player2Score);
+                }
+                
             } catch (error) {
                 console.error('Erreur de parsing JSON dans le jeu:', error);
                 reject(error);

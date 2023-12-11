@@ -118,6 +118,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             'ball_state': event['ball_state']  # Ajouter l'état du jeu
         }))
 
+
     async def update_ball_position(self):
         game_state = self.game_states[self.game_id]
         ball = game_state['ball']['ball']
@@ -135,7 +136,23 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         if ball['z'] < -15 or ball['z'] > 15:  # Si la balle dépasse les raquettes
             print('out')
-        # Réinitialiser la position de la balle et des raquettes
+
+            if ball['z'] < -15:  # Si la balle passe derrière la raquette du joueur 1
+                game_state['score']['player2'] += 1  # Incrémenter le score du joueur 2
+                # self.reset_positions(game_state)  # Réinitialiser les positions
+                # await self.send_score_update(game_state)  # Envoyer la mise à jour des scores
+
+            elif ball['z'] > 15:  # Si la balle passe derrière la raquette du joueur 2
+                game_state['score']['player1'] += 1  # Incrémenter le score du joueur 1
+                # self.reset_positions(game_state)  # Réinitialiser les positions
+            
+            await self.channel_layer.group_send(
+                f'pong_game_{self.game_id}',
+                {
+                    'type': 'send_score_update',
+                    'score_state': game_state['score']
+                }
+            )        # Réinitialiser la position de la balle et des raquettes
             ball['x'], ball['z'] = 0, 0
             ball['dx'], ball['dz'] = 0, 1  # Réinitialiser également la direction et la vitesse
             paddle1['x'], paddle2['x'] = 0, 0  # Réinitialiser la position des raquettes
@@ -149,7 +166,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
         else:
         # Vérifier les collisions avec les raquettes
-            print('not out')
+            # print('not out')
             paddles_positions = [(paddle1, -14), (paddle2, 14)]
             for paddle, z_position in paddles_positions:
                 if abs(ball['z'] - z_position) < 1:  # Seuil de collision
@@ -213,7 +230,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                 },
                 'ball': {
                     'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 1}
-                }   
+                },
+                'score': {'player1': 0, 'player2': 0}  # Initialisation des scores 
         }
         self.game_active = True
         self.game_id = game_id
@@ -221,6 +239,22 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'game_start',
             'game_id': event['game_id']
+        }))
+
+    # # async def send_score_update(self, game_state):
+    #     await self.channel_layer.group_send(
+    #         f'pong_game_{self.game_id}',
+    #         {
+    #             'type': 'send_score_update',
+    #             'scores': game_state['score']
+    #         }
+    #     )
+
+    async def send_score_update(self, event):
+        # Envoi de l'état mis à jour du jeu aux clients
+        await self.send(text_data=json.dumps({
+            'type': 'score_update',  # Indiquer le type de message
+            'score_state': event['score_state']  # Ajouter l'état du jeu
         }))
 
     async def end_game(self, event):

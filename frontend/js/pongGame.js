@@ -1,11 +1,46 @@
 import * as THREE from 'three';
 
+
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+
 // import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 // import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 // import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 // import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 
+const loader = new FontLoader();
+
 const scene = new THREE.Scene();
+
+
+// Charger une police (remplacer par le chemin de votre police)
+loader.load('node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json', function (font) {
+    const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    // const textGeometry1 = new TextGeometry('Score: 0', {
+    //     font: font,
+    //     size: 1,
+    //     height: 0.1
+    // });
+    const textGeometry = new TextGeometry('player1: 0 | player2: 0', {
+        font: font,
+        size: 2,
+        height: 0.2
+    });
+
+    const scoreText1 = new THREE.Mesh(textGeometry, textMaterial);
+    // const scoreText2 = new THREE.Mesh(textGeometry2, textMaterial);
+
+    // Positionner les éléments de texte dans la scène
+    scoreText1.position.set(-15, 15, 0); // Modifier selon votre scène
+    // scoreText2.position.set(-5, 5, 14);  // Modifier selon votre scène
+
+    scene.add(scoreText1);
+    // scene.add(scoreText2);
+
+    window.scoreText1 = scoreText1;
+    // window.scoreText2 = scoreText2;
+});
 
 const paddleMaterial1 = new THREE.MeshStandardMaterial({
     color: 0xffa500,
@@ -164,6 +199,22 @@ window.setPlayerRole = function() {
         camera.position.set(0, 5, 24); // Position inversée de la caméra pour le joueur 2
     }
 }
+
+window.updateScores = function(player1Score, player2Score) {
+    // Mettre à jour le texte
+    const newText = `player1: ${player1Score} | player2: ${player2Score}`;
+
+    // Créer une nouvelle géométrie de texte avec le nouveau texte
+    const newGeometry = new TextGeometry(newText, {
+        font: scoreText1.geometry.parameters.font,
+        size: 2,
+        height: 0.2
+    });
+
+    // Mettre à jour la géométrie du Mesh
+    scoreText1.geometry.dispose(); // Dispose l'ancienne géométrie pour libérer de la mémoire
+    scoreText1.geometry = newGeometry;
+};
 
 function animate() {
     requestAnimationFrame(animate);
