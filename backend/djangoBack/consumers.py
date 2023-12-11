@@ -125,7 +125,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     def update_ball_position(self):
         # Utilisez l'état de la partie spécifique
         game_state = self.game_states[self.game_id]
-        game_state['ball']['z'] += game_state['ball']['dz']
+        game_state['ball']['ball']['z'] += game_state['ball']['ball']['dz']
 
     def get_paddles_state(self):
         if self.game_id in self.game_states:
@@ -133,7 +133,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             return game_state['paddles']
         else:
             # Retourner un état par défaut ou gérer l'erreur
-            return {'paddle1': {'x': 5}, 'paddle2': {'x': 0}}
+            return {'paddle1': {'x': 0}, 'paddle2': {'x': 0}}
 
     def get_ball_state(self):
         if self.game_id in self.game_states:
@@ -141,7 +141,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             return game_state['ball']
         else:
             # Retourner un état par défaut ou gérer l'erreur
-            return {'ball': {'x': -5, 'z': 0, 'dx': 0, 'dz': 1}}
+            return {'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 1}}
 
     
     async def send_game_start(self):
@@ -164,9 +164,8 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'paddle2': {'x': 0}
                 },
                 'ball': {
-                    'x': 0, 'z': 0, 'dx': 0, 'dz': 1
-                }
-            
+                    'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 1}
+                }   
         }
         self.game_active = True
         self.game_id = game_id

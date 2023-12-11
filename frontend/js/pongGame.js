@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
+// import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+// import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+// import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+// import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 
 const scene = new THREE.Scene();
 
@@ -23,7 +23,6 @@ const paddleMaterial2 = new THREE.MeshStandardMaterial({
 
 // Raquette 1
 const paddleGeo = new THREE.BoxGeometry(6, 1, 1);
-
 const paddle1 = new THREE.Mesh(paddleGeo, paddleMaterial1);
 window.paddle1 = paddle1;
 paddle1.position.set(0, 0, -14);
@@ -39,7 +38,6 @@ scene.add(paddle2);
 const ballGeometry = new THREE.SphereGeometry(1, 32, 32);
 const ballMaterial = new THREE.MeshStandardMaterial({
     color: 0x000000,
-    // emissive: 0xffffff,
     emissiveIntensity: 0
 });
 const ball = new THREE.Mesh(ballGeometry, ballMaterial);
@@ -90,36 +88,36 @@ const canvas = document.getElementById('pong-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas: canvas });
 renderer.setSize(800, 600);
 
-// Composer pour le post-traitement
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene, camera));
-
-// Configurer l'Unreal Bloom Pass
-const bloomPass = new UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
-    1.5,  // Intensité de la lumière
-    0.4,  // Rayon de la lumière
-    0.85  // Seuil de luminosité
-);
-composer.addPass(bloomPass);
-
-// Création de l'OutlinePass
-const outlinePass = new OutlinePass(
-    new THREE.Vector2(800, 600),
-    scene,
-    camera
-);
-outlinePass.edgeStrength = 5;
-outlinePass.edgeGlow = 1.0;
-outlinePass.edgeThickness = 3;
-outlinePass.visibleEdgeColor.set('#00ff00');
-// outlinePass.hiddenEdgeColor.set('#ff0000');
-outlinePass.selectedObjects = [paddle1, paddle2, wall1, wall2, ball];
-composer.addPass(outlinePass);
-
 // Ajout de lumière
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
+
+// // Composer pour le post-traitement
+// const composer = new EffectComposer(renderer);
+// composer.addPass(new RenderPass(scene, camera));
+
+// // Configurer l'Unreal Bloom Pass
+// const bloomPass = new UnrealBloomPass(
+//     new THREE.Vector2(window.innerWidth, window.innerHeight),
+//     1.5,  // Intensité de la lumière
+//     0.4,  // Rayon de la lumière
+//     0.85  // Seuil de luminosité
+// );
+// composer.addPass(bloomPass);
+
+// // Création de l'OutlinePass
+// const outlinePass = new OutlinePass(
+//     new THREE.Vector2(800, 600),
+//     scene,
+//     camera
+// );
+// outlinePass.edgeStrength = 5;
+// outlinePass.edgeGlow = 1.0;
+// outlinePass.edgeThickness = 3;
+// outlinePass.visibleEdgeColor.set('#00ff00');
+// // outlinePass.hiddenEdgeColor.set('#ff0000');
+// outlinePass.selectedObjects = [paddle1, paddle2, wall1, wall2, ball];
+// composer.addPass(outlinePass);
 
 document.addEventListener('keydown', (event) => {
     if (typeof gameWebsocket !== 'undefined' && gameWebsocket.readyState === WebSocket.OPEN) {
@@ -169,7 +167,9 @@ window.setPlayerRole = function() {
 
 function animate() {
     requestAnimationFrame(animate);
-    composer.render();
+    renderer.render(scene, camera);
+    // composer.render();
+
 }
 
 animate();
