@@ -126,7 +126,13 @@ function openGameWebSocketConnection() {
                     applyBallState(data.ball_state);
                 }
                 else if (data.type === 'score_update') {
-                    window.updateScores(data.player1Score, data.player2Score);
+                    console.log("data update score: ", data)
+                    console.log("score1: ", data.score_state.player1, "score2: ", data.score_state.player2)
+                    window.updateScores(data.score_state.player1, data.score_state.player2);
+                }
+                else if (data.type === 'game_over') {
+                    // Fermer la connexion WebSocket
+                    gameWebsocket.close();
                 }
                 
             } catch (error) {

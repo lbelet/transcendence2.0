@@ -48,6 +48,7 @@ function quitPong3D() {
             // console.log('Success:', data);
             localStorage.removeItem('currentGameId');
             localStorage.removeItem('playerRole');
+            localStorage.removeItem('')
             navigateTo('welcome');
         })
         .catch(error => {

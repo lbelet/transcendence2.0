@@ -458,7 +458,6 @@ def api_outGame(request):
             'game_id': game_id
         }
     )
-
     return JsonResponse({'message': 'quitter le jeu réussie'}, status=200)
 
 

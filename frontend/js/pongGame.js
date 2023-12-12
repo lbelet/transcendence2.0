@@ -8,6 +8,7 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 // import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 // import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 // import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
+let globalFont; // Déclaration d'une variable globale pour la police
 
 const loader = new FontLoader();
 
@@ -16,6 +17,7 @@ const scene = new THREE.Scene();
 
 // Charger une police (remplacer par le chemin de votre police)
 loader.load('node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json', function (font) {
+    globalFont = font; // Stocker la police chargée dans la variable globale
     const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     // const textGeometry1 = new TextGeometry('Score: 0', {
     //     font: font,
@@ -169,7 +171,7 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-window.updateGameFromState  = function(newGameState) {
+window.updateGameFromState = function (newGameState) {
     console.log("Mise à jour de l'état des raquettes reçue:", newGameState);
     if (newGameState.paddle1) {
         paddle1.position.x = newGameState.paddle1.x;
@@ -179,14 +181,14 @@ window.updateGameFromState  = function(newGameState) {
     }
 };
 
-window.updateBallFromState  = function(newBallState) {
+window.updateBallFromState = function (newBallState) {
 
     if (newBallState.ball) {
         ball.position.set(newBallState.ball.x, 1, newBallState.ball.z);
     }
 };
 
-window.setPlayerRole = function() {
+window.setPlayerRole = function () {
     const playerRole = localStorage.getItem('playerRole');
     if (playerRole == 1) {
         paddleUser = paddle1;
@@ -201,20 +203,32 @@ window.setPlayerRole = function() {
 }
 
 window.updateScores = function(player1Score, player2Score) {
-    // Mettre à jour le texte
-    const newText = `player1: ${player1Score} | player2: ${player2Score}`;
+    // Supprimer l'ancien Mesh de la scène
+    if (window.scoreText1) {
+        scene.remove(window.scoreText1);
+        window.scoreText1.geometry.dispose();
+    }
 
-    // Créer une nouvelle géométrie de texte avec le nouveau texte
+    const newText = `player1: ${player1Score} | player2: ${player2Score}`;
+    const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+    // Créer une nouvelle géométrie de texte
     const newGeometry = new TextGeometry(newText, {
-        font: scoreText1.geometry.parameters.font,
+        font: globalFont, // Assurez-vous que 'font' est accessible ici
         size: 2,
         height: 0.2
     });
 
-    // Mettre à jour la géométrie du Mesh
-    scoreText1.geometry.dispose(); // Dispose l'ancienne géométrie pour libérer de la mémoire
-    scoreText1.geometry = newGeometry;
+    // Créer un nouveau Mesh et l'ajouter à la scène
+    const newScoreText = new THREE.Mesh(newGeometry, textMaterial);
+    newScoreText.position.set(-15, 15, 0);
+    scene.add(newScoreText);
+
+    // Mettre à jour la référence globale
+    window.scoreText1 = newScoreText;
 };
+
+
 
 function animate() {
     requestAnimationFrame(animate);
