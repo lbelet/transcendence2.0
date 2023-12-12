@@ -41,6 +41,9 @@ urlpatterns = [
     path('update_language/', views.update_language, name='update-language'),
     # path('update_email/', views.update_email, name='update-email'),
 
+    path('create_tournament/', views.create_tournament, name='create_tournament'),
+
+
 
 
     # Home page URL

@@ -193,7 +193,7 @@
                 <p>Bienvenue, <span id="user-name-game"></span>!</p>
                 <button class="btn btn-primary" onclick="playPong()">practice playing Pong</button>
                 <button class="btn btn-primary" onclick="joinGameQueue()">Rejoindre la partie</button>
-
+                <button class="btn btn-primary" onclick="goTournament()">tournois</button>
             </div>
 
             <div id="pong-section" class="hidden">
@@ -202,6 +202,10 @@
                 <canvas id="pong-canvas"></canvas>
             </div>
 
+            <div id="tournament-section" class="hidden">
+                <h2>Tournois Pong</h2>
+                <button class="btn btn-primary" onclick="openTournamentModal()">creer tournoi</button>
+            </div>
 
             <div id="searchResultsModal" class="modal">
                 <div class="modal-content">
@@ -223,7 +227,8 @@
                         </div>
                         <div class="form-group">
                             <label for="newUsername">Nouveau username:</label>
-                            <input type="username" class="form-control" id="newUsername" placeholder="Entrez le nouveau username">
+                            <input type="username" class="form-control" id="newUsername"
+                                placeholder="Entrez le nouveau username">
                         </div>
 
                         <div class="form-group">
@@ -232,7 +237,8 @@
                         </div>
                         <div class="form-group">
                             <label for="newFirstname">Nouveau firstname:</label>
-                            <input type="firstname" class="form-control" id="newFirstname" placeholder="Entrez le nouveau firstname">
+                            <input type="firstname" class="form-control" id="newFirstname"
+                                placeholder="Entrez le nouveau firstname">
                         </div>
 
                         <div class="form-group">
@@ -246,15 +252,17 @@
 
                         <div class="form-group">
                             <label for="currentPassword">Mot de passe actuel:</label>
-                            <input type="password" class="form-control" id="currentPassword" placeholder="Entrez le mot de passe actuel">
+                            <input type="password" class="form-control" id="currentPassword"
+                                placeholder="Entrez le mot de passe actuel">
                         </div>
                         <div class="form-group">
                             <label for="newPassword">Nouveau mot de passe:</label>
-                            <input type="password" class="form-control" id="newPassword" placeholder="Entrez le nouveau mot de passe">
+                            <input type="password" class="form-control" id="newPassword"
+                                placeholder="Entrez le nouveau mot de passe">
                         </div>
-                        
+
                         <!-- <button type="button" class="btn btn-primary" onclick="updateEmail()">Modifier Email</button> -->
-            
+
                         <div class="form-group">
                             <label for="twoFactorMethod">Choose 2FA Method:</label>
                             <select class="form-control" id="twoFactorMethod">
@@ -276,6 +284,63 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Tournament Creation Modal -->
+            <div id="createTournamentModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeCreateTournamentModal()">&times;</span>
+                    <h2>Créer un Nouveau Tournoi</h2>
+                    <form id="createTournamentForm">
+                        <!-- Tournament Name -->
+                        <div class="form-group">
+                            <label for="tournamentName">Nom du tournoi:</label>
+                            <input type="text" class="form-control" id="tournamentName"
+                                placeholder="Entrez le nom du tournoi" required>
+                        </div>
+
+                        <!-- Number of Players -->
+                        <!-- Number of Players -->
+                        <div class="form-group">
+                            <label>Nombre de joueurs:</label>
+                            <div>
+                                <input type="radio" id="fourPlayers" name="numberOfPlayers" value="4" required>
+                                <label for="fourPlayers">4</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="eightPlayers" name="numberOfPlayers" value="8">
+                                <label for="eightPlayers">8</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="sixteenPlayers" name="numberOfPlayers" value="16">
+                                <label for="sixteenPlayers">16</label>
+                            </div>
+                        </div>
+
+                        <!-- Start Date Option -->
+                        <div class="form-group">
+                            <label>Date de début:</label>
+                            <div>
+                                <input type="radio" name="startDateOption" id="startWhenFull" value="whenFull" required>
+                                <label for="startWhenFull">Quand le nombre de joueurs est atteint</label>
+                            </div>
+                            <div>
+                                <input type="radio" name="startDateOption" id="startAtSpecificTime"
+                                    value="specificTime">
+                                <label for="startAtSpecificTime">À une date et heure fixe</label>
+                                <input type="datetime-local" class="form-control" id="specificDateTime" disabled>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Créer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+
             <!-- </div> -->
 
             <script src="js/script.js"></script>
@@ -289,18 +354,10 @@
             <script src="js/mainNavig.js"></script>
             <script src="js/mainLog.js"></script>
             <script src="js/mainRegEdit.js"></script>
-
-            <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+            <script src="js/tournaments.js"></script>
 
             <script type="module" src="js/pongGame.js"></script>
 
 </body>
 
 </html>
-
-<!-- Login Section -->
-<!-- <style>
-    .form-label {
-        text-align: center;
-    }
-    </style> -->

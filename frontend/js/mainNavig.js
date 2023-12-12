@@ -7,6 +7,10 @@ function showRegisterForm() {
     navigateTo('register');
 }
 
+function goTournament() {
+    navigateTo('tournament')
+}
+
 // function showEditUserForm() {
 //     navigateTo('edit-user');
 // }

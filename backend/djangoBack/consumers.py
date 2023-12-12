@@ -151,7 +151,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             )
         else:
-            # Vérifier les collisions avec les raquettes
             paddles_positions = [(paddle1, -14), (paddle2, 14)]
             for paddle, z_position in paddles_positions:
                 if abs(ball['z'] - z_position) < 1:  # Seuil de collision
