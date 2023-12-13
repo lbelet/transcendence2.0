@@ -85,9 +85,9 @@ class FriendRequest(models.Model):
 
 class Tournament(models.Model):
     name = models.CharField(max_length=100)
-    start_date = models.DateTimeField()
+    start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
-    max_players = models.IntegerField()
+    number_of_players = models.IntegerField()
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
