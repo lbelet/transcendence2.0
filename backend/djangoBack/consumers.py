@@ -4,6 +4,10 @@ import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
+from djangoBack.models import PongGame, User
+from asgiref.sync import sync_to_async
+
+
 
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -93,6 +97,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         )
 
     def mark_player_joined(self, game_id, channel_name):
+        self.initialize_game_state(game_id)
+
+        if self.game_states[game_id]['player1_channel'] is None:
+            self.game_states[game_id]['player1_channel'] = channel_name
+        elif self.game_states[game_id]['player2_channel'] is None and self.game_states[game_id]['player1_channel'] != channel_name:
+            self.game_states[game_id]['player2_channel'] = channel_name
+
         if game_id not in self.players_connected:
             self.players_connected[game_id] = set()
         self.players_connected[game_id].add(channel_name)
@@ -168,7 +179,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             if ball['x'] >= 9.8 or ball['x'] <= -9.8:
                 ball['dx'] *= -1
-
         game_state['ball']['ball'] = ball
         game_state['paddles']['paddle1'] = paddle1
         game_state['paddles']['paddle2'] = paddle2
@@ -201,17 +211,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def game_start(self, event):
         game_id = event['game_id']
-        if game_id not in self.game_states:
-            self.game_states[game_id] = {
-                'paddles': {
-                    'paddle1': {'x': 0},
-                    'paddle2': {'x': 0}
-                },
-                'ball': {
-                    'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 1}
-                },
-                'score': {'player1': 0, 'player2': 0}
-            }
+        self.initialize_game_state(game_id)
+
         self.game_active = True
         self.game_id = game_id
         asyncio.create_task(self.game_loop())
@@ -232,10 +233,15 @@ class GameConsumer(AsyncWebsocketConsumer):
             'type': 'game_over',
         }))
 
-
     async def end_game(self, event):
         print('end game ok')
-        # Réinitialiser les scores
+
+        score_player_one = self.game_states[self.game_id]['score']['player1']
+        score_player_two = self.game_states[self.game_id]['score']['player2']
+        game_state = self.game_states[self.game_id]
+        winner_channel_name = game_state['player1_channel'] if score_player_one > score_player_two else game_state['player2_channel']
+
+        await self.update_game_in_database(self.game_id, score_player_one, score_player_two, winner_channel_name)
         if self.game_id in self.game_states:
             self.game_states[self.game_id]['score']['player1'] = 0
             self.game_states[self.game_id]['score']['player2'] = 0
@@ -246,15 +252,47 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'score_state': self.game_states[self.game_id]['score']
                 }
             ) 
-
-        # Arrêter la boucle de jeu
         self.game_active = False
-
-        # Optionnel : Envoyer un message pour indiquer la fin du jeu
         await self.channel_layer.group_send(
             f'pong_game_{self.game_id}',
             {
                 'type': 'send_game_over',
-                # Autres informations si nécessaire
             }
         )
+
+    async def update_game_in_database(self, game_id, score_player_one, score_player_two, winner_channel_name):
+        await sync_to_async(self._update_game_in_database)(game_id, score_player_one, score_player_two, winner_channel_name)
+
+
+    def _update_game_in_database(self, game_id, score_player_one, score_player_two, winner_channel_name):
+        try:
+            game = PongGame.objects.get(id=game_id)
+            game.score_player_one = score_player_one
+            game.score_player_two = score_player_two
+
+            if winner_channel_name:
+                winner_user = User.objects.get(game_socket_id=winner_channel_name)
+                game.winner = winner_user
+
+            game.status = 'complete'
+            game.save()
+        except User.DoesNotExist:
+            print(f"User with game_socket_id {winner_channel_name} not found")
+        except PongGame.DoesNotExist:
+            print(f"PongGame with id {game_id} not found")
+        except Exception as e:
+            print(f"Erreur lors de l'enregistrement : {e}")
+
+
+    def initialize_game_state(self, game_id):
+        if game_id not in self.game_states:
+            self.game_states[game_id] = {
+                'player1_channel': None,
+                'player2_channel': None,
+                'paddles': {'paddle1': {'x': 0}, 'paddle2': {'x': 0}},
+                'ball': {'ball': {'x': 0, 'z': 0, 'dx': 0, 'dz': 1}},
+                'score': {'player1': 0, 'player2': 0}
+            }
+        else:
+            # Ajoutez ici la logique pour compléter ou mettre à jour l'état si nécessaire
+            pass
