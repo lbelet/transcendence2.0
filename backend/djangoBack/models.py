@@ -82,6 +82,13 @@ class FriendRequest(models.Model):
 
     def __str__(self):
         return f"De {self.sender.username} à {self.receiver.username}"
+    
+class Player(models.Model):
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+    # Vous pouvez inclure d'autres détails spécifiques au joueur ici, si nécessaire
+
+    def __str__(self):
+        return self.user.username
 
 class Tournament(models.Model):
     name = models.CharField(max_length=100)
@@ -89,16 +96,10 @@ class Tournament(models.Model):
     end_date = models.DateTimeField(null=True)
     number_of_players = models.IntegerField()
     is_active = models.BooleanField(default=True)
+    participants = models.ManyToManyField(Player, related_name='tournaments', blank=True)
 
     def __str__(self):
         return f"{self.name} ({self.start_date} - {self.end_date})"
-
-class Player(models.Model):
-    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
-    # Vous pouvez inclure d'autres détails spécifiques au joueur ici, si nécessaire
-
-    def __str__(self):
-        return self.user.username
 
 class Match(models.Model):
     tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)

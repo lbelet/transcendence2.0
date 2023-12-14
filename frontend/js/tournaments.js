@@ -48,11 +48,33 @@ document.getElementById('createTournamentForm').addEventListener('submit', funct
     .then(data => {
         console.log('Success:', data);
         // Vous pouvez gérer la réponse ici
+        if (data.success) {
+            // Appeler la fonction pour inscrire l'utilisateur au tournoi
+            registerUserToTournament(data.tournament_id);
+        }
     })
     .catch((error) => {
         console.error('Error:', error);
         // Gérer les erreurs ici
     });
 });
+
+function registerUserToTournament(tournamentId) {
+    fetch(`/api/register_to_tournament/${tournamentId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Inscription Success:', data);
+        // Gérer l'inscription réussie
+    })
+    .catch((error) => {
+        console.error('Inscription Error:', error);
+    });
+}
 
 

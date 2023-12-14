@@ -20,7 +20,7 @@ from rest_framework.permissions import IsAuthenticated
 from djangoBack import settings
 
 # Local application imports
-from djangoBack.models import Tournament, User, FriendRequest, PongGame
+from djangoBack.models import Player, Tournament, User, FriendRequest, PongGame
 from djangoBack.helpers import (
     get_tokens_for_user, send_two_factor_email, generate_qr_code,
     retrieve_stored_2fa_code
@@ -495,3 +495,20 @@ def create_tournament(request):
         return JsonResponse({'success': 'Tournament created successfully', 'tournament_id': tournament.id}, status=201)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def register_to_tournament(request, tournament_id):
+    try:
+        tournament = Tournament.objects.get(id=tournament_id)
+        player, created = Player.objects.get_or_create(user=request.user)
+
+        # Vérifier si le tournoi a atteint son nombre maximum de joueurs
+        if tournament.participants.count() >= tournament.number_of_players:
+            return JsonResponse({'error': 'Le tournoi est complet'}, status=400)
+
+        tournament.participants.add(player)
+        return JsonResponse({'message': 'Inscription réussie', 'current_participants': tournament.participants.count()}, status=200)
+    except Tournament.DoesNotExist:
+        return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
+
