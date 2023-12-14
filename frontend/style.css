@@ -437,3 +437,50 @@ a:hover {
   background-color: rgb(239, 124, 9); /* Replace with your desired color */
   /* text-align: center;
 } */
+
+/* Style global de la section des tournois */
+#tournament-section {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+#tournament-section.hidden {
+  display: none;
+}
+
+/* Style pour le bouton de création de tournoi */
+#tournament-section .btn-primary {
+  margin-bottom: 20px;  /* Espace sous le bouton */
+}
+
+/* Style pour la liste des tournois disponibles */
+#available-tournaments {
+  margin-left: 20px; /* Espace entre le bouton et la liste */
+  width: 70%; /* Largeur de la liste des tournois */
+  color: white;
+}
+
+/* Style pour chaque tournoi individuel */
+.tournament {
+  background-color: #f9f9f9; /* Couleur de fond */
+  border: 1px solid #ddd; /* Bordure */
+  padding: 10px;
+  margin-bottom: 10px; /* Espace entre les tournois */
+  border-radius: 5px; /* Bords arrondis */
+}
+
+/* Style pour les titres de chaque tournoi */
+.tournament h3 {
+  color: #333;
+  font-size: 1.2em;
+}
+
+/* Style pour les détails des tournois */
+.tournament p {
+  color: #666;
+  font-size: 0.9em;
+  margin: 5px 0;
+}
+

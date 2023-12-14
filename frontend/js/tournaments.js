@@ -77,4 +77,40 @@ function registerUserToTournament(tournamentId) {
     });
 }
 
+function loadAvailableTournaments() {
+    fetch('/api/available_tournaments/', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+    .then(response => response.json())
+    .then(tournaments => {
+        console.log("tournois dispo? :", tournaments)
+        displayTournaments(tournaments);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function displayTournaments(tournaments) {
+    const container = document.getElementById('available-tournaments');
+    container.innerHTML = ''; // Effacer les tournois précédents
+
+    tournaments.forEach(tournament => {
+        const tournamentDiv = document.createElement('div');
+        tournamentDiv.className = 'tournament';
+        tournamentDiv.innerHTML = `
+            <h3>${tournament.name}</h3>
+            <p>Date de début : ${tournament.start_date}</p>
+            <p>Participants : ${tournament.current_participants}/${tournament.number_of_players}</p>
+            <!-- Ajoutez d'autres détails ici -->
+        `;
+        container.appendChild(tournamentDiv);
+    });
+}
+
+
+
 

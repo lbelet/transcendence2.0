@@ -33,6 +33,7 @@ function hideAllSections() {
     document.getElementById('email-two-factor-section').classList.add('hidden');
     document.getElementById('pong-section').classList.add('hidden');
     document.getElementById('qr-two-factor-section').classList.add('hidden');
+    document.getElementById('tournament-section').classList.add('hidden');
 }
 
 function navigateTo(sectionId) {

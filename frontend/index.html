@@ -204,7 +204,10 @@
 
             <div id="tournament-section" class="hidden">
                 <h2>Tournois Pong</h2>
-                <button class="btn btn-primary" onclick="openTournamentModal()">creer tournoi</button>
+                <button class="btn btn-primary" onclick="openTournamentModal()">Créer tournoi</button>
+                <div><h1>Tournois dispos</h1></div>
+                <button class="btn btn-primary" onclick="loadAvailableTournaments()">charger les tournois dispos</button>
+                <div id="available-tournaments"></div>
             </div>
 
             <div id="searchResultsModal" class="modal">
@@ -338,11 +341,7 @@
                     </form>
                 </div>
             </div>
-
-
-
             <!-- </div> -->
-
             <script src="js/script.js"></script>
             <script src="js/main.js"></script>
             <script src="js/mainPong.js"></script>

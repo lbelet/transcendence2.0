@@ -97,6 +97,8 @@ class Tournament(models.Model):
     number_of_players = models.IntegerField()
     is_active = models.BooleanField(default=True)
     participants = models.ManyToManyField(Player, related_name='tournaments', blank=True)
+    participants_count = models.IntegerField(default=0)
+
 
     def __str__(self):
         return f"{self.name} ({self.start_date} - {self.end_date})"

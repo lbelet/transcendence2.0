@@ -26,6 +26,8 @@ from djangoBack.helpers import (
     retrieve_stored_2fa_code
 )
 
+from django.db.models import F
+
 # import time
 
 
@@ -508,7 +510,28 @@ def register_to_tournament(request, tournament_id):
             return JsonResponse({'error': 'Le tournoi est complet'}, status=400)
 
         tournament.participants.add(player)
+        tournament.participants_count = tournament.participants.count()
+        tournament.save()
         return JsonResponse({'message': 'Inscription réussie', 'current_participants': tournament.participants.count()}, status=200)
     except Tournament.DoesNotExist:
         return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def available_tournaments(request):
+    try:
+        tournaments = Tournament.objects.filter(is_active=True)
+        data = [{
+            'id': tournament.id,
+            'name': tournament.name,
+            'start_date': tournament.start_date,
+            'number_of_players': tournament.number_of_players,
+            'current_participants': tournament.participants_count,
+            # ...
+        } for tournament in tournaments]
+
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
 
