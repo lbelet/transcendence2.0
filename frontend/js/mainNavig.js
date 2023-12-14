@@ -15,6 +15,10 @@ function goTournament() {
 //     navigateTo('edit-user');
 // }
 
+// function showTournamentDetails() {
+//     navigateTo('tournamentBracket')
+// }
+
 function showTwoFactorForm() {
     navigateTo('email-two-factor');
 }
@@ -34,6 +38,7 @@ function hideAllSections() {
     document.getElementById('pong-section').classList.add('hidden');
     document.getElementById('qr-two-factor-section').classList.add('hidden');
     document.getElementById('tournament-section').classList.add('hidden');
+    document.getElementById('tournamentBracket-section').classList.add('hidden');
 }
 
 function navigateTo(sectionId) {
