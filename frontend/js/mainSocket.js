@@ -15,10 +15,17 @@ function openWebSocketConnection() {
         // console.log('Message reçu :', event.data);
         try {
             const data = JSON.parse(event.data);
+            console.log("data websocket: ", data)
 
             if (data.socket_id) {
                 // console.log('Socket ID reçu:', data.socket_id);
                 updateSocketId(data.socket_id);
+            }
+
+            if (data.type === 'tournament_update') {
+                console.log("Mise à jour du tournoi reçue", data);
+                // Mettre à jour l'interface utilisateur avec les nouvelles informations
+                updateTournamentDisplay(data);
             }
 
             // Gestion des nouvelles demandes d'amis
@@ -31,6 +38,12 @@ function openWebSocketConnection() {
             console.error('Erreur de parsing JSON:', error);
         }
     };
+
+    // function updateTournamentDisplay(tournamentUpdate) {
+    //     // Trouvez le tournoi dans l'interface utilisateur et mettez à jour les détails
+    //     // Exemple : mettre à jour le nombre de participants, ajouter le nom du nouveau joueur, etc.
+    //     // Vous devez implémenter cette logique en fonction de votre structure UI
+    // }
 
     function updateSocketId(socketId) {
         fetch('/api/update_socket_id/', {

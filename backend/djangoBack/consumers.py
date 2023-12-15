@@ -13,8 +13,12 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
         await self.send(text_data=json.dumps({"socket_id": self.channel_name}))
+        await self.channel_layer.group_add("tournament_updates", self.channel_name)
+
 
     async def disconnect(self, close_code):
+        await self.channel_layer.group_discard("tournament_updates", self.channel_name)
+
         pass
 
     async def receive(self, text_data):
@@ -23,6 +27,13 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def websocket_send(self, event):
         await self.send(event["text"])
 
+    async def tournament_update(self, event):
+    # Envoie le message à tous les clients WebSocket connectés
+        print("websocket send tournament")
+        await self.send(text_data=json.dumps({
+                    "type": "tournament_update",
+                    "message": event["message"]
+                }))
 
 class GameConsumer(AsyncWebsocketConsumer):
 

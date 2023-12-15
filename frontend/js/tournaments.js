@@ -112,78 +112,184 @@ function displayTournaments(tournaments) {
     });
 }
 
-// function showTournamentDetails(tournamentId) {
-//     // Code pour afficher un spinner ou un message de chargement
-//     const mainContent = document.getElementById('main-content');
-//     mainContent.innerHTML = '<p>Chargement des détails du tournoi...</p>';
+// function displayTournamentDetails(tournamentData) {
+//     console.log("tournament data: ", tournamentData)
+//     const tournamentSection = document.getElementById('tournamentBracket-section');
+//     tournamentSection.innerHTML = ''; // Effacer les contenus précédents
+//     tournamentSection.classList.remove('hidden');
 
-//     // Requête pour obtenir les détails du tournoi
-//     fetch(`/api/tournament_details/${tournamentId}/`, {
-//         method: 'GET',
-//         headers: {
-//             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+//     // Ajouter le nom du tournoi
+//     const tournamentName = document.createElement('h2');
+//     tournamentName.id = 'tournament-name';
+//     tournamentName.textContent = tournamentData.name;
+//     tournamentSection.appendChild(tournamentName);
+
+//     // Créer et ajouter les demi-finales
+//     const semiFinals = createRound(tournamentData, 'semi-final');
+//     tournamentSection.appendChild(semiFinals);
+
+//     // Créer et ajouter la finale
+//     const final = createRound(tournamentData, 'final');
+//     tournamentSection.appendChild(final);
+// }
+
+// function createRound(tournamentData, roundType) {
+//     const roundDiv = document.createElement('div');
+//     roundDiv.className = 'round';
+
+//     // Supposons que tournamentData.matches est un tableau de matches
+//     // Vous devrez filtrer ou sélectionner les matches en fonction de roundType
+//     tournamentData.matches.forEach(match => {
+//         if (match.round === roundType) {
+//             const matchDiv = document.createElement('div');
+//             matchDiv.className = 'match';
+//             matchDiv.id = `${roundType}-${match.id}`;
+
+//             const player1Div = document.createElement('div');
+//             player1Div.className = 'player';
+//             player1Div.id = `player-${match.player1.id}`;
+//             player1Div.textContent = match.player1.name;
+
+//             const player2Div = document.createElement('div');
+//             player2Div.className = 'player';
+//             player2Div.id = `player-${match.player2.id}`;
+//             player2Div.textContent = match.player2.name;
+
+//             matchDiv.appendChild(player1Div);
+//             matchDiv.appendChild(player2Div);
+//             roundDiv.appendChild(matchDiv);
 //         }
-//     })
-//     .then(response => response.json())
-//     .then(tournamentData => {
-//         displayTournamentDetails(tournamentData);
-//     })
-//     .catch(error => {
-//         console.error('Error:', error);
 //     });
+
+//     return roundDiv;
 // }
 
 function displayTournamentDetails(tournamentData) {
-    console.log("tournament data: ", tournamentData)
     const tournamentSection = document.getElementById('tournamentBracket-section');
-    tournamentSection.innerHTML = ''; // Effacer les contenus précédents
-    tournamentSection.classList.remove('hidden');
+    tournamentSection.innerHTML = '';
+    navigateTo('tournamentBracket'); // Assurez-vous que cette fonction existe pour gérer la navigation
 
-    // Ajouter le nom du tournoi
     const tournamentName = document.createElement('h2');
-    tournamentName.id = 'tournament-name';
     tournamentName.textContent = tournamentData.name;
     tournamentSection.appendChild(tournamentName);
 
-    // Créer et ajouter les demi-finales
-    const semiFinals = createRound(tournamentData, 'semi-final');
+    const semiFinals = createDefaultRound('semi-final', 2, tournamentData.participants);
     tournamentSection.appendChild(semiFinals);
 
-    // Créer et ajouter la finale
-    const final = createRound(tournamentData, 'final');
+    const final = createDefaultRound('final', 1, []);
     tournamentSection.appendChild(final);
+
+    // Créer le bouton d'inscription avec la forme souhaitée
+    const registerButton = document.createElement('button');
+    registerButton.className = 'btn btn-primary';
+    registerButton.textContent = "S'inscrire";
+    registerButton.onclick = function() {
+        registerForTournament(tournamentData.id);
+    };
+
+    // Ajouter le bouton d'inscription à la section du tournoi
+    tournamentSection.appendChild(registerButton);
 }
 
-function createRound(tournamentData, roundType) {
+function createDefaultRound(roundType, numberOfMatches, participants) {
     const roundDiv = document.createElement('div');
     roundDiv.className = 'round';
+    roundDiv.id = `${roundType}`;
 
-    // Supposons que tournamentData.matches est un tableau de matches
-    // Vous devrez filtrer ou sélectionner les matches en fonction de roundType
-    tournamentData.matches.forEach(match => {
-        if (match.round === roundType) {
-            const matchDiv = document.createElement('div');
-            matchDiv.className = 'match';
-            matchDiv.id = `${roundType}-${match.id}`;
+    // Créer un tableau avec suffisamment de places pour tous les joueurs nécessaires pour les matchs
+    const filledParticipants = [];
+    for (let i = 0; i < numberOfMatches * 2; i++) {
+        filledParticipants.push(
+            participants[i] ? participants[i] : { username: "libre" }
+        );
+    }
 
-            const player1Div = document.createElement('div');
-            player1Div.className = 'player';
-            player1Div.id = `player-${match.player1.id}`;
-            player1Div.textContent = match.player1.name;
+    for (let i = 0; i < numberOfMatches; i++) {
+        const matchDiv = document.createElement('div');
+        matchDiv.className = 'match';
+        matchDiv.id = `${roundType}-${i + 1}`;
 
-            const player2Div = document.createElement('div');
-            player2Div.className = 'player';
-            player2Div.id = `player-${match.player2.id}`;
-            player2Div.textContent = match.player2.name;
+        const player1Index = i * 2;
+        const player2Index = i * 2 + 1;
 
-            matchDiv.appendChild(player1Div);
-            matchDiv.appendChild(player2Div);
-            roundDiv.appendChild(matchDiv);
-        }
-    });
+        // Créer les joueurs pour le match
+        const player1Div = document.createElement('div');
+        player1Div.className = 'player';
+        player1Div.textContent = filledParticipants[player1Index].username;
 
+        const player2Div = document.createElement('div');
+        player2Div.className = 'player';
+        player2Div.textContent = filledParticipants[player2Index].username;
+
+        matchDiv.appendChild(player1Div);
+        matchDiv.appendChild(player2Div);
+        roundDiv.appendChild(matchDiv);
+    }
     return roundDiv;
 }
+
+function registerForTournament(tournamentId) {
+    console.log('tournament id:', tournamentId)
+    // Ici, vous pouvez ajouter la logique pour envoyer une requête d'inscription au serveur
+    console.log(`Tentative d'inscription au tournoi avec l'ID : ${tournamentId}`);
+
+    fetch(`/api/register_to_tournament/${tournamentId}/`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'Content-Type': 'application/json'
+        },
+        // Pas de corps nécessaire si vous identifiez le joueur par son token d'authentification
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            console.log(data);
+            // Vous pourriez vouloir rafraîchir les détails du tournoi ou naviguer l'utilisateur vers une autre vue
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors de l\'inscription :', error);
+    });
+}
+
+function updateTournamentDisplay(tournamentUpdate) {
+    console.log("updateTournament inside")
+    // Si l'ID du tournoi reçu correspond au tournoi actuellement affiché, mettez à jour l'affichage
+    const tournamentSection = document.getElementById('tournamentBracket-section');
+    const currentTournamentName = tournamentSection.querySelector('h2').textContent;
+    
+    if (currentTournamentName === tournamentUpdate.name) {
+        // Mettez à jour les matchs avec les nouveaux participants
+        const matches = tournamentSection.querySelectorAll('.match');
+        for (let i = 0; i < matches.length; i++) {
+            const playerDivs = matches[i].querySelectorAll('.player');
+            const player1Div = playerDivs[0];
+            const player2Div = playerDivs[1];
+
+            // Mettre à jour les noms des joueurs
+            if (i < tournamentUpdate.current_participants) {
+                player1Div.textContent = tournamentUpdate.username; // Nom du joueur inscrit
+            } else {
+                player1Div.textContent = "libre";
+                player2Div.textContent = "libre";
+            }
+        }
+    }
+}
+
+
+
+// // Appeler cette fonction pour générer l'arbre de tournoi
+// displayTournamentDetails({ 
+//     name: "Tournoi Exemple", 
+//     matches: [
+//         // Ajouter des objets de match ici
+//     ]
+// });
+
 
 
 

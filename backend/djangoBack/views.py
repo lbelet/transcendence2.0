@@ -453,7 +453,7 @@ def send_friend_request_notification(receiver_user_id, request_id, sender_userna
     except User.DoesNotExist:
         pass  # L'utilisateur destinataire n'existe pas ou n'est pas connecté
 
-    from django.http import JsonResponse
+    # from django.http import JsonResponse
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -509,9 +509,25 @@ def register_to_tournament(request, tournament_id):
         if tournament.participants.count() >= tournament.number_of_players:
             return JsonResponse({'error': 'Le tournoi est complet'}, status=400)
 
+        print("player:..........", player)
         tournament.participants.add(player)
         tournament.participants_count = tournament.participants.count()
         tournament.save()
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "tournament_updates",
+            {
+                "type": "tournament_update",
+                "message": {
+                    "name": tournament.name,
+                    "tournament_id": tournament.id,
+                    "username": request.user.username,
+                    "current_participants": tournament.participants.count(),
+                },
+            }
+        )
+
         return JsonResponse({'message': 'Inscription réussie', 'current_participants': tournament.participants.count()}, status=200)
     except Tournament.DoesNotExist:
         return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
@@ -520,18 +536,27 @@ def register_to_tournament(request, tournament_id):
 @permission_classes([IsAuthenticated])
 def available_tournaments(request):
     try:
-        tournaments = Tournament.objects.filter(is_active=True)
+        tournaments = Tournament.objects.filter(is_active=True).prefetch_related('participants__user')
         data = [{
             'id': tournament.id,
             'name': tournament.name,
             'start_date': tournament.start_date,
             'number_of_players': tournament.number_of_players,
-            'current_participants': tournament.participants_count,
+            'current_participants': tournament.participants.count(),
+            'participants': [
+                {
+                    'id': player.id,
+                    'username': player.user.username,
+                    # Ajoutez d'autres détails du joueur si nécessaire
+                }
+                for player in tournament.participants.all()
+            ],
             # ...
         } for tournament in tournaments]
 
         return JsonResponse(data, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
 
 
