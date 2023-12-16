@@ -179,17 +179,29 @@ function displayTournamentDetails(tournamentData) {
     const final = createDefaultRound('final', 1, []);
     tournamentSection.appendChild(final);
 
-    // Créer le bouton d'inscription avec la forme souhaitée
-    const registerButton = document.createElement('button');
+    // Créer ou mettre à jour le bouton d'inscription/désinscription
+    let registerButton = document.createElement('button');
+    registerButton.id = 'tournament-register-button';
     registerButton.className = 'btn btn-primary';
-    registerButton.textContent = "S'inscrire";
-    registerButton.onclick = function() {
-        registerForTournament(tournamentData.id);
-    };
 
-    // Ajouter le bouton d'inscription à la section du tournoi
+    // Vérifier si l'utilisateur est déjà inscrit
+    const username = localStorage.getItem('username'); // Remplacez ceci par la méthode que vous utilisez pour obtenir le nom d'utilisateur actuel
+    const isRegistered = tournamentData.participants.some(participant => participant.username === username);
+
+    if (isRegistered) {
+        registerButton.textContent = "Se désinscrire";
+        registerButton.onclick = function() {
+            unregisterFromTournament(tournamentData.id);
+        };
+    } else {
+        registerButton.textContent = "S'inscrire";
+        registerButton.onclick = function() {
+            registerForTournament(tournamentData);
+        };
+    }
     tournamentSection.appendChild(registerButton);
 }
+
 
 function createDefaultRound(roundType, numberOfMatches, participants) {
     const roundDiv = document.createElement('div');
@@ -228,11 +240,11 @@ function createDefaultRound(roundType, numberOfMatches, participants) {
     return roundDiv;
 }
 
-function registerForTournament(tournamentId) {
-    console.log('tournament id:', tournamentId)
+function registerForTournament(tournamentData) {
+    console.log('tournament data:', tournamentData)
     // Ici, vous pouvez ajouter la logique pour envoyer une requête d'inscription au serveur
-    console.log(`Tentative d'inscription au tournoi avec l'ID : ${tournamentId}`);
-
+    console.log(`Tentative d'inscription au tournoi avec l'ID : ${tournamentData.id}`);
+    const tournamentId = tournamentData.id
     fetch(`/api/register_to_tournament/${tournamentId}/`, {
         method: 'POST',
         headers: {
@@ -247,6 +259,8 @@ function registerForTournament(tournamentId) {
             alert(data.error);
         } else {
             console.log(data);
+            // displayTournamentDetails(tournamentData);
+
             // Vous pourriez vouloir rafraîchir les détails du tournoi ou naviguer l'utilisateur vers une autre vue
         }
     })
@@ -255,43 +269,47 @@ function registerForTournament(tournamentId) {
     });
 }
 
-function updateTournamentDisplay(tournamentUpdate) {
-    console.log("updateTournament inside")
-    // Si l'ID du tournoi reçu correspond au tournoi actuellement affiché, mettez à jour l'affichage
-    const tournamentSection = document.getElementById('tournamentBracket-section');
-    const currentTournamentName = tournamentSection.querySelector('h2').textContent;
-    
-    if (currentTournamentName === tournamentUpdate.name) {
-        // Mettez à jour les matchs avec les nouveaux participants
-        const matches = tournamentSection.querySelectorAll('.match');
-        for (let i = 0; i < matches.length; i++) {
-            const playerDivs = matches[i].querySelectorAll('.player');
-            const player1Div = playerDivs[0];
-            const player2Div = playerDivs[1];
+function unregisterFromTournament(tournamentData) {
+    console.log('tournament data:', tournamentData)
+    // Ici, vous pouvez ajouter la logique pour envoyer une requête d'inscription au serveur
+    console.log(`Tentative de desinscription au tournoi avec l'ID : ${tournamentData.id}`);
+    const tournamentId = tournamentData
+    fetch(`/api/unregister_from_tournament/${tournamentId}/`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'Content-Type': 'application/json'
+        },
+        // Pas de corps nécessaire si vous identifiez le joueur par son token d'authentification
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            console.log(data);
+            // displayTournamentDetails(tournamentData);
 
-            // Mettre à jour les noms des joueurs
-            if (i < tournamentUpdate.current_participants) {
-                player1Div.textContent = tournamentUpdate.username; // Nom du joueur inscrit
-            } else {
-                player1Div.textContent = "libre";
-                player2Div.textContent = "libre";
-            }
+            // Vous pourriez vouloir rafraîchir les détails du tournoi ou naviguer l'utilisateur vers une autre vue
         }
-    }
+    })
+    .catch(error => {
+        console.error('Erreur lors de la desinscription :', error);
+    });
 }
 
-
-
-// // Appeler cette fonction pour générer l'arbre de tournoi
-// displayTournamentDetails({ 
-//     name: "Tournoi Exemple", 
-//     matches: [
-//         // Ajouter des objets de match ici
-//     ]
-// });
-
-
-
-
-
-
+function fetchTournamentDetails(tournamentId) {
+    fetch(`/api/tournament_details/${tournamentId}/`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+    .then(response => response.json())
+    .then(tournamentData => {
+        displayTournamentDetails(tournamentData);
+    })
+    .catch(error => {
+        console.error('Erreur lors de la récupération des détails du tournoi :', error);
+    });
+}

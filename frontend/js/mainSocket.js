@@ -23,9 +23,8 @@ function openWebSocketConnection() {
             }
 
             if (data.type === 'tournament_update') {
-                console.log("Mise à jour du tournoi reçue", data);
-                // Mettre à jour l'interface utilisateur avec les nouvelles informations
-                updateTournamentDisplay(data);
+                // Récupérer les détails à jour du tournoi
+                fetchTournamentDetails(data.message.tournament_id)
             }
 
             // Gestion des nouvelles demandes d'amis
@@ -38,12 +37,6 @@ function openWebSocketConnection() {
             console.error('Erreur de parsing JSON:', error);
         }
     };
-
-    // function updateTournamentDisplay(tournamentUpdate) {
-    //     // Trouvez le tournoi dans l'interface utilisateur et mettez à jour les détails
-    //     // Exemple : mettre à jour le nombre de participants, ajouter le nom du nouveau joueur, etc.
-    //     // Vous devez implémenter cette logique en fonction de votre structure UI
-    // }
 
     function updateSocketId(socketId) {
         fetch('/api/update_socket_id/', {
@@ -129,7 +122,7 @@ function openGameWebSocketConnection() {
                     console.log('!!!!La partie de Pong commence grace au sockets');
                     startPongGame(data.game_id);
                 }
-                
+
                 else if (data.type === 'paddles_update') {
                     console.log("paddles_update ok")
                     applyGameState(data.paddles_state);
@@ -147,7 +140,7 @@ function openGameWebSocketConnection() {
                     // Fermer la connexion WebSocket
                     gameWebsocket.close();
                 }
-                
+
             } catch (error) {
                 console.error('Erreur de parsing JSON dans le jeu:', error);
                 reject(error);

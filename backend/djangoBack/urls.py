@@ -43,11 +43,9 @@ urlpatterns = [
 
     path('create_tournament/', views.create_tournament, name='create-tournament'),
     path('register_to_tournament/<int:tournament_id>/', views.register_to_tournament, name='register-to-tournament'),
+    path('unregister_from_tournament/<int:tournament_id>/', views.unregister_from_tournament, name='unregister-from-tournament'),
     path('available_tournaments/', views.available_tournaments, name='available-tournaments'),
-
-
-
-
+    path('tournament_details/<int:tournament_id>/', views.tournament_details, name='tournament-details'),
 
     # Home page URL
     path('', views.index, name='index'),
