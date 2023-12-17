@@ -1,5 +1,3 @@
-
-
 document.getElementById('loginForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const username = document.getElementById('login-username').value;
@@ -36,6 +34,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     loadTranslations(obj.body.language);
                     showWelcome();
                     openWebSocketConnection();
+                    document.getElementById('hiddenNav').classList.remove('hidden');
                 }
             } else {
                 alert(obj.body.error);
@@ -76,7 +75,7 @@ function logout() {
             localStorage.removeItem('username');
             localStorage.removeItem('language');
             localStorage.removeItem('gameSocket_ID');
-
+            document.getElementById('hiddenNav').classList.add('hidden');
             navigateTo('home');
         })
         .catch(error => {
