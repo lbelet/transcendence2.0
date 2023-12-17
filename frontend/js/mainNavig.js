@@ -51,4 +51,16 @@ function isValidToken() {
     return token !== null;
 }
 
+function openSearchResultsModal() {
+    var myModal = new bootstrap.Modal(document.getElementById('searchResultsModal'));
+    myModal.show();
+}
+
+// function closeSearchResultsModal() {
+//     var myModal = bootstrap.Modal.getInstance(document.getElementById('searchResultsModal'));
+//     myModal.hide();
+// }
+
+
+
 

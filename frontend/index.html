@@ -40,7 +40,7 @@
                             </ul>
                         </li>
                     </ul>
-                    <form class="d-flex" role="search" onsubmit="searchUser(); return false;">
+                    <form class="d-flex" role="search" onsubmit="searchUser(); openSearchResultsModal(); return false;">
                         <input class="form-control me-2" type="search" id="search-username"
                             placeholder="Rechercher Utilisateur" aria-label="Search">
                         <button class="btn btn-outline-success" type="submit">Search</button>
@@ -176,13 +176,41 @@
                 <div id="tournamentBracket-section" class="hidden"></div>
 
 
-                <div id="searchResultsModal" class="modal">
+                <!-- <div id="searchResultsModal" class="modal">
                     <div class="modal-content">
                         <span class="close" onclick="closeSearchResultsModal()">&times;</span>
                         <h2>Résultats de la Recherche</h2>
                         <div id="search-results"></div>
                     </div>
+                </div> -->
+                <!-- Modal de Résultats de Recherche -->
+                <!-- Modal de Résultats de Recherche -->
+                <div class="modal fade" id="searchResultsModal" tabindex="-1" aria-labelledby="searchResultsLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="searchResultsLabel">Résultats de la Recherche</h5>
+                                <!-- Bouton pour fermer la modal avec la croix -->
+                                <!-- <button type="button" class="btn-close" onclick="closeSearchResultsModal()"
+                                    aria-label="Close"></button> -->
+                            </div>
+                            <div class="modal-body">
+                                <div id="search-results">
+                                    <!-- Les résultats de la recherche seront affichés ici -->
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <h3>click outside to close</h3>
+                                <!-- Bouton pour fermer la modal en bas -->
+                                <!-- <button type="button" class="btn btn-secondary"
+                                    onclick="closeSearchResultsModal()">Fermer</button> -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+
 
                 <div id="editUserModal" class="modal">
                     <div class="modal-content">
