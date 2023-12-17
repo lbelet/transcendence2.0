@@ -29,31 +29,19 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                         showTwoFactorForm();
                     }
                 } else {
-                    // console.log('Login successful:', obj.body);
                     localStorage.setItem('access_token', obj.body.access);
                     localStorage.setItem('refresh_token', obj.body.refresh);
                     localStorage.setItem('language', obj.body.language);
-
-                    const burgerMenu = document.getElementById('bMenu');
-                    burgerMenu.classList.remove('hidden');
-
-                    const searchingBar = document.getElementById('searchU');
-                    searchingBar.classList.remove('hidden');
-
-                    // console.log("Burger menu should be visible now");
 
                     loadTranslations(obj.body.language);
                     showWelcome();
                     openWebSocketConnection();
                 }
             } else {
-                // Afficher le message d'erreur renvoyé par le serveur
                 alert(obj.body.error);
             }
         })
         .catch(error => {
-            // Gérer les erreurs de réseau ou autres erreurs imprévues
-            // console.error('Error:', error);
             alert('Une erreur est survenue lors de la tentative de connexion.');
         });
 });
@@ -88,17 +76,6 @@ function logout() {
             localStorage.removeItem('username');
             localStorage.removeItem('language');
             localStorage.removeItem('gameSocket_ID');
-
-            const burgerMenu = document.getElementById('bMenu');
-            burgerMenu.classList.add('hidden');
-
-            const burgerMenuContent = document.getElementById('burgerMenuContent');
-            burgerMenuContent.classList.add('hidden');
-
-            const searchingBar = document.getElementById('searchU');
-            searchingBar.classList.add('hidden');
-
-            console.log("Burger menu should be hidden now");
 
             navigateTo('home');
         })

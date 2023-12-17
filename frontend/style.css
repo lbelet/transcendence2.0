@@ -96,7 +96,7 @@ body {
   margin-right: 10px;
 }
 
-header {
+/* header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -104,9 +104,9 @@ header {
   color: white;
   padding: 10px;
   width: 100%;
-}
+} */
 
-.burger-menu {
+/* .burger-menu {
   cursor: pointer;
 }
 
@@ -134,9 +134,9 @@ header {
 
 .header-right {
   position: relative;
-}
+} */
 
-.language-selection button {
+/* .language-selection button {
   border: none;
   background: none;
   cursor: pointer;
@@ -162,7 +162,7 @@ header {
   background: none;
   border: none;
   cursor: pointer;
-}
+} */
 
 
 #home-section {
