@@ -1,45 +1,14 @@
-/* :root {
-  --main-background-color: #d62323; Define a CSS variable for background color
-  --primary-text-color: #646cff; Define a CSS variable for text color
-}
-
-body {
-  background-color: var(--main-background-color);  Use the CSS variable for background color
-  color: var(--primary-text-color);  Use the CSS variable for text color
-}
-*/
-
-
-/* :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  background-color: #000000;
-  color-scheme: light dark;
-  color: rgba(10, 0, 0, 0.87);
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-} */
-
 #canvas1 {
 	border: 2px solid rgb(0, 6, 20);
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	/* width: 1000px;
-	height: 576px; */
 
   width: 100%;
   height: 100%;
-  z-index: 0; /* Puts the canvas behind your content */
-  pointer-events: none; /* This line makes the canvas ignore mouse events */
-  /*z-index: -1; Puts the canvas behind your content */
+  z-index: 0;
+  pointer-events: none;
 }
 
 body {
@@ -54,126 +23,31 @@ body {
   display: none;
 }
 
-/*buttons*/
-button {
-  border-radius: 8px;
-  border: 1px solid rgb(78, 74, 74);
-  /* padding: 0.6em 1.2em; */
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  /* cursor: pointer; */
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  border-color: #c3c4d2;
-}
-
-.button-primary {
-  color: #faf6f6; /* Text color for the button */
-}
-
-.button-container {
-  padding-bottom: 8rem; /* Adjust the value as needed */
-}
-
-.spaced-buttons {
-  margin-left: 10px; /* Adjust the value as needed */
-}
-
-/* .main-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-} */
-
-h1 {
-  color: rgb(244, 237, 237);
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #f7df1eaa);
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-
-  a:hover {
-    color: #747bff;
-  }
-
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
-
 #pong-canvas {
   width: 800px;
-  /* ou toute autre taille appropriée */
   height: 600px;
   border: 1px solid black;
 }
 
 .modal {
   display: none;
-  position: fixed;
+  /* position: fixed;
   z-index: 1;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.4); */
 }
 
 .modal-content {
-  background-color: white;
+  /* background-color: white; */
   margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  color: black;
+  /* padding: 20px; */
+  /* border: 1px solid #888; */
+   width: 80%;
+  /* color: black;  */
 }
 
 .close {
@@ -188,21 +62,6 @@ button:focus-visible {
   color: black;
   text-decoration: none;
   cursor: pointer;
-}
-
-.user-container {
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.user-container img {
-  margin-right: 10px;
-  vertical-align: middle;
-}
-
-.user-container button {
-  margin-left: 10px;
 }
 
 #pending-requests-container {
@@ -225,20 +84,6 @@ button:focus-visible {
   font-size: 1rem;
 }
 
-/* .request-button {
-  margin-left: 10px;
-  padding: 5px 10px;
-  background-color: blue;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-} */
-
-/* .request-button:hover {
-  background-color: darkblue;
-} */
-
 .friend-item {
   border: 1px solid #ddd;
   padding: 10px;
@@ -251,7 +96,6 @@ button:focus-visible {
   margin-right: 10px;
 }
 
-
 header {
   display: flex;
   justify-content: space-between;
@@ -260,7 +104,6 @@ header {
   color: white;
   padding: 10px;
   width: 100%;
-  /* Assurez-vous qu'il s'étend sur toute la largeur */
 }
 
 .burger-menu {
@@ -276,13 +119,13 @@ header {
 
 #burgerMenuContent {
   position: absolute;
-  top: 100%; /* Positionner juste en dessous de l'icône du menu burger */
+  top: 100%; 
   right: 0;
-  width: 200px; /* Ou la largeur que vous souhaitez */
+  width: 200px; 
   background-color: rgb(47, 47, 47);
   border: 1px solid #ddd;
   box-sizing: border-box;
-  z-index: 1000; /* Assurez-vous qu'il est au-dessus des autres éléments */
+  z-index: 1000;
 }
 
 #burgerMenuContent.hidden {
@@ -302,7 +145,7 @@ header {
 .search-container {
   display: flex;
   align-items: center;
-  margin-right: 10px; /* Ajuster selon vos besoins */
+  margin-right: 10px;
 }
 
 .search-container.hidden{
@@ -320,252 +163,33 @@ header {
   border: none;
   cursor: pointer;
 }
-.login-container {
-  display: flex;
-  flex-direction: column; /* Stack children vertically */
-  justify-content: flex-center; /* Center vertically */
-  align-items: center; /* Center horizontally */
-  min-height: 100vh; /* Ensure container takes up at least the full viewport height */
-  margin-top: 10px;
-}
+
 
 #home-section {
-  height: 0px; /* Adjust the height as needed */
+  height: 0px;
 }
 
-/* login page: customised the text of input fields */
 #loginForm label {
-  color: #cacaca; /* Label text color */
-  font-size: 16px; /* Label font size */
+  color: #cacaca; 
+  font-size: 16px;
 
 }
 
-/* login page: customised the input field styles */
 #login-username,
 #login-password {
-  background-color: transparent; /* Input background color */
-  border: 1px solid #6c757d; /* Input border color */
-  color: #6c757d; /* Input text color */
-  border-radius: 10px; /* Input border radius */
+  background-color: transparent; 
+  border: 1px solid #6c757d; 
+  color: #6c757d; 
+  border-radius: 10px; 
   padding: 8px;
   margin-bottom: 15px;
 }
 
-/*Change the input field border color on focus */
 #login-username:focus,
 #login-password:focus {
-  border-color: #ffffff; /* Change the border color on focus */
-}
-
-/* #registersection-section {
-  height: 100px; /* Adjust the height as needed */
-/*} */
-/* Custom styles for the login form */
-/* .form-label {
-  text-align: center;
-  color: #be2e11; /* Label text color */
-  /*font-size: 16px;
-} */
-
-/* .button-primary:hover {
-  background-color: #000000; /* Change the color on hover */
-/* }
-
-.button-secondary {
-  background-color: #000000; /* Replace with your desired color */
-  /*color: #ffffff; /* Text color for the button
-}
-
-.button-secondary:hover {
-  background-color: #00eeff; /* Change the color on hover
-} */
-
-/* #registerForm label {
-  max-width: 500px; *//* Sets the maximum width of the form */
-  /*margin: 0 auto; /* Centers the form horizontally */
-/*} */
-/* Customize the submit button styles */
-/* #loginForm button[type="submit"] {
-  margin-top: 30px;
-  background-color: #000000;
-  color: #ffffff;
-  border: 1px solid #d81818;
-  border-radius: 10px;
-  padding: 12px 20px;
-  font-weight: bold;
-  text-align: center;
-} */
-
-/* Change button background color on hover
-#loginForm button[type="submit"]:hover {
-  margin-top: 30px;
-  background-color: #4f4d4d; */ /* Change the background color on hover
-}*/
-
-/* .navbar-nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-Optional: Add some spacing between menu items
-.nav-item {
-  margin: 0 15px;
-} */
-
-/* position-values: (
-  0: 0,
-  50: 50%,
-  75: 75%,
-  100: 100%
-); */
-
-
-/* a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-} */
-
-
-/*
-.custom-navbar {
-  background-color: rgb(239, 124, 9); /* Replace with your desired color */
-  /* text-align: center;
-} */
-
-/* Style global de la section des tournois */
-#tournament-section {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 20px;
+  border-color: #ffffff;
 }
 
 #tournament-section.hidden {
   display: none;
 }
-
-/* Style pour le bouton de création de tournoi */
-#tournament-section .btn-primary {
-  margin-bottom: 20px;  /* Espace sous le bouton */
-}
-
-/* Style pour la liste des tournois disponibles */
-#available-tournaments {
-  margin-left: 20px; /* Espace entre le bouton et la liste */
-  width: 70%; /* Largeur de la liste des tournois */
-  color: white;
-}
-
-/* Style pour chaque tournoi individuel */
-.tournament {
-  background-color: #f9f9f9; /* Couleur de fond */
-  border: 1px solid #ddd; /* Bordure */
-  padding: 10px;
-  margin-bottom: 10px; /* Espace entre les tournois */
-  border-radius: 5px; /* Bords arrondis */
-}
-
-/* Style pour les titres de chaque tournoi */
-.tournament h3 {
-  color: #333;
-  font-size: 1.2em;
-}
-
-/* Style pour les détails des tournois */
-.tournament p {
-  color: #666;
-  font-size: 0.9em;
-  margin: 5px 0;
-}
-
-#tournamentBracket {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 20px;
-}
-
-/* #tournamentBracket.hidden {
-  display: none;
-}
-
-.round {
-  margin-bottom: 20px;
-}
-
-.match {
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 4px;
-  background-color: #f9f9f9;
-}
-
-.player {
-  padding: 5px;
-  border-bottom: 1px solid #ddd;
-  text-align: center;
-}
-
-.player:last-child {
-  border-bottom: none;
-} */
-
-#tournamentBracket {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-top: 20px;
-}
-
-.round {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.match {
-  background-color: white;
-  border: 1px solid #ccc;
-  padding: 8px;
-  margin-bottom: 16px;
-  text-align: center;
-}
-
-/* Positionner les demi-finales et la finale */
-#semi-final-1, #semi-final-2 {
-  grid-column: 1;
-}
-
-#final {
-  grid-column: 2 / span 2; /* Centrer la finale */
-}
-
-/* Cacher les joueurs de la finale par défaut */
-#final .player {
-  visibility: hidden;
-}
-
-/* Ajouter des lignes de connexion */
-.match:after {
-  content: '';
-  border-left: 2px solid #ccc;
-  height: 20px;
-  margin-left: 50%;
-}
-
-#final:after {
-  display: none;
-}
-
-/* Ajuster la dernière ligne de connexion de la demi-finale */
-.round:last-child .match:last-child:after {
-  height: 0;
-}
-

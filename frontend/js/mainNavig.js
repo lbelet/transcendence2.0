@@ -83,19 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Ajouter l'écouteur d'événement au document entier
-    document.addEventListener('click', (event) => {
-        const burgerMenuContent = document.getElementById('burgerMenuContent');
-        const burgerMenu = document.getElementById('bMenu');
-
-        // Vérifier si le clic est en dehors du burgerMenuContent et si le menu est ouvert
-        if (!burgerMenu.contains(event.target) && !burgerMenuContent.contains(event.target) && !burgerMenuContent.classList.contains('hidden')) {
-            burgerMenuContent.classList.add('hidden');
-        }
-    });
-});
-
 function isValidToken() {
     const token = localStorage.getItem('access_token');
     // Ajoutez ici la logique pour vérifier la validité du token

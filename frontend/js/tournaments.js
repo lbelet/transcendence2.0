@@ -100,7 +100,7 @@ function displayTournaments(tournaments) {
 
     tournaments.forEach(tournament => {
         const tournamentButton = document.createElement('button');
-        tournamentButton.className = 'btn btn-primary tournament-btn';
+        tournamentButton.className = 'btn btn-outline-secondary tournament-btn';
         tournamentButton.innerHTML = `${tournament.name} - Début : ${tournament.start_date} - Participants : ${tournament.current_participants}/${tournament.number_of_players}`;
         
         // Ajouter un gestionnaire d'événements onclick pour chaque bouton
@@ -182,7 +182,7 @@ function displayTournamentDetails(tournamentData) {
     // Créer ou mettre à jour le bouton d'inscription/désinscription
     let registerButton = document.createElement('button');
     registerButton.id = 'tournament-register-button';
-    registerButton.className = 'btn btn-primary';
+    registerButton.className = 'btn btn-outline-secondary';
 
     // Vérifier si l'utilisateur est déjà inscrit
     const username = localStorage.getItem('username'); // Remplacez ceci par la méthode que vous utilisez pour obtenir le nom d'utilisateur actuel

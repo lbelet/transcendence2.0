@@ -69,7 +69,7 @@
                                 <input type="password" class="form-control" id="login-password" required>
                             </div>
                             <div class="text-center"> <!-- Center the button -->
-                                <button type="submit" class="btn btn-primary">Se connecter</button>
+                                <button type="submit" class="btn btn-outline-secondary">Se connecter</button>
                             </div>
                         </form>
                     </div>
@@ -112,7 +112,7 @@
                     <input type="file" class="form-control" id="avatar" accept="image/*">
                     <small class="form-text text-muted">Laissez ce champ vide pour utiliser l'avatar par défaut.</small>
                 </div>
-                <button type="submit" class="btn btn-primary">Créer</button>
+                <button type="submit" class="btn btn-outline-secondary">Créer</button>
             </form>
         </div>
 			</div>
@@ -124,10 +124,10 @@
             <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
 
             <!-- Welcome Buttons -->
-            <button class="btn btn-primary" onclick="logout()">Déconnexion</button>
-            <button class="btn btn-primary" onclick="showGameForm()">Game</button>
-            <button class="btn btn-primary" onclick="showEditUserForm()">Modifier le profil</button>
-            <button class="btn btn-primary" onclick="openSearchModal()">Rechercher Utilisateur</button>
+            <button class="btn btn-outline-secondary" onclick="logout()">Déconnexion</button>
+            <button class="btn btn-outline-secondary" onclick="showGameForm()">Game</button>
+            <button class="btn btn-outline-secondary" onclick="showEditUserForm()">Modifier le profil</button>
+            <button class="btn btn-outline-secondary" onclick="openSearchModal()">Rechercher Utilisateur</button>
         </div>
 
 
@@ -138,7 +138,7 @@
                 <span class="close" onclick="closeSearchModal()">&times;</span>
                 <h2>Rechercher Utilisateur</h2>
                 <input type="text" id="search-username" placeholder="Nom d'utilisateur">
-                <button class="btn btn-primary" onclick="searchUser()">Rechercher</button>
+                <button class="btn btn-outline-secondary" onclick="searchUser()">Rechercher</button>
                 <div id="search-results"></div>
             </div>
         </div>
@@ -152,7 +152,7 @@
                     <label for="twoFactorCode">2FA Code</label>
                     <input type="text" class="form-control" id="twoFactorCode" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Verify</button>
+                <button type="submit" class="btn btn-outline-secondary">Verify</button>
             </form>
         </div>
 
@@ -168,7 +168,7 @@
                     <label for="qrTwoFactorCode">2FA Code</label>
                     <input type="text" class="form-control" id="qrTwoFactorCode" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Verify</button>
+                <button type="submit" class="btn btn-outline-secondary">Verify</button>
             </form>
         </div>
 
@@ -176,7 +176,7 @@
         <div id="game-section" class="hidden">
             <h2>Bienvenue sur la page de jeu</h2>
             <p>Bienvenue, <span id="user-name-game"></span>!</p>
-            <button class="btn btn-primary" onclick="playPong()">play Pong</button>
+            <button class="btn btn-outline-secondary" onclick="playPong()">play Pong</button>
         </div>
 
         <div id="pong-section" class="hidden">
@@ -195,7 +195,7 @@
                         <option value="qr">QR Code</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                <button type="submit" class="btn btn-outline-secondary">Enregistrer les modifications</button>
             </form>
         </div>
 

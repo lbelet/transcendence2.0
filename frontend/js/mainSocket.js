@@ -64,14 +64,14 @@ function openWebSocketConnection() {
         requestElement.textContent = `Demande de ${senderUsername}`;
 
         const acceptButton = document.createElement('button');
-        acceptButton.className = 'btn btn-primary';
+        acceptButton.className = 'btn btn-outline-secondary';
         acceptButton.textContent = 'Accepter';
         acceptButton.onclick = function () {
             acceptFriendRequest(requestId);
         };
 
         const declineButton = document.createElement('button');
-        declineButton.className = 'btn btn-primary';
+        declineButton.className = 'btn btn-outline-secondary';
         declineButton.textContent = 'Refuser';
         declineButton.onclick = function () {
             declineFriendRequest(requestId);

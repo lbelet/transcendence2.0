@@ -82,7 +82,7 @@ function searchUser() {
                     // Bouton Ajouter en ami
                     var addFriendButton = document.createElement('button');
                     addFriendButton.textContent = 'Ajouter en ami';
-                    addFriendButton.className = 'btn btn-primary';
+                    addFriendButton.className = 'btn btn-outline-secondary';
                     addFriendButton.onclick = function () {
                         addFriend(user.username);
                     };
@@ -142,7 +142,7 @@ function showPendingFriendRequests() {
 
                 // Bouton pour accepter la demande d'ami
                 const acceptButton = document.createElement('button');
-                acceptButton.className = 'btn btn-primary';
+                acceptButton.className = 'btn btn-outline-secondary';
                 acceptButton.textContent = 'Accepter';
                 acceptButton.onclick = function () {
                     acceptFriendRequest(request.id);
@@ -150,7 +150,7 @@ function showPendingFriendRequests() {
 
                 // Bouton pour refuser la demande d'ami
                 const declineButton = document.createElement('button');
-                declineButton.className = 'btn btn-primary';
+                declineButton.className = 'btn btn-outline-secondary';
                 declineButton.textContent = 'Refuser';
                 declineButton.onclick = function () {
                     declineFriendRequest(request.id);
