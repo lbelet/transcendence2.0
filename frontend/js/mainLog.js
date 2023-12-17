@@ -89,7 +89,7 @@ function logout() {
 
             const burgerMenu = document.getElementById('bMenu');
             burgerMenu.classList.add('hidden');
-            
+
             const burgerMenuContent = document.getElementById('burgerMenuContent');
             burgerMenuContent.classList.add('hidden');
 

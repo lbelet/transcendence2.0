@@ -39,7 +39,7 @@ body {
     background-color: rgb(0, 6, 20);
     border: 0.5px solid #ffffff;
     padding-left: 20px; /* Adds space inside the border */
-    
+
   }
 
   .navbar-nav .nav-item {
@@ -206,29 +206,47 @@ body {
 
 /*-------------------------------------------------------------------------------*/
 
+.login-section {
+  display: none;
+}
 /*LOGIN-SECTION*/
-.login-container {
+.login-section {
   display: flex;
-  flex-direction: column; /* Stack children vertically */
-  justify-content: flex-center; /* Center vertically */
+  flex-direction: column; /*Stack children vertically*/
+  justify-content: flex-top; /* Center vertically */
   align-items: center; /* Center horizontally */
-  min-height: 100vh; /* Ensure container takes up at least the full viewport height */
-  margin-top: 10px;
+  /* min-height: 100vh; Ensure container takes up at least the full viewport height */
+  margin-bottom: 10px;
 }
 
 
 
 /* login page: customised the text of input fields */
-#loginForm label {
+#loginForm label,
+#registerForm label,
+#register-text label {
   font-family: monospace;
   color: #ffffff; /* Label text color */
   font-size: 14px; /* Label font size */
 
 }
 
+#form-text {
+  font-family: monospace;
+  color: #ffffff; /* Label text color */
+  font-size: 14px; /* Label font size */
+}
+
 /* login page: customised the input field styles */
 #login-username,
-#login-password {
+#login-password,
+#username,
+#firstname,
+#lastname,
+#email,
+#password,
+#retypePassword,
+#avatar {
   width: flex;
   background-color: rgba(173, 173, 173, 0.4);
   border: 0.5px solid #ffffff;
@@ -240,9 +258,21 @@ body {
   margin-bottom: 10px;
 }
 
+#register-avatar {
+  color: rgb(0, 0, 0);
+
+}
+
 /*Change the input field border color on focus */
 #login-username:focus,
-#login-password:focus {
+#login-password:focus,
+#username:focus,
+#firstname:focus,
+#lastname:focus,
+#email:focus,
+#password:focus,
+#retypePassword:focus,
+#avatar:focus {
   border-color: #ffffff; /* Replace with your desired color */
 }
 
@@ -313,7 +343,7 @@ body {
 /*-------------------------------------------------------------------------------*/
 
 /* .spaced-buttons {
-  margin-left: 10px; /* Adjust the value as needed 
+  margin-left: 10px; /* Adjust the value as needed
 } */
 
 /* .main-container {
@@ -492,7 +522,7 @@ button:focus-visible {
   color: white;
   padding: 10px;
   width: 100%;
-  /* Assurez-vous qu'il s'étend sur toute la largeur 
+  /* Assurez-vous qu'il s'étend sur toute la largeur
 } */
 
 
@@ -518,11 +548,11 @@ button:focus-visible {
 } */
 
 /* .button-primary {
-  color: #faf6f6; Text color for the button 
+  color: #faf6f6; Text color for the button
 }
 
 /* .button-container {
-  padding-bottom: 8rem; /* Adjust the value as needed 
+  padding-bottom: 8rem; /* Adjust the value as needed
 } */
 
 /* } */
