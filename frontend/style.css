@@ -106,3 +106,80 @@ body {
 #tournament-section.hidden {
   display: none;
 }
+
+.tournament-title {
+  background-color: #333; /* Couleur de fond du titre du tournoi */
+  color: white;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.tournament-row h3 {
+  color: white;
+  padding: 5px;
+  border: 1px solid #ccc; /* Bordure autour des titres de chaque colonne */
+}
+
+.semi-finals h3 {
+  background-color: #6c7ae0; /* Couleur de fond pour les demi-finales */
+}
+
+.final h3 {
+  background-color: #9b59b6; /* Couleur de fond pour la finale */
+}
+
+.winner h3 {
+  background-color: #f1c40f; /* Couleur de fond pour le vainqueur */
+}
+
+.matches-container {
+  border: 2px solid #ccc; /* Bordure autour de la zone des matchs */
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+.match {
+  background-color: #ecf0f1; /* Couleur de fond pour chaque match */
+  border: 1px solid #7f8c8d; /* Bordure pour chaque match */
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.match .player {
+  padding: 5px; /* Espacement autour du texte du joueur */
+  border-bottom: 1px solid #bdc3c7; /* Bordure entre les joueurs */
+}
+
+.match .player:last-child {
+  border-bottom: none; /* Pas de bordure pour le dernier joueur */
+}
+
+.match .vs {
+  text-align: center;
+  margin: 10px 0;
+}
+
+#available-tournaments {
+  max-height: 400px; /* ou la hauteur que vous souhaitez */
+  overflow-y: auto; /* active l'ascenseur vertical si nécessaire */
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* ajoute un espace entre les boutons */
+}
+
+/* .tournament-btn {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: white; /* Définir la couleur du texte en blanc
+  background-color: #001d3c; 
+  border-color: #007bff; 
+} */
+
+
+
+
