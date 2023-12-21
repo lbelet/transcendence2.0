@@ -31,17 +31,9 @@ loader.load('node_modules/three/examples/fonts/droid/droid_serif_regular.typefac
     });
 
     const scoreText1 = new THREE.Mesh(textGeometry, textMaterial);
-    // const scoreText2 = new THREE.Mesh(textGeometry2, textMaterial);
-
-    // Positionner les éléments de texte dans la scène
     scoreText1.position.set(-15, 15, 0); // Modifier selon votre scène
-    // scoreText2.position.set(-5, 5, 14);  // Modifier selon votre scène
-
     scene.add(scoreText1);
-    // scene.add(scoreText2);
-
     window.scoreText1 = scoreText1;
-    // window.scoreText2 = scoreText2;
 });
 
 const paddleMaterial1 = new THREE.MeshStandardMaterial({

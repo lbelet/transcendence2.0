@@ -47,7 +47,6 @@ function navigateTo(sectionId) {
 
 function isValidToken() {
     const token = localStorage.getItem('access_token');
-    // Ajoutez ici la logique pour vérifier la validité du token
     return token !== null;
 }
 
@@ -56,11 +55,68 @@ function openSearchResultsModal() {
     myModal.show();
 }
 
-// function closeSearchResultsModal() {
-//     var myModal = bootstrap.Modal.getInstance(document.getElementById('searchResultsModal'));
-//     myModal.hide();
-// }
+function closeSearchResultsModal() {
+    var myModal = bootstrap.Modal.getInstance(document.getElementById('searchResultsModal'));
+    myModal.hide();
+    var backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+        backdrop.remove();
+    }
+}
 
+function openEditModal() {
+    var myModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+    myModal.show();
+}
 
+function closeEditModal() {
+    var myModal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+    myModal.hide();
+    var backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+        backdrop.remove();
+    }
+}
 
+function openTournamentModal() {
+    var myModal = new bootstrap.Modal(document.getElementById('createTournamentModal'));
+    myModal.show();
+}
 
+function closeTournamentModal() {
+    var myModal = bootstrap.Modal.getInstance(document.getElementById('createTournamentModal'));
+    myModal.hide();
+    var backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+        backdrop.remove();
+    }
+}
+
+function openFriendsModal() {
+    loadFriendsList();
+    var myModal = new bootstrap.Modal(document.getElementById('friendsModal'));
+    myModal.show();
+}
+
+function closeFriendstModal() {
+    var myModal = bootstrap.Modal.getInstance(document.getElementById('friendsModal'));
+    myModal.hide();
+    var backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+        backdrop.remove();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const currentPage = window.location.pathname;
+
+    console.log('La page actuelle est :', currentPage);
+
+    if (localStorage.getItem('access_token')) {
+        document.getElementById('hiddenNav').classList.remove('hidden');
+    }
+    if (currentPage === '/welcome') {
+        const username = localStorage.getItem('username');
+        document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
+    } 
+});

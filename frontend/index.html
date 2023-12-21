@@ -20,7 +20,6 @@
                     aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <!-- Contenu de la Navbar -->
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item dropdown">
@@ -45,14 +44,13 @@
                             placeholder="Rechercher Utilisateur" aria-label="Search">
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
-                    <button class="btn btn-outline-secondary ms-2" onclick="openEditUserModal()">Modifier le
+                    <button class="btn btn-outline-secondary ms-2" onclick="openEditModal()">Modifier le
                         Profil</button>
                     <button class="btn btn-outline-secondary ms-2" onclick="logout()">Déconnexion</button>
                 </div>
             </div>
         </div>
     </nav>
-
 
     <!-- Canvas for particle animation -->
     <!-- <canvas id="canvas1"></canvas> -->
@@ -112,16 +110,8 @@
                     <img id="user-avatar" alt="User Avatar" style="width: 100px; height: 100px;">
                     <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
                     <button class="btn btn-outline-secondary" onclick="showGameForm()">Game</button>
-                    <button class="btn btn-outline-secondary" onclick="showFriendsModal()">Amis</button>
+                    <button class="btn btn-outline-secondary" onclick="openFriendsModal()">Amis</button>
                     <div id="pending-requests-container"></div>
-                </div>
-
-                <div id="friendsModal" class="modal" style="display:none;">
-                    <div class="modal-content">
-                        <span class="close" onclick="closeFriendsModal()">&times;</span>
-                        <h2>Liste des Amis</h2>
-                        <div id="friends-list-container"></div>
-                    </div>
                 </div>
 
                 <div id="email-two-factor-section" class="hidden">
@@ -175,135 +165,160 @@
 
                 <div id="tournamentBracket-section" class="hidden"></div>
 
-
-                <!-- <div id="searchResultsModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close" onclick="closeSearchResultsModal()">&times;</span>
-                        <h2>Résultats de la Recherche</h2>
-                        <div id="search-results"></div>
-                    </div>
-                </div> -->
                 <!-- Modal de Résultats de Recherche -->
-                <!-- Modal de Résultats de Recherche -->
-                <div class="modal fade" id="searchResultsModal" tabindex="-1" aria-labelledby="searchResultsLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
+                <div class="modal fade text-center" id="searchResultsModal" tabindex="-1"
+                    aria-labelledby="searchResultsLabel" aria-hidden="true" data-bs-theme="dark">
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="searchResultsLabel">Résultats de la Recherche</h5>
-                                <!-- Bouton pour fermer la modal avec la croix -->
-                                <!-- <button type="button" class="btn-close" onclick="closeSearchResultsModal()"
-                                    aria-label="Close"></button> -->
+                                <button type="button" class="btn-close" onclick="closeSearchResultsModal()"
+                                    aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <div id="search-results">
-                                    <!-- Les résultats de la recherche seront affichés ici -->
-                                </div>
+                                <div id="search-results"></div>
                             </div>
                             <div class="modal-footer">
-                                <h3>click outside to close</h3>
-                                <!-- Bouton pour fermer la modal en bas -->
-                                <!-- <button type="button" class="btn btn-secondary"
-                                    onclick="closeSearchResultsModal()">Fermer</button> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de Modification de Profil -->
+                <div class="modal fade text-center" id="editUserModal" tabindex="-1" aria-labelledby="editUserLabel"
+                    aria-hidden="true" data-bs-theme="dark">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editUserLabel">Modifier le profil</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editUserForm">
+                                    <div class="form-group">
+                                        <label for="currentUsername">Username actuel:</label>
+                                        <span id="currentUsername">Username</span>
+                                        <label for="newUsername">Nouveau username:</label>
+                                        <input type="username" class="form-control" id="newUsername"
+                                            placeholder="Entrez le nouveau username">
+                                        <label for="currentFirstName">firstname actuel:</label>
+                                        <span id="currentFirstName">firstname</span>
+                                        <label for="newFirstname">Nouveau firstname:</label>
+                                        <input type="firstname" class="form-control" id="newFirstname"
+                                            placeholder="Entrez le nouveau firstname">
+                                        <label for="currentEmail">Email Actuel:</label>
+                                        <span id="currentEmail">email@example.com</span>
+                                        <label for="newEmail">Nouvel Email:</label>
+                                        <input type="email" class="form-control" id="newEmail"
+                                            placeholder="Entrez le nouvel email">
+                                        <label for="currentPassword">Mot de passe actuel:</label>
+                                        <input type="password" class="form-control" id="currentPassword"
+                                            placeholder="Entrez le mot de passe actuel">
+                                        <label for="newPassword">Nouveau mot de passe:</label>
+                                        <input type="password" class="form-control" id="newPassword"
+                                            placeholder="Entrez le nouveau mot de passe">
+                                        <label for="twoFactorMethod">Choose 2FA Method:</label>
+                                        <select class="form-control" id="twoFactorMethod">
+                                            <option value="none">Aucune</option>
+                                            <option value="email">Email</option>
+                                            <option value="qr">QR Code</option>
+                                        </select>
+                                        <label for="language">Language:</label>
+                                        <select class="form-control" id="language">
+                                            <option value="fr">Français</option>
+                                            <option value="blr">Bielorusse</option>
+                                            <option value="en">English</option>
+                                            <option value="de">Deutsch</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-outline-secondary">Enregistrer les
+                                        modifications</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de Création de Tournoi -->
+                <div class="modal fade text-center" id="createTournamentModal" tabindex="-1"
+                    aria-labelledby="createTournamentLabel" aria-hidden="true" data-bs-theme="dark">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="createTournamentLabel">Créer un Nouveau Tournoi</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="createTournamentForm">
+                                    <div class="form-group">
+                                        <label for="tournamentName">Nom du tournoi:</label>
+                                        <input type="text" class="form-control" id="tournamentName"
+                                            placeholder="Entrez le nom du tournoi" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Nombre de joueurs:</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="fourPlayers"
+                                                name="numberOfPlayers" value="4" required>
+                                            <label class="form-check-label" for="fourPlayers">4</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="eightPlayers"
+                                                name="numberOfPlayers" value="8">
+                                            <label class="form-check-label" for="eightPlayers">8</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" id="sixteenPlayers"
+                                                name="numberOfPlayers" value="16">
+                                            <label class="form-check-label" for="sixteenPlayers">16</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Date de début:</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="startDateOption"
+                                                id="startWhenFull" value="whenFull" required>
+                                            <label class="form-check-label" for="startWhenFull">Quand le nombre de
+                                                joueurs est atteint</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="startDateOption"
+                                                id="startAtSpecificTime" value="specificTime">
+                                            <label class="form-check-label" for="startAtSpecificTime">À une date et
+                                                heure fixe</label>
+                                            <input type="datetime-local" class="form-control" id="specificDateTime"
+                                                disabled>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-outline-secondary">Créer</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Liste des Amis -->
+                <div class="modal fade text-center" id="friendsModal" tabindex="-1" aria-labelledby="friendsModalLabel"
+                    aria-hidden="true" data-bs-theme="dark">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="friendsModalLabel">Liste des Amis</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="friends-list-container"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
 
-
-                <div id="editUserModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close" onclick="closeEditUserModal()">&times;</span>
-                        <h2>Modifier le profil</h2>
-                        <form id="editUserForm">
-                            <div class="form-group">
-                                <label for="currentUsername">Username actuel:</label>
-                                <span id="currentUsername">Username</span>
-                                <label for="newUsername">Nouveau username:</label>
-                                <input type="username" class="form-control" id="newUsername"
-                                    placeholder="Entrez le nouveau username">
-                                <label for="currentFirstName">firstname actuel:</label>
-                                <span id="currentFirstName">firstname</span>
-                                <label for="newFirstname">Nouveau firstname:</label>
-                                <input type="firstname" class="form-control" id="newFirstname"
-                                    placeholder="Entrez le nouveau firstname">
-                                <label for="currentEmail">Email Actuel:</label>
-                                <span id="currentEmail">email@example.com</span>
-                                <label for="newEmail">Nouvel Email:</label>
-                                <input type="email" class="form-control" id="newEmail"
-                                    placeholder="Entrez le nouvel email">
-                                <label for="currentPassword">Mot de passe actuel:</label>
-                                <input type="password" class="form-control" id="currentPassword"
-                                    placeholder="Entrez le mot de passe actuel">
-                                <label for="newPassword">Nouveau mot de passe:</label>
-                                <input type="password" class="form-control" id="newPassword"
-                                    placeholder="Entrez le nouveau mot de passe">
-                                <label for="twoFactorMethod">Choose 2FA Method:</label>
-                                <select class="form-control" id="twoFactorMethod">
-                                    <option value="none">Aucune</option>
-                                    <option value="email">Email</option>
-                                    <option value="qr">QR Code</option>
-                                </select>
-                                <label for="language">Language:</label>
-                                <select class="form-control" id="language">
-                                    <option value="fr">Français</option>
-                                    <option value="blr">Bielorusse</option>
-                                    <option value="en">English</option>
-                                    <option value="de">Deutsch</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-outline-secondary">Enregistrer les
-                                modifications</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div id="createTournamentModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close" onclick="closeCreateTournamentModal()">&times;</span>
-                        <h2>Créer un Nouveau Tournoi</h2>
-                        <form id="createTournamentForm">
-                            <div class="form-group">
-                                <label for="tournamentName">Nom du tournoi:</label>
-                                <input type="text" class="form-control" id="tournamentName"
-                                    placeholder="Entrez le nom du tournoi" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Nombre de joueurs:</label>
-                                <div>
-                                    <input type="radio" id="fourPlayers" name="numberOfPlayers" value="4" required>
-                                    <label for="fourPlayers">4</label>
-                                </div>
-                                <div>
-                                    <input type="radio" id="eightPlayers" name="numberOfPlayers" value="8">
-                                    <label for="eightPlayers">8</label>
-                                </div>
-                                <div>
-                                    <input type="radio" id="sixteenPlayers" name="numberOfPlayers" value="16">
-                                    <label for="sixteenPlayers">16</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Date de début:</label>
-                                <div>
-                                    <input type="radio" name="startDateOption" id="startWhenFull" value="whenFull"
-                                        required>
-                                    <label for="startWhenFull">Quand le nombre de joueurs est atteint</label>
-                                </div>
-                                <div>
-                                    <input type="radio" name="startDateOption" id="startAtSpecificTime"
-                                        value="specificTime">
-                                    <label for="startAtSpecificTime">À une date et heure fixe</label>
-                                    <input type="datetime-local" class="form-control" id="specificDateTime" disabled>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-outline-secondary">Créer</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
