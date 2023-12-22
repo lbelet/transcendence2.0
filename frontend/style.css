@@ -161,12 +161,18 @@ body {
 }
 
 #available-tournaments {
-  max-height: 400px; /* ou la hauteur que vous souhaitez */
+  max-height: 300px; /* ou la hauteur que vous souhaitez */
   overflow-y: auto; /* active l'ascenseur vertical si nécessaire */
   display: flex;
   flex-direction: column;
   gap: 10px; /* ajoute un espace entre les boutons */
 }
+
+.sort-indicator {
+  margin-left: 5px;
+  user-select: none; 
+}
+
 
 /* .tournament-btn {
   width: 100%;

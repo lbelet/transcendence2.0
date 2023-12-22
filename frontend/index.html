@@ -163,50 +163,55 @@
                     <div id="available-tournaments"></div> -->
                     <div class="container">
                         <h1>Tournois disponibles</h1>
-                        
+
                         <div class="my-3">
-                            <button class="btn btn-primary" onclick="loadAvailableTournaments()">Charger les tournois disponibles</button>
+                            <button class="btn btn-primary" onclick="loadAvailableTournaments()">Charger les tournois
+                                disponibles</button>
                         </div>
-                    
+
                         <div class="my-3">
-                            <button class="btn btn-info" onclick="sortTournaments('name')">Trier par nom</button>
-                            <button class="btn btn-info" onclick="sortTournaments('date')">Trier par date</button>
-                            <button class="btn btn-info" onclick="sortTournaments('participants')">Trier par nombre de participants</button>
+                            <button class="btn btn-info" onclick="sortTournaments('name', this)">
+                                Trier par nom <span class="sort-indicator">&#9650;</span>
+                            </button>
+                            <button class="btn btn-info" onclick="sortTournaments('date', this)">
+                                Trier par date <span class="sort-indicator">&#9650;</span>
+                            </button>
+                            <button class="btn btn-info" onclick="sortTournaments('participants', this)">
+                                Trier par nombre de participants <span class="sort-indicator">&#9650;</span>
+                            </button>
+
                         </div>
-                        
-                        <select id="tournament-dropdown" class="form-select" onchange="displaySelectedTournament()">
-                            <option value="">Sélectionnez un tournoi</option> <!-- Option par défaut -->
-                        </select>
-                    
-                        <div id="tournament-details" class="mt-4">
-                            <!-- Les détails du tournoi sélectionné seront affichés ici -->
+
+                        <div id="available-tournaments" class="tournament-list">
+                            <!-- Les boutons de tournois seront ajoutés ici -->
                         </div>
                     </div>
+
                 </div>
 
                 <!-- <div id="tournamentBracket-section" class="hidden"></div> -->
 
                 <div id="tournamentBracket-section" class="container hidden">
                     <h2 id="tournamentName" class="text-center tournament-title">Nom du Tournoi</h2>
-                
+
                     <div class="row my-4 tournament-row">
                         <div class="col d-flex flex-column semi-finals">
                             <h3>Demi-finales</h3>
                             <div id="semi-finals" class="matches-container"></div>
                         </div>
-                
+
                         <div class="col d-flex flex-column justify-content-center final">
                             <h3>Finale</h3>
                             <div id="final" class="matches-container"></div>
                         </div>
-                
+
                         <div class="col d-flex flex-column justify-content-center winner">
                             <h3>Vainqueur</h3>
                             <div id="winner" class="matches-container"></div>
                         </div>
                     </div>
                 </div>
-                
+
 
 
                 <!-- Modal de Résultats de Recherche -->

@@ -56,6 +56,8 @@ function registerUserToTournament(tournamentId) {
         });
 }
 
+let availableTournaments = [];
+
 function loadAvailableTournaments() {
     fetch('/api/available_tournaments/', {
         method: 'GET',
@@ -66,57 +68,76 @@ function loadAvailableTournaments() {
         .then(response => response.json())
         .then(tournaments => {
             console.log("tournois dispo? :", tournaments)
-            fillTournamentDropdown(tournaments);
+            availableTournaments = tournaments;
+            displayTournaments(tournaments);
         })
         .catch(error => {
             console.error('Error:', error);
         });
 }
 
-let tournamentsMap = {};
+function sortTournaments(criteria, button) {
+    let sortedTournaments = [...availableTournaments];
+    let isAscending = true;
 
-function fillTournamentDropdown(tournaments) {
-    const dropdown = document.getElementById('tournament-dropdown');
-    dropdown.innerHTML = '';
-    const defaultOption = document.createElement('option');
-    defaultOption.textContent = "Sélectionnez un tournoi";
-    defaultOption.value = "";
-    dropdown.appendChild(defaultOption);
-
-    // Trier par date par défaut
-    tournaments.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
-
-    // Remplir le menu déroulant et stocker les données des tournois
-    tournaments.forEach(tournament => {
-        const option = document.createElement('option');
-        option.value = tournament.id;
-        option.textContent = `${tournament.name} - Début : ${tournament.start_date || 'Indéfini'} - Participants : ${tournament.current_participants}/${tournament.number_of_players}`;
-        dropdown.appendChild(option);
-
-        // Stocker les données du tournoi pour y accéder plus tard
-        tournamentsMap[tournament.id] = tournament;
+    // Réinitialiser les indicateurs sur tous les autres boutons
+    document.querySelectorAll('.sort-indicator').forEach(indicator => {
+        if (indicator !== button.querySelector('.sort-indicator')) {
+            indicator.textContent = '▲';
+        }
     });
-}
 
-function displaySelectedTournament() {
-    const dropdown = document.getElementById('tournament-dropdown');
-    const selectedTournamentId = dropdown.value;
-
-    if (selectedTournamentId && tournamentsMap[selectedTournamentId]) {
-        const tournamentData = tournamentsMap[selectedTournamentId];
-        displayTournamentDetails(tournamentData);
+    // Vérifier et basculer le sens du tri pour le bouton actuel
+    const indicator = button.querySelector('.sort-indicator');
+    if (indicator.textContent === '▼') {
+        isAscending = true;
+        indicator.textContent = '▲';
+    } else {
+        isAscending = false;
+        indicator.textContent = '▼';
     }
+
+    // Appliquer le tri
+    sortedTournaments.sort((a, b) => {
+        let comparison = 0;
+        switch (criteria) {
+            case 'name':
+                comparison = a.name.localeCompare(b.name);
+                break;
+            case 'date':
+                // Gérer les dates nulles correctement
+                if (a.start_date === null && b.start_date === null) {
+                    comparison = 0; // Deux dates nulles sont équivalentes
+                } else if (a.start_date === null) {
+                    comparison = isAscending ? -1 : -1;
+                } else if (b.start_date === null) {
+                    comparison = isAscending ? 1 : 1;
+                } else {
+                    comparison = new Date(a.start_date) - new Date(b.start_date);
+                }
+                break;
+            case 'participants':
+                comparison = a.number_of_players - b.number_of_players;
+                break;
+        }
+        return isAscending ? comparison : -comparison;
+    });
+
+    displayTournaments(sortedTournaments);
 }
+
+
+
 
 function displayTournaments(tournaments) {
     const container = document.getElementById('available-tournaments');
     container.innerHTML = '';
 
-    tournaments.sort((a, b) => {
-        if (a.start_date === null) return -1;
-        if (b.start_date === null) return 1;
-        return new Date(a.start_date) - new Date(b.start_date);
-    });
+    // tournaments.sort((a, b) => {
+    //     if (a.start_date === null) return -1;
+    //     if (b.start_date === null) return 1;
+    //     return new Date(a.start_date) - new Date(b.start_date);
+    // });
 
     tournaments.forEach(tournament => {
         const tournamentButton = document.createElement('button');
@@ -130,78 +151,6 @@ function displayTournaments(tournaments) {
         container.appendChild(tournamentButton);
     });
 }
-
-// function displayTournamentDetails(tournamentData) {
-//     const tournamentSection = document.getElementById('tournamentBracket-section');
-//     tournamentSection.innerHTML = '';
-//     navigateTo('tournamentBracket');
-
-//     const tournamentName = document.createElement('h2');
-//     tournamentName.textContent = tournamentData.name;
-//     tournamentSection.appendChild(tournamentName);
-
-//     const semiFinals = createDefaultRound('semi-final', 2, tournamentData.participants);
-//     tournamentSection.appendChild(semiFinals);
-
-//     const final = createDefaultRound('final', 1, []);
-//     tournamentSection.appendChild(final);
-
-//     let registerButton = document.createElement('button');
-//     registerButton.id = 'tournament-register-button';
-//     registerButton.className = 'btn btn-outline-secondary';
-
-//     const username = localStorage.getItem('username');
-//     const isRegistered = tournamentData.participants.some(participant => participant.username === username);
-
-//     if (isRegistered) {
-//         registerButton.textContent = "Se désinscrire";
-//         registerButton.onclick = function() {
-//             unregisterFromTournament(tournamentData.id);
-//         };
-//     } else {
-//         registerButton.textContent = "S'inscrire";
-//         registerButton.onclick = function() {
-//             registerForTournament(tournamentData);
-//         };
-//     }
-//     tournamentSection.appendChild(registerButton);
-// }
-
-
-// function createDefaultRound(roundType, numberOfMatches, participants) {
-//     const roundDiv = document.createElement('div');
-//     roundDiv.className = 'round';
-//     roundDiv.id = `${roundType}`;
-//     // Créer un tableau avec suffisamment de places pour tous les joueurs nécessaires pour les matchs
-//     const filledParticipants = [];
-//     for (let i = 0; i < numberOfMatches * 2; i++) {
-//         filledParticipants.push(
-//             participants[i] ? participants[i] : { username: "libre" }
-//         );
-//     }
-
-//     for (let i = 0; i < numberOfMatches; i++) {
-//         const matchDiv = document.createElement('div');
-//         matchDiv.className = 'match';
-//         matchDiv.id = `${roundType}-${i + 1}`;
-
-//         const player1Index = i * 2;
-//         const player2Index = i * 2 + 1;
-
-//         const player1Div = document.createElement('div');
-//         player1Div.className = 'player';
-//         player1Div.textContent = filledParticipants[player1Index].username;
-
-//         const player2Div = document.createElement('div');
-//         player2Div.className = 'player';
-//         player2Div.textContent = filledParticipants[player2Index].username;
-
-//         matchDiv.appendChild(player1Div);
-//         matchDiv.appendChild(player2Div);
-//         roundDiv.appendChild(matchDiv);
-//     }
-//     return roundDiv;
-// }
 
 function displayTournamentDetails(tournamentData) {
     // Mettre à jour le nom du tournoi
