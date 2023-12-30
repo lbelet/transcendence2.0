@@ -33,6 +33,13 @@ from django.db.models import F
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def verify_token(request):
+    # Si le code atteint ce point, le token est valide
+    return JsonResponse({"message": "Token valide"})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def join_game_queue(request):
     # Récupérer l'utilisateur actuel
     current_user = request.user
@@ -229,7 +236,7 @@ def update_user(request):
         user.is_two_factor_enabled = True
         user.save()
 
-        send_two_factor_email(user.email, user)
+        # send_two_factor_email(user.email, user)
         return JsonResponse({'success': 'Profile updated successfully'}, status=200)
 
     else:
@@ -436,6 +443,7 @@ def api_outGame(request):
 def index(request):
     return render(request, 'index.html')
 
+
 def send_friend_request_notification(receiver_user_id, request_id, sender_username):
     User = get_user_model()
     try:
@@ -455,6 +463,7 @@ def send_friend_request_notification(receiver_user_id, request_id, sender_userna
 
     # from django.http import JsonResponse
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def update_language(request):
@@ -468,6 +477,7 @@ def update_language(request):
         return JsonResponse({'success': 'Language updated successfully'}, status=200)
     else:
         return JsonResponse({'error': 'No language provided'}, status=400)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -497,7 +507,8 @@ def create_tournament(request):
         return JsonResponse({'success': 'Tournament created successfully', 'tournament_id': tournament.id}, status=201)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-    
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def register_to_tournament(request, tournament_id):
@@ -567,12 +578,13 @@ def unregister_from_tournament(request, tournament_id):
     except Tournament.DoesNotExist:
         return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
 
- 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def available_tournaments(request):
     try:
-        tournaments = Tournament.objects.filter(is_active=True).prefetch_related('participants__user')
+        tournaments = Tournament.objects.filter(
+            is_active=True).prefetch_related('participants__user')
         data = [{
             'id': tournament.id,
             'name': tournament.name,
@@ -593,12 +605,14 @@ def available_tournaments(request):
         return JsonResponse(data, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-    
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def tournament_details(request, tournament_id):
     try:
-        tournament = Tournament.objects.filter(id=tournament_id).prefetch_related('participants__user').first()
+        tournament = Tournament.objects.filter(
+            id=tournament_id).prefetch_related('participants__user').first()
         if not tournament:
             return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
 
@@ -622,7 +636,3 @@ def tournament_details(request, tournament_id):
         return JsonResponse(data, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
-
-
-

@@ -125,6 +125,7 @@ function updateUserLanguage(language) {
     .then(() => {
         console.log(`Language updated to: ${language}`);
         loadTranslations(language);
+        localStorage.setItem('language', language)
         // Optionnel : recharger la page ou mettre à jour l'interface utilisateur pour refléter le changement de langue
     })
     .catch(error => {

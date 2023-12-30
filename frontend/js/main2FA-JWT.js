@@ -27,16 +27,17 @@ document.getElementById('EmailTwoFactorForm').addEventListener('submit', functio
             localStorage.setItem('refresh_token', data.refresh);
             localStorage.setItem('language', data.language);
             // Après une connexion réussie
-            const burgerMenu = document.getElementById('bMenu');
-            burgerMenu.classList.remove('hidden');
+            // const burgerMenu = document.getElementById('bMenu');
+            // burgerMenu.classList.remove('hidden');
 
-            const searchingBar = document.getElementById('searchU');
-            searchingBar.classList.remove('hidden');
+            // const searchingBar = document.getElementById('searchU');
+            // searchingBar.classList.remove('hidden');
 
             // console.log("Burger menu should be visible now");
 
             showWelcome();
             openWebSocketConnection();
+            document.getElementById('hiddenNav').classList.remove('hidden');
         })
         .catch(error => {
             console.error('2FA Verification error:', error);

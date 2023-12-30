@@ -1,16 +1,17 @@
 window.onload = function () {
     const path = window.location.pathname.substring(1);
     if (path) {
-        navigateTo(path);
+        navigateWithTokenCheck(path);
     } else {
-        navigateTo('home');
+        navigateWithTokenCheck('home');
     }
 };
 
+
 window.onpopstate = function (event) {
     if (event.state && event.state.section) {
-        navigateTo(event.state.section);
+        navigateWithTokenCheck(event.state.section);
     } else {
-        navigateTo('home');
+        navigateWithTokenCheck('home');
     }
 };

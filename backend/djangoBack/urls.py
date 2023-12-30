@@ -47,6 +47,8 @@ urlpatterns = [
     path('available_tournaments/', views.available_tournaments, name='available-tournaments'),
     path('tournament_details/<int:tournament_id>/', views.tournament_details, name='tournament-details'),
 
+    path('verify_token/', views.verify_token, name='verify_token'),
+
     # Home page URL
     path('', views.index, name='index'),
 ]

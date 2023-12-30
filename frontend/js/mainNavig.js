@@ -8,16 +8,27 @@ function showRegisterForm() {
 }
 
 function goTournament() {
-    navigateTo('tournament')
+    navigateWithTokenCheck('tournament')
 }
 
 function showTwoFactorForm() {
-    navigateTo('email-two-factor');
+    navigateTo('emailTwoFactor');
 }
 
 function showQrTwoFactorForm() {
-    navigateTo('qr-two-factor');
+    navigateTo('qrTwoFactor');
 }
+
+async function navigateWithTokenCheck(sectionId) {
+    const tokenIsValid = await isValidToken();
+
+    if (!tokenIsValid && sectionId !== 'login' && sectionId !== 'home' && sectionId !== 'register') {
+        navigateTo('home');
+    } else {
+        navigateTo(sectionId);
+    }
+}
+
 
 function hideAllSections() {
     document.getElementById('home-section').classList.add('hidden');
@@ -25,18 +36,14 @@ function hideAllSections() {
     document.getElementById('register-section').classList.add('hidden');
     document.getElementById('welcome-section').classList.add('hidden');
     document.getElementById('game-section').classList.add('hidden');
-    document.getElementById('email-two-factor-section').classList.add('hidden');
+    document.getElementById('emailTwoFactor-section').classList.add('hidden');
     document.getElementById('pong-section').classList.add('hidden');
-    document.getElementById('qr-two-factor-section').classList.add('hidden');
+    document.getElementById('qrTwoFactor-section').classList.add('hidden');
     document.getElementById('tournament-section').classList.add('hidden');
     document.getElementById('tournamentBracket-section').classList.add('hidden');
 }
 
 function navigateTo(sectionId) {
-    if (!isValidToken() && sectionId !== 'login' && sectionId !== 'home' && sectionId !== 'register') {
-        navigateTo('home');
-        return;
-    }
     hideAllSections();
     document.getElementById(sectionId + '-section').classList.remove('hidden');
 
@@ -45,10 +52,29 @@ function navigateTo(sectionId) {
     }
 }
 
-function isValidToken() {
-    const token = localStorage.getItem('access_token');
-    return token !== null;
+
+async function isValidToken() {
+    try {
+        const response = await fetch('/api/verify_token/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
+
+        if (response.ok) {
+            return true;
+        } else {
+            localStorage.removeItem('access_token'); // Optionnel : supprimez le token invalide
+            return false;
+        }
+    } catch (error) {
+        console.error('Erreur lors de la vérification du token:', error);
+        return false;
+    }
 }
+
+
 
 function openSearchResultsModal() {
     var myModal = new bootstrap.Modal(document.getElementById('searchResultsModal'));
@@ -118,5 +144,5 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentPage === '/welcome') {
         const username = localStorage.getItem('username');
         document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
-    } 
+    }
 });

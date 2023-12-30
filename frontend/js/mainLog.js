@@ -37,13 +37,34 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     document.getElementById('hiddenNav').classList.remove('hidden');
                 }
             } else {
-                alert(obj.body.error);
+                // alert(obj.body.error);
+                showAlert("login");
             }
         })
         .catch(error => {
             alert('Une erreur est survenue lors de la tentative de connexion.');
         });
 });
+
+async function showAlert(key) {
+    var lang = localStorage.getItem('language');
+
+    try {
+        const response = await fetch('./locales/alerts.json');
+        const messages = await response.json();
+
+        if (messages[key] && messages[key][lang]) {
+            var message = messages[key][lang];
+            alert(message);
+        } else {
+            alert("Message not found for key: " + key + " and language: " + lang);
+        }
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        alert("Unable to load messages.");
+    }
+}
+
 
 
 
@@ -73,7 +94,7 @@ function logout() {
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('username');
-            localStorage.removeItem('language');
+            // localStorage.removeItem('language');
             localStorage.removeItem('gameSocket_ID');
             document.getElementById('hiddenNav').classList.add('hidden');
             navigateTo('home');
