@@ -11,9 +11,9 @@
   pointer-events: none;
 }
 
-label {
+/* label {
   color: #ff00ea8a;
-}
+} */
 
 body {
   background-color: rgb(0, 6, 20);
