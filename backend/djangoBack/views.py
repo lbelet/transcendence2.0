@@ -487,6 +487,7 @@ def create_tournament(request):
     number_of_players = request.data.get('number_of_players')
     start_date_option = request.data.get('start_date_option')
     specific_start_date = request.data.get('specific_start_date')
+    print('request: ', request)
 
     # Valider les données
     if not all([name, number_of_players, start_date_option]):

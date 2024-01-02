@@ -5,7 +5,8 @@ document.getElementById('startAtSpecificTime').addEventListener('change', functi
 document.getElementById('createTournamentForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    const tournamentName = document.getElementById('tournamentName').value;
+    const tournamentName = document.getElementById('tournamentNameBis').value;
+    console.log('tournament name: ', tournamentName)
     const numberOfPlayers = document.querySelector('input[name="numberOfPlayers"]:checked').value;
     const startDateOption = document.querySelector('input[name="startDateOption"]:checked').value;
     let specificStartDate = null;
@@ -19,6 +20,7 @@ document.getElementById('createTournamentForm').addEventListener('submit', funct
         start_date_option: startDateOption,
         specific_start_date: specificStartDate
     };
+    console.log('data send: ', data)
     fetch('/api/create_tournament/', {
         method: 'POST',
         headers: {
