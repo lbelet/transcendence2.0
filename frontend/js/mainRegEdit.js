@@ -1,3 +1,25 @@
+document.getElementById('avatar').addEventListener('change', function (event) {
+    var file = event.target.files[0];
+    if (file) {
+        var validTypes = ['image/jpeg', 'image/png'];
+        var maxSize = 1048576; // 1MB in bytes
+
+        // Check if the file type is valid
+        if (!validTypes.includes(file.type)) {
+            alert('Avatar1 : Seuls les fichiers JPEG et PNG sont autorisés.');
+            event.target.value = ''; // Clear the file input
+            return; // Exit the function
+        }
+
+        // Check if the file size exceeds the maximum size
+        if (file.size > maxSize) {
+            alert('Avatar1 : La taille du fichier doit être inférieure à 1 Mo.');
+            event.target.value = ''; // Clear the file input
+            return; // Exit the function
+        }
+    }
+});
+
 document.getElementById('registerForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
@@ -36,7 +58,6 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
         alert('Passwords do not match!');
     }
 });
-
 
 document.getElementById('editUserModal').addEventListener('submit', function (event) {
     event.preventDefault();
@@ -116,21 +137,21 @@ function updateUserLanguage(language) {
             language: language
         })
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(() => {
-        console.log(`Language updated to: ${language}`);
-        loadTranslations(language);
-        localStorage.setItem('language', language)
-        // Optionnel : recharger la page ou mettre à jour l'interface utilisateur pour refléter le changement de langue
-    })
-    .catch(error => {
-        alert('Error updating language preference');
-    });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(() => {
+            console.log(`Language updated to: ${language}`);
+            loadTranslations(language);
+            localStorage.setItem('language', language)
+            // Optionnel : recharger la page ou mettre à jour l'interface utilisateur pour refléter le changement de langue
+        })
+        .catch(error => {
+            alert('Error updating language preference');
+        });
 }
 
 // function updateEmail() {
