@@ -27,6 +27,13 @@ body {
   display: none;
 }
 
+.navbar-nav .dropdown-menu {
+  width: auto;
+  right: 0;
+  left: auto;
+  min-width: 0;
+}
+
 #pong-canvas {
   width: 800px;
   height: 600px;
