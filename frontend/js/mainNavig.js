@@ -47,6 +47,13 @@ function navigateTo(sectionId) {
     hideAllSections();
     document.getElementById(sectionId + '-section').classList.remove('hidden');
 
+    console.log("navigateTo");
+    if (sectionId === 'home') {
+        startAnimation();
+    } else {
+        stopAnimation();
+    }
+
     if (!window.location.pathname.endsWith(`/${sectionId}`)) {
         window.history.pushState({ section: sectionId }, '', `/${sectionId}`);
     }
