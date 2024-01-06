@@ -8,3 +8,4 @@ qrcode
 Pillow
 uvicorn[standard]
 channels_redis
+python-dotenv

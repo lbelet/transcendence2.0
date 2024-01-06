@@ -20,13 +20,18 @@ function showQrTwoFactorForm() {
 }
 
 async function navigateWithTokenCheck(sectionId) {
-    const tokenIsValid = await isValidToken();
+    const toktok = localStorage.getItem('access_token')
+    if (toktok) {
+        const tokenIsValid = await isValidToken();
 
-    if (!tokenIsValid && sectionId !== 'login' && sectionId !== 'home' && sectionId !== 'register') {
-        navigateTo('home');
-    } else {
-        navigateTo(sectionId);
+        if (!tokenIsValid && sectionId !== 'login' && sectionId !== 'home' && sectionId !== 'register') {
+            navigateTo('home');
+        } else {
+            navigateTo(sectionId);
+        }
     }
+    else
+        navigateTo('home');
 }
 
 

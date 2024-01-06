@@ -15,8 +15,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'svl.transcendence@gmail.com'
-EMAIL_HOST_PASSWORD = 'vgkz atql apmu rvmw'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'valeur_par_defaut')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'valeur_par_defaut')
 # TODO: Set those info in environment variables
 # EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'default-email@gmail.com')
 # EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'default-password')
