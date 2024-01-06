@@ -30,6 +30,23 @@ function refreshToken() {
         });
 }
 
+let tokenRefreshInterval;
+
+function setupTokenRefresh() {
+    console.log("yo!")
+    // Définir l'intervalle en millisecondes
+    // Par exemple, pour rafraîchir le token toutes les 15 minutes
+    const refreshInterval = 1 * 60 * 1000; // 15 minutes en millisecondes
+
+    // Configurer setInterval pour appeler refreshToken à cet intervalle
+    tokenRefreshInterval  = setInterval(refreshToken, refreshInterval);
+}
+
+function stopTokenRefreshInterval() {
+    clearInterval(tokenRefreshInterval);
+}
+
+
 // Function to verify the token
 function verifyToken() {
     const accessToken = localStorage.getItem('access_token');

@@ -15,9 +15,12 @@
   color: #ff00ea8a;
 } */
 
-body {
+body, html {
+  height: 100%; /* Assurez-vous que la hauteur du body et html est de 100% */
   background-color: rgb(0, 6, 20);
   margin: 0;
+  display: flex;
+  flex-direction: column; /* Organise les éléments enfants verticalement */
   /* 100% of the viewport height */
   /* min-width: 320px;
   min-height: 100vh; */
@@ -33,6 +36,10 @@ body {
   right: 0;
   left: auto;
   min-width: 0;
+}
+
+.navbar {
+  flex-shrink: 0; /* La navbar ne rétrécit pas */
 }
 
 #pong-canvas {
@@ -144,6 +151,11 @@ body {
   border: 2px solid #ccc; /* Bordure autour de la zone des matchs */
   padding: 10px;
   margin-bottom: 15px;
+}
+
+.container {
+  flex-grow: 1; /* Le container prend tout l'espace disponible */
+  overflow-y: auto; /* Permettre le défilement dans le container si nécessaire */
 }
 
 .match {

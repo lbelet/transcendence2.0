@@ -31,6 +31,10 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     localStorage.setItem('refresh_token', obj.body.refresh);
                     localStorage.setItem('language', obj.body.language);
 
+                    console.log("refresssshhhh: ", localStorage.getItem('refresh_token'))
+
+                    setupTokenRefresh();
+
                     loadTranslations(obj.body.language);
                     showWelcome();
                     openWebSocketConnection();
@@ -94,6 +98,8 @@ function logout() {
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('username');
+
+            stopTokenRefreshInterval();
             // localStorage.removeItem('language');
             localStorage.removeItem('gameSocket_ID');
             document.getElementById('hiddenNav').classList.add('hidden');

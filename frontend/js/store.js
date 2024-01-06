@@ -3,6 +3,7 @@
 const initialState = {
     username: null,
     access_token: null,
+    refresh_token: null,
     language: "fr",
     gameSocket_ID: null,
     currentGameId: null,

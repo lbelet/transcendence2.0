@@ -26,6 +26,9 @@ document.getElementById('EmailTwoFactorForm').addEventListener('submit', functio
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
             localStorage.setItem('language', data.language);
+
+            setupTokenRefresh();
+
             // Après une connexion réussie
             // const burgerMenu = document.getElementById('bMenu');
             // burgerMenu.classList.remove('hidden');
@@ -73,12 +76,15 @@ document.getElementById('qrTwoFactorForm').addEventListener('submit', function (
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
             localStorage.setItem('language', data.language);
-            // Après une connexion réussie
-            const burgerMenu = document.getElementById('bMenu');
-            burgerMenu.classList.remove('hidden');
 
-            const searchingBar = document.getElementById('searchU');
-            searchingBar.classList.remove('hidden');
+            setupTokenRefresh();
+
+            // Après une connexion réussie
+            // const burgerMenu = document.getElementById('bMenu');
+            // burgerMenu.classList.remove('hidden');
+
+            // const searchingBar = document.getElementById('searchU');
+            // searchingBar.classList.remove('hidden');
 
             // console.log("Burger menu should be visible now");
 
