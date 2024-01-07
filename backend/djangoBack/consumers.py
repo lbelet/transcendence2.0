@@ -281,9 +281,14 @@ class GameConsumer(AsyncWebsocketConsumer):
             game.score_player_one = score_player_one
             game.score_player_two = score_player_two
 
-            if winner_channel_name:
+            # Vérifier si le gagnant a déjà été déterminé pour ce jeu
+            if winner_channel_name and not game.winner:
                 winner_user = User.objects.get(game_socket_id=winner_channel_name)
                 game.winner = winner_user
+
+                # Mise à jour du nombre de victoires seulement si le gagnant vient d'être déterminé
+                winner_user.won_game += 1
+                winner_user.save()
 
             game.status = 'complete'
             game.save()
@@ -293,6 +298,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             print(f"PongGame with id {game_id} not found")
         except Exception as e:
             print(f"Erreur lors de l'enregistrement : {e}")
+
 
 
     def initialize_game_state(self, game_id):
