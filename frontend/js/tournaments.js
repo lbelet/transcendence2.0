@@ -161,7 +161,7 @@ function displayTournamentDetails(tournamentData) {
     // Afficher la section du tournoi
     const tournamentSection = document.getElementById('tournamentBracket-section');
     tournamentSection.classList.remove('hidden');
-    navigateTo('tournamentBracket');
+    navigateWithTokenCheck('tournamentBracket');
 
 
     // Créer et ajouter les demi-finales

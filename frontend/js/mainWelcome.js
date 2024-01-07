@@ -1,30 +1,30 @@
-function showWelcome() {
-    const username = localStorage.getItem('username');
-    document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
-    fetch(`/api/get_user_avatar/`, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        }
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const avatarUrl = data.avatarUrl;
-            document.getElementById('user-avatar').src = avatarUrl;
-        })
-        .catch(error => {
-            alert('Error fetching avatar');
-            document.getElementById('user-avatar').src = '/media/avatars/default.png';
-        });
+// function showWelcome() {
+//     const username = localStorage.getItem('username');
+//     document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
+//     fetch(`/api/get_user_avatar/`, {
+//         method: 'GET',
+//         headers: {
+//             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+//         }
+//     })
+//         .then(response => {
+//             if (!response.ok) {
+//                 throw new Error('Network response was not ok');
+//             }
+//             return response.json();
+//         })
+//         .then(data => {
+//             const avatarUrl = data.avatarUrl;
+//             document.getElementById('user-avatar').src = avatarUrl;
+//         })
+//         .catch(error => {
+//             alert('Error fetching avatar');
+//             document.getElementById('user-avatar').src = '/media/avatars/default.png';
+//         });
 
-    navigateTo('welcome');
-    showPendingFriendRequests();
-}
+//     navigateWithTokenCheck('game');
+//     showPendingFriendRequests();
+// }
 
 function searchUser() {
     var username = document.getElementById('search-username').value;

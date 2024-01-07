@@ -36,7 +36,8 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     setupTokenRefresh();
 
                     loadTranslations(obj.body.language);
-                    showWelcome();
+                    // showWelcome();
+                    navigateWithTokenCheck('game');
                     openWebSocketConnection();
                     document.getElementById('hiddenNav').classList.remove('hidden');
                 }

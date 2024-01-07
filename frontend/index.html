@@ -70,7 +70,7 @@
         <div class="row">
             <div class="col">
                 <div id="home-section" class="hidden">
-                    <h1></h1>
+                    <canvas id="canvas1"></canvas>
                     <div class="position-absolute top-75 start-50 translate-middle">
                         <button class="btn btn-outline-secondary" onclick="showLoginForm()">Login</button>
                         <button class="btn btn-outline-secondary spaced-buttons" onclick="showRegisterForm()">Créer
@@ -116,14 +116,13 @@
                     </form>
                 </div>
 
-                <div id="welcome-section" class="text-center hidden">
+                <!-- <div id="welcome-section" class="text-center hidden">
                     <h2 data-key="welcome">Bienvenue sur Mon Site</h2>
                     <img id="user-avatar" alt="User Avatar" style="width: 100px; height: 100px;">
                     <p>Bienvenue, <span id="user-name-welcome"></span>!</p>
                     <button class="btn btn-outline-secondary" onclick="showGameForm()">Game</button>
-                    <!-- <button class="btn btn-outline-secondary" onclick="openFriendsModal()">Amis</button> -->
                     <div id="pending-requests-container"></div>
-                </div>
+                </div> -->
 
                 <div id="emailTwoFactor-section" class="hidden">
                     <h2>Two-Factor Authentication</h2>
@@ -155,6 +154,7 @@
                     <button class="btn btn-outline-secondary" onclick="playPong()">practice playing Pong</button>
                     <button class="btn btn-outline-secondary" onclick="joinGameQueue()">Rejoindre la partie</button>
                     <button class="btn btn-outline-secondary" onclick="goTournament()">tournois</button>
+                    <div id="pending-requests-container"></div>
                 </div>
 
                 <div id="pong-section" class="text-center hidden">

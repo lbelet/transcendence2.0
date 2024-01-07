@@ -169,7 +169,8 @@ function applyBallState(newBallState) {
 function startPongGame(gameId) {
     // Logique pour initialiser et démarrer la partie de Pong
     console.log('!!!!Démarrage de la partie de Pong STARTPONGGAME');
-    navigateTo('pong')
+    navigateWithTokenCheck('pong');
+
 
     window.setPlayerRole();
 }

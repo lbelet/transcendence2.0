@@ -18,7 +18,7 @@ function playPong() {
             // console.log('Success:', data);
             openGameWebSocketConnection();
 
-            navigateTo('pong');
+            navigateWithTokenCheck('pong');
             // openGameWebSocketConnection()
 
         })
@@ -49,7 +49,7 @@ function quitPong3D() {
             localStorage.removeItem('currentGameId');
             localStorage.removeItem('playerRole');
             localStorage.removeItem('')
-            navigateTo('welcome');
+            navigateWithTokenCheck('game');
         })
         .catch(error => {
             alert('Error');
@@ -61,7 +61,7 @@ function showGameForm() {
     // console.log("1 username: ", username)
     document.getElementById('user-name-game').textContent = username || 'Utilisateur';
     // openGameWebSocketConnection();
-    navigateTo('game');
+    navigateWithTokenCheck('game');
 }
 
 // document.getElementById('joinGameButton').addEventListener('click', joinGameQueue);

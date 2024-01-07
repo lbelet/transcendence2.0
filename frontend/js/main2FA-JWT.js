@@ -38,7 +38,7 @@ document.getElementById('EmailTwoFactorForm').addEventListener('submit', functio
 
             // console.log("Burger menu should be visible now");
 
-            showWelcome();
+            navigateWithTokenCheck('game');
             openWebSocketConnection();
             document.getElementById('hiddenNav').classList.remove('hidden');
         })
@@ -88,7 +88,7 @@ document.getElementById('qrTwoFactorForm').addEventListener('submit', function (
 
             // console.log("Burger menu should be visible now");
 
-            showWelcome();
+            navigateWithTokenCheck('game');
             openWebSocketConnection();
         })
         .catch(error => {

@@ -96,7 +96,7 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
         .then(() => {
             alert(`Preferences updated. 2FA method: ${selectedTwoFactorMethod.toUpperCase()}, Language: ${selectedLanguage}`);
             loadTranslations(selectedLanguage); // Load the new language translations
-            navigateTo('welcome');
+            navigateWithTokenCheck('game');
         })
         .catch(error => {
             // console.error('Error updating 2FA preference:', error);

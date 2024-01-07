@@ -1,4 +1,3 @@
-
 function showLoginForm() {
     navigateTo('login');
 }
@@ -39,7 +38,7 @@ function hideAllSections() {
     document.getElementById('home-section').classList.add('hidden');
     document.getElementById('login-section').classList.add('hidden');
     document.getElementById('register-section').classList.add('hidden');
-    document.getElementById('welcome-section').classList.add('hidden');
+    // document.getElementById('welcome-section').classList.add('hidden');
     document.getElementById('game-section').classList.add('hidden');
     document.getElementById('emailTwoFactor-section').classList.add('hidden');
     document.getElementById('pong-section').classList.add('hidden');
@@ -85,8 +84,6 @@ async function isValidToken() {
         return false;
     }
 }
-
-
 
 function openSearchResultsModal() {
     var myModal = new bootstrap.Modal(document.getElementById('searchResultsModal'));
@@ -145,16 +142,14 @@ function closeFriendstModal() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const currentPage = window.location.pathname;
-
-    console.log('La page actuelle est :', currentPage);
-
-    if (localStorage.getItem('access_token')) {
-        document.getElementById('hiddenNav').classList.remove('hidden');
-    }
-    if (currentPage === '/welcome') {
-        const username = localStorage.getItem('username');
-        document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
-    }
-});
+// document.addEventListener('DOMContentLoaded', () => {
+//     const currentPage = window.location.pathname;
+//     console.log('La page actuelle est :', currentPage);
+//     if (localStorage.getItem('access_token')) {
+//         document.getElementById('hiddenNav').classList.remove('hidden');
+//     }
+//     if (currentPage === '/welcome') {
+//         const username = localStorage.getItem('username');
+//         document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
+//     }
+// });
