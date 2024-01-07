@@ -167,13 +167,39 @@ function applyBallState(newBallState) {
 }
 
 function startPongGame(gameId) {
+    fetch('/api/update_nbre_games/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.error) {
+            console.error(data.error);
+            alert('Erreur lors du traitement de la demande');
+        } else {
+            console.log(data.message, 'Nombre de jeux:', data.nbre_games);
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors du traitement de la demande:', error);
+        alert('Erreur lors du traitement de la demande');
+    });
+
     // Logique pour initialiser et démarrer la partie de Pong
     console.log('!!!!Démarrage de la partie de Pong STARTPONGGAME');
     navigateWithTokenCheck('pong');
 
-
     window.setPlayerRole();
 }
+
 
 function sendGameIdToWebSocket(gameId) {
     if (gameWebsocket && gameWebsocket.readyState === WebSocket.OPEN) {

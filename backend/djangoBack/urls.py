@@ -49,6 +49,8 @@ urlpatterns = [
 
     path('verify_token/', views.verify_token, name='verify_token'),
 
+    path('update_nbre_games/', views.update_nbre_games, name='update-nbre-games'),
+
     # Home page URL
     path('', views.index, name='index'),
 ]

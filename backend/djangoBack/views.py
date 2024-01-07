@@ -43,6 +43,8 @@ def verify_token(request):
 def join_game_queue(request):
     # Récupérer l'utilisateur actuel
     current_user = request.user
+    current_user.status = User.IN_GAME
+    current_user.save()
 
     game_socket_id = request.data.get('game_socket_id')
 
@@ -67,6 +69,19 @@ def join_game_queue(request):
 
         return JsonResponse({'message': 'Vous êtes en file d attente pour une nouvelle partie', 'game_id': new_game.id, 'player_role': 1})
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def update_nbre_games(request):
+    user = request.user
+
+    try:
+        # Incrémenter le nombre de jeux
+        user.nbre_games += 1
+        user.save()
+        return JsonResponse({'status': 'success', 'message': 'Nombre de jeux mis à jour avec succès.', 'nbre_games': user.nbre_games})
+    except Exception as e:
+        # En cas d'erreur, retourner une réponse JSON avec les détails de l'erreur
+        return JsonResponse({'status': 'error', 'message': 'Erreur lors de la mise à jour du nombre de jeux.'}, status=500)
 
 @api_view(['POST'])
 @csrf_exempt

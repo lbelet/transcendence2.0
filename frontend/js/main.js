@@ -4,15 +4,16 @@ window.onload = async function () {
         try {
             await refreshToken();
             setupTokenRefresh();
+            document.getElementById('hiddenNav').classList.remove('hidden');
         } catch (error) {
             console.error("Error during token refresh:", error);
+            document.getElementById('hiddenNav').classList.add('hidden');
             // Gérer l'erreur de rafraîchissement du token, si nécessaire
         }
     }
     const path = window.location.pathname.substring(1);
     if (path) {
         navigateWithTokenCheck(path);
-        document.getElementById('hiddenNav').classList.remove('hidden');
     } else {
         navigateWithTokenCheck('home');
     }

@@ -42,14 +42,11 @@ class User(AbstractBaseUser):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=OFFLINE)
     socket_id = models.CharField(max_length=255, blank=True, default='NONE')
     game_socket_id = models.CharField(max_length=255, blank=True, default='NONE')
-
-
     language = models.CharField(max_length=10, default='fr')
-
+    nbre_games = models.IntegerField(default=0)
+    won_game = models.IntegerField(default=0)
     objects = UserManager()
-
     USERNAME_FIELD = 'username'
-
     def __str__(self):
         return f"{self.username} ({self.email})"
 
