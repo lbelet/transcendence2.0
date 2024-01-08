@@ -25,6 +25,21 @@
 //     navigateWithTokenCheck('game');
 //     showPendingFriendRequests();
 // }
+function initializePopovers() {
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    var popovers = popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl);
+    });
+
+    // Fermer les popovers lors du clic en dehors
+    document.addEventListener('click', function (event) {
+        popovers.forEach(function (popover) {
+            if (!popover._element.contains(event.target)) {
+                popover.hide();
+            }
+        });
+    });
+}
 
 function searchUser() {
     var username = document.getElementById('search-username').value;
@@ -49,9 +64,27 @@ function searchUser() {
                 users.forEach(user => {
                     var userContainer = document.createElement('div');
                     userContainer.className = 'user-container';
+                    
                     var userName = document.createElement('p');
-                    userName.textContent = user.username;
+                    userName.textContent = user.username; 
+
+                    userName.setAttribute('data-bs-toggle', 'popover');
+                    userName.setAttribute('title', user.username);
+                    // userName.setAttribute('data-bs-content', `Nombre de jeux: ${user.nbreGames}, Victoires: ${user.victories}`);
+
+                    var victoriesPercentage = (user.nbreGames > 0) ? ((user.victories / user.nbreGames) * 100) : 0;                
+                    var progressBarHtml = `
+                        <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="${victoriesPercentage}" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar w-${victoriesPercentage}"></div>
+                        </div>
+                    `;
+                    userName.setAttribute('data-bs-html', 'true');
+                    userName.setAttribute('data-bs-content', `Nombre de jeux: ${user.nbreGames}<br>${progressBarHtml}`);
+                
+                
+
                     userContainer.appendChild(userName);
+
                     if (user.avatarUrl) {
                         var userAvatar = document.createElement('img');
                         userAvatar.src = user.avatarUrl;
@@ -68,6 +101,13 @@ function searchUser() {
                     userContainer.appendChild(addFriendButton);
                     resultsContainer.appendChild(userContainer);
                 });
+                
+                initializePopovers();
+
+                // var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+                // popoverTriggerList.forEach(function (popoverTriggerEl) {
+                //     new bootstrap.Popover(popoverTriggerEl);
+                // });
             }
             openSearchResultsModal();
         })

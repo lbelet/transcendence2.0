@@ -28,6 +28,7 @@ from djangoBack.helpers import (
 
 from django.db.models import F
 
+
 # import time
 
 
@@ -305,7 +306,9 @@ def search_users(request):
         user_data = {
             'id': user.id,
             'username': user.username,
-            'avatarUrl': request.build_absolute_uri(user.avatar.url) if user.avatar else None
+            'avatarUrl': request.build_absolute_uri(user.avatar.url) if user.avatar else None,
+            'nbreGames': user.nbre_games,
+            'victories': user.won_game
         }
         users_data.append(user_data)
 
