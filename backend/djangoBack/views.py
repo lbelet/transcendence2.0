@@ -17,16 +17,19 @@ from asgiref.sync import async_to_sync
 import pyotp
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from django.db import transaction
+from django.db.models import Q
+from djangoBack.models import User, PongGame  # Importez directement les modèles nécessaires
 from djangoBack import settings
 
 # Local application imports
-from djangoBack.models import Player, Tournament, User, FriendRequest, PongGame
+from djangoBack.models import Player, Tournament, User, FriendRequest, PongGame, Match
 from djangoBack.helpers import (
     get_tokens_for_user, send_two_factor_email, generate_qr_code,
     retrieve_stored_2fa_code
 )
 
-from django.db.models import F
+# from django.db.models import F
 
 
 # import time
@@ -393,13 +396,37 @@ def get_friends(request):
     user = request.user
     friends = user.friends.all()
 
+    games_played = PongGame.objects.filter(Q(player_one=user) | Q(player_two=user))
+
+    games_data = []
+    for game in games_played:
+        if game.player_one == user:
+            opponent = game.player_two
+            user_score = game.score_player_one
+            opponent_score = game.score_player_two
+        else:
+            opponent = game.player_one
+            user_score = game.score_player_two
+            opponent_score = game.score_player_one
+
+        games_data.append({
+            'date': game.date.strftime('%d-%m-%Y'),
+            'opponent_username': opponent.username if opponent else 'Unknown',
+            'user_score': user_score,
+            'opponent_score': opponent_score,
+        })
+
     friends_data = [{
         'username': friend.username,
         'avatarUrl': request.build_absolute_uri(friend.avatar.url) if friend.avatar else None,
-        'status': friend.status
+        'status': friend.status,
+        'nbreGames': friend.nbre_games,
+        'victories': friend.won_game,
+        'recent_games': games_data  # Assurez-vous que cela reflète ce que vous souhaitez envoyer
     } for friend in friends]
 
     return JsonResponse(friends_data, safe=False)
+
 
 
 @api_view(['POST'])
@@ -496,16 +523,14 @@ def update_language(request):
     else:
         return JsonResponse({'error': 'No language provided'}, status=400)
 
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_tournament(request):
     # Récupérer les données de la requête
     name = request.data.get('name')
-    number_of_players = request.data.get('number_of_players')
+    number_of_players = int(request.data.get('number_of_players'))
     start_date_option = request.data.get('start_date_option')
     specific_start_date = request.data.get('specific_start_date')
-    print('request: ', request)
 
     # Valider les données
     if not all([name, number_of_players, start_date_option]):
@@ -514,16 +539,41 @@ def create_tournament(request):
     # Gérer l'option de la date de début
     start_date = None
     if start_date_option == 'specificTime' and specific_start_date:
-        start_date = specific_start_date  # Convertir en objet datetime si nécessaire
+        start_date = specific_start_date
 
-    # Créer le tournoi
     try:
-        tournament = Tournament.objects.create(
-            name=name,
-            number_of_players=number_of_players,
-            start_date=start_date
-        )
-        return JsonResponse({'success': 'Tournament created successfully', 'tournament_id': tournament.id}, status=201)
+        with transaction.atomic():  # S'assurer que toutes les opérations sont atomiques
+            tournament = Tournament.objects.create(
+                name=name,
+                number_of_players=number_of_players,
+                start_date=start_date
+            )
+
+            # Créer les matches initiaux pour le tournoi selon le nombre de joueurs
+            if number_of_players == 4:
+                # Créer les demi-finales et la finale
+                for i in range(1, 3):
+                    Match.objects.create(tournament=tournament, round="Demi-finale")
+                Match.objects.create(tournament=tournament, round="Finale")
+            elif number_of_players == 8:
+                # Créer les quarts de finale, les demi-finales et la finale
+                for i in range(1, 5):
+                    Match.objects.create(tournament=tournament, round="Quart de finale")
+                for i in range(1, 3):
+                    Match.objects.create(tournament=tournament, round="Demi-finale")
+                Match.objects.create(tournament=tournament, round="Finale")
+            elif number_of_players == 16:
+                # Créer les huitièmes de finale, les quarts de finale, les demi-finales et la finale
+                for i in range(1, 9):
+                    Match.objects.create(tournament=tournament, round="Huitième de finale")
+                for i in range(1, 5):
+                    Match.objects.create(tournament=tournament, round="Quart de finale")
+                for i in range(1, 3):
+                    Match.objects.create(tournament=tournament, round="Demi-finale")
+                Match.objects.create(tournament=tournament, round="Finale")
+
+            return JsonResponse({'success': 'Tournament created successfully', 'tournament_id': tournament.id}, status=201)
+
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 

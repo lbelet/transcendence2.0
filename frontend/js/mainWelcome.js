@@ -49,71 +49,58 @@ function searchUser() {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         }
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(users => {
-            var resultsContainer = document.getElementById('search-results');
-            resultsContainer.innerHTML = '';
-            if (users.length === 0) {
-                resultsContainer.textContent = 'Utilisateur non trouvé';
-            } else {
-                users.forEach(user => {
-                    var userContainer = document.createElement('div');
-                    userContainer.className = 'user-container';
-                    
-                    var userName = document.createElement('p');
-                    userName.textContent = user.username; 
-
-                    userName.setAttribute('data-bs-toggle', 'popover');
-                    userName.setAttribute('title', user.username);
-                    // userName.setAttribute('data-bs-content', `Nombre de jeux: ${user.nbreGames}, Victoires: ${user.victories}`);
-
-                    var victoriesPercentage = (user.nbreGames > 0) ? ((user.victories / user.nbreGames) * 100) : 0;                
-                    var progressBarHtml = `
-                        <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="${victoriesPercentage}" aria-valuemin="0" aria-valuemax="100">
-                            <div class="progress-bar w-${victoriesPercentage}"></div>
-                        </div>
-                    `;
-                    userName.setAttribute('data-bs-html', 'true');
-                    userName.setAttribute('data-bs-content', `Nombre de jeux: ${user.nbreGames}<br>${progressBarHtml}`);
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(users => {
+        var resultsContainer = document.getElementById('search-results');
+        resultsContainer.innerHTML = '';
+        if (users.length === 0) {
+            resultsContainer.textContent = 'Aucun utilisateur trouvé';
+        } else {
+            users.forEach(user => {
+                var userContainer = document.createElement('div');
+                userContainer.className = 'user-container';
                 
+                var userName = document.createElement('p');
+                userName.textContent = user.username; 
+
+                userName.setAttribute('data-bs-toggle', 'popover');
+                userName.setAttribute('title', user.username);
+                userName.setAttribute('data-bs-html', 'true');
+                userName.setAttribute('data-bs-content', `Nombre de jeux: ${user.nbreGames}<br>Victoires: ${user.victories}`);
                 
+                userContainer.appendChild(userName);
 
-                    userContainer.appendChild(userName);
+                if (user.avatarUrl) {
+                    var userAvatar = document.createElement('img');
+                    userAvatar.src = user.avatarUrl;
+                    userAvatar.alt = 'Avatar de ' + user.username;
+                    userAvatar.style.width = '50px';
+                    userContainer.appendChild(userAvatar);
+                }
 
-                    if (user.avatarUrl) {
-                        var userAvatar = document.createElement('img');
-                        userAvatar.src = user.avatarUrl;
-                        userAvatar.alt = 'Avatar de ' + user.username;
-                        userAvatar.style.width = '50px';
-                        userContainer.appendChild(userAvatar);
-                    }
-                    var addFriendButton = document.createElement('button');
-                    addFriendButton.textContent = 'Ajouter en ami';
-                    addFriendButton.className = 'btn btn-outline-secondary';
-                    addFriendButton.onclick = function () {
-                        addFriend(user.username);
-                    };
-                    userContainer.appendChild(addFriendButton);
-                    resultsContainer.appendChild(userContainer);
-                });
-                
-                initializePopovers();
-
-                // var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-                // popoverTriggerList.forEach(function (popoverTriggerEl) {
-                //     new bootstrap.Popover(popoverTriggerEl);
-                // });
-            }
-            openSearchResultsModal();
-        })
-        .catch(error => {
-            alert('Erreur lors de la recherche de l\'utilisateur');
-        });
+                var addFriendButton = document.createElement('button');
+                addFriendButton.textContent = 'Ajouter en ami';
+                addFriendButton.className = 'btn btn-outline-secondary';
+                addFriendButton.onclick = function () {
+                    addFriend(user.username);
+                };
+                userContainer.appendChild(addFriendButton);
+                resultsContainer.appendChild(userContainer);
+            });
+            
+            initializePopovers();
+        }
+        openSearchResultsModal();
+    })
+    .catch(error => {
+        console.error('Erreur lors de la recherche de l\'utilisateur:', error);
+        alert('Erreur lors de la recherche de l\'utilisateur');
+    });
 }
 
 function showPendingFriendRequests() {

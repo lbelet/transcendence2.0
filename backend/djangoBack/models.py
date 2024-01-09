@@ -51,6 +51,7 @@ class User(AbstractBaseUser):
         return f"{self.username} ({self.email})"
 
 class PongGame(models.Model):
+    date = models.DateTimeField(auto_now_add=True, null=True)  # La date et l'heure de la création de la partie seront automatiquement enregistrées
     player_one = models.ForeignKey(get_user_model(), related_name='player_one_game', on_delete=models.SET_NULL, null=True)
     player_two = models.ForeignKey(get_user_model(), related_name='player_two_game', on_delete=models.SET_NULL, null=True)
     player_one_socket_id = models.CharField(max_length=255, null=True, blank=True)
@@ -103,9 +104,9 @@ class Tournament(models.Model):
 class Match(models.Model):
     tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)
     round = models.CharField(max_length=50)  # Exemple: "Quarterfinal", "Semifinal", "Final"
-    player_one = models.ForeignKey(Player, related_name='matches_as_player_one', on_delete=models.CASCADE)
-    player_two = models.ForeignKey(Player, related_name='matches_as_player_two', on_delete=models.CASCADE)
-    date_time = models.DateTimeField()
+    player_one = models.ForeignKey(Player, related_name='matches_as_player_one', on_delete=models.CASCADE, null=True)
+    player_two = models.ForeignKey(Player, related_name='matches_as_player_two', on_delete=models.CASCADE, null=True)
+    date_time = models.DateTimeField(null=True)
     score_player_one = models.IntegerField(default=0)
     score_player_two = models.IntegerField(default=0)
     winner = models.ForeignKey(Player, related_name='won_matches', on_delete=models.SET_NULL, null=True, blank=True)
