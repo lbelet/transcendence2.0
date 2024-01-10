@@ -33,10 +33,106 @@ function openWebSocketConnection() {
                 addFriendRequestToDOM(data.request_id, data.sender);
             }
 
+            if (data.type === 'tournament_full') {
+                console.log("tournament full: ", data.message);
+
+                // Afficher un toast Bootstrap pour la notification
+                const toastElement = document.createElement('div');
+                toastElement.classList.add('toast');
+                toastElement.setAttribute('role', 'alert');
+                toastElement.setAttribute('aria-live', 'assertive');
+                toastElement.setAttribute('aria-atomic', 'true');
+                toastElement.innerHTML = `
+                    <div class="toast-header">
+                        <strong class="mr-auto">Tournoi Complet</strong>
+                    </div>
+                    <div class="toast-body">
+                        ${data.message}
+                        <div id="countdown">59</div>
+                        <button id="readyButton" class="btn btn-success">Ready</button>
+                        <button id="noButton" class="btn btn-danger">No</button>
+                    </div>
+                `;
+
+                document.body.appendChild(toastElement);
+
+                const toast = new bootstrap.Toast(toastElement, {
+                    autohide: false // Empêche le toast de se cacher automatiquement
+                });                
+                toast.show();
+
+                const countdownDisplay = document.getElementById('countdown');
+                let countdownInterval = startCountdown(60, countdownDisplay, function () {
+                    // Logique lorsque le compte à rebours est terminé
+                    console.log("Le compte à rebours est terminé. Le tournoi est annulé.");
+                    // Envoyer une requête au serveur pour annuler le tournoi
+                    // ...
+                    toast.dispose();
+                });
+
+                document.getElementById('readyButton').addEventListener('click', function() {
+                    clearInterval(countdownInterval);
+                    console.log("Le joueur est prêt.");
+                    
+                    // Récupérer l'ID du tournoi à partir d'un endroit approprié, par exemple en le stockant quelque part lors de la création du toast
+                    const tournamentId = data.tournament_id; // Vous devez remplacer ceci par le moyen approprié pour obtenir l'ID du tournoi
+                
+                    // Envoyer une requête au serveur pour confirmer la présence du joueur
+                    fetch(`/api/set_player_ready/${tournamentId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Réponse du serveur:', data);
+                        if (data.error) {
+                            alert(data.error);
+                        } else {
+                            // Gérer la confirmation de la présence du joueur ici
+                            alert("Présence du joueur confirmée");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la confirmation de la présence du joueur:', error);
+                    });
+                
+                    toast.dispose();
+                });
+                
+
+                document.getElementById('noButton').addEventListener('click', function () {
+                    clearInterval(countdownInterval);
+                    console.log("Le joueur a refusé.");
+                    // Envoyer une requête au serveur pour annuler le tournoi
+                    // ...
+                    toast.dispose();
+                });
+            }
+
         } catch (error) {
             console.error('Erreur de parsing JSON:', error);
         }
     };
+
+    function startCountdown(duration, display, onCountdownFinished) {
+        let timer = duration, minutes, seconds;
+        const countdownInterval = setInterval(function () {
+            seconds = parseInt(timer % 59, 10);
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            display.textContent = seconds;
+
+            if (--timer < 0) {
+                clearInterval(countdownInterval);
+                onCountdownFinished();
+            }
+        }, 1000);
+        return countdownInterval;
+    }
+
+
 
     function updateSocketId(socketId) {
         fetch('/api/update_socket_id/', {
@@ -174,24 +270,24 @@ function startPongGame(gameId) {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         },
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.error) {
-            console.error(data.error);
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                console.error(data.error);
+                alert('Erreur lors du traitement de la demande');
+            } else {
+                console.log(data.message, 'Nombre de jeux:', data.nbre_games);
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors du traitement de la demande:', error);
             alert('Erreur lors du traitement de la demande');
-        } else {
-            console.log(data.message, 'Nombre de jeux:', data.nbre_games);
-        }
-    })
-    .catch(error => {
-        console.error('Erreur lors du traitement de la demande:', error);
-        alert('Erreur lors du traitement de la demande');
-    });
+        });
 
     // Logique pour initialiser et démarrer la partie de Pong
     console.log('!!!!Démarrage de la partie de Pong STARTPONGGAME');

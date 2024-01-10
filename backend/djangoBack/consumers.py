@@ -15,9 +15,10 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"socket_id": self.channel_name}))
         await self.channel_layer.group_add("tournament_updates", self.channel_name)
 
-
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard("tournament_updates", self.channel_name)
+        await self.channel_layer.group_discard("tournament_is_full", self.channel_name)
+
 
         pass
 
@@ -32,6 +33,13 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         print("websocket send tournament")
         await self.send(text_data=json.dumps({
                     "type": "tournament_update",
+                    "message": event["message"]
+                }))
+        
+    async def tournament_full(self, event):
+        print("websocket send tournament full")
+        await self.send(text_data=json.dumps({
+                    "type": "tournament_full",
                     "message": event["message"]
                 }))
 

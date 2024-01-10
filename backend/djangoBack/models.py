@@ -83,7 +83,6 @@ class FriendRequest(models.Model):
     
 class Player(models.Model):
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
-    # Vous pouvez inclure d'autres détails spécifiques au joueur ici, si nécessaire
 
     def __str__(self):
         return self.user.username
@@ -94,12 +93,24 @@ class Tournament(models.Model):
     end_date = models.DateTimeField(null=True)
     number_of_players = models.IntegerField()
     is_active = models.BooleanField(default=True)
-    participants = models.ManyToManyField(Player, related_name='tournaments', blank=True)
+    participants = models.ManyToManyField(
+        'Player',
+        through='TournamentParticipation',
+        related_name='tournaments',
+        blank=True
+    )
     participants_count = models.IntegerField(default=0)
-
 
     def __str__(self):
         return f"{self.name} ({self.start_date} - {self.end_date})"
+
+class TournamentParticipation(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    is_ready = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ['tournament', 'player']
 
 class Match(models.Model):
     tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)
@@ -110,7 +121,6 @@ class Match(models.Model):
     score_player_one = models.IntegerField(default=0)
     score_player_two = models.IntegerField(default=0)
     winner = models.ForeignKey(Player, related_name='won_matches', on_delete=models.SET_NULL, null=True, blank=True)
-    # Vous pourriez aussi vouloir avoir un champ pour le statut du match, comme 'Scheduled', 'In Progress', 'Completed'
 
     def __str__(self):
         return f"{self.round} - {self.player_one} vs {self.player_two} on {self.date_time}"

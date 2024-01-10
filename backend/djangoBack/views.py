@@ -19,11 +19,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 from django.db.models import Q
-from djangoBack.models import User, PongGame  # Importez directement les modèles nécessaires
+# Importez directement les modèles nécessaires
+from djangoBack.models import User, PongGame
 from djangoBack import settings
 
 # Local application imports
-from djangoBack.models import Player, Tournament, User, FriendRequest, PongGame, Match
+from djangoBack.models import Player, Tournament, User, FriendRequest, PongGame, Match, TournamentParticipation
 from djangoBack.helpers import (
     get_tokens_for_user, send_two_factor_email, generate_qr_code,
     retrieve_stored_2fa_code
@@ -73,6 +74,7 @@ def join_game_queue(request):
 
         return JsonResponse({'message': 'Vous êtes en file d attente pour une nouvelle partie', 'game_id': new_game.id, 'player_role': 1})
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def update_nbre_games(request):
@@ -86,6 +88,7 @@ def update_nbre_games(request):
     except Exception as e:
         # En cas d'erreur, retourner une réponse JSON avec les détails de l'erreur
         return JsonResponse({'status': 'error', 'message': 'Erreur lors de la mise à jour du nombre de jeux.'}, status=500)
+
 
 @api_view(['POST'])
 @csrf_exempt
@@ -396,7 +399,8 @@ def get_friends(request):
     user = request.user
     friends = user.friends.all()
 
-    games_played = PongGame.objects.filter(Q(player_one=user) | Q(player_two=user))
+    games_played = PongGame.objects.filter(
+        Q(player_one=user) | Q(player_two=user))
 
     games_data = []
     for game in games_played:
@@ -422,11 +426,11 @@ def get_friends(request):
         'status': friend.status,
         'nbreGames': friend.nbre_games,
         'victories': friend.won_game,
-        'recent_games': games_data  # Assurez-vous que cela reflète ce que vous souhaitez envoyer
+        # Assurez-vous que cela reflète ce que vous souhaitez envoyer
+        'recent_games': games_data
     } for friend in friends]
 
     return JsonResponse(friends_data, safe=False)
-
 
 
 @api_view(['POST'])
@@ -523,6 +527,7 @@ def update_language(request):
     else:
         return JsonResponse({'error': 'No language provided'}, status=400)
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_tournament(request):
@@ -553,23 +558,29 @@ def create_tournament(request):
             if number_of_players == 4:
                 # Créer les demi-finales et la finale
                 for i in range(1, 3):
-                    Match.objects.create(tournament=tournament, round="Demi-finale")
+                    Match.objects.create(
+                        tournament=tournament, round="Demi-finale")
                 Match.objects.create(tournament=tournament, round="Finale")
             elif number_of_players == 8:
                 # Créer les quarts de finale, les demi-finales et la finale
                 for i in range(1, 5):
-                    Match.objects.create(tournament=tournament, round="Quart de finale")
+                    Match.objects.create(
+                        tournament=tournament, round="Quart de finale")
                 for i in range(1, 3):
-                    Match.objects.create(tournament=tournament, round="Demi-finale")
+                    Match.objects.create(
+                        tournament=tournament, round="Demi-finale")
                 Match.objects.create(tournament=tournament, round="Finale")
             elif number_of_players == 16:
                 # Créer les huitièmes de finale, les quarts de finale, les demi-finales et la finale
                 for i in range(1, 9):
-                    Match.objects.create(tournament=tournament, round="Huitième de finale")
+                    Match.objects.create(
+                        tournament=tournament, round="Huitième de finale")
                 for i in range(1, 5):
-                    Match.objects.create(tournament=tournament, round="Quart de finale")
+                    Match.objects.create(
+                        tournament=tournament, round="Quart de finale")
                 for i in range(1, 3):
-                    Match.objects.create(tournament=tournament, round="Demi-finale")
+                    Match.objects.create(
+                        tournament=tournament, round="Demi-finale")
                 Match.objects.create(tournament=tournament, round="Finale")
 
             return JsonResponse({'success': 'Tournament created successfully', 'tournament_id': tournament.id}, status=201)
@@ -586,7 +597,7 @@ def register_to_tournament(request, tournament_id):
         player, created = Player.objects.get_or_create(user=request.user)
 
         # Vérifier si le tournoi a atteint son nombre maximum de joueurs
-        if tournament.participants.count() >= tournament.number_of_players:
+        if tournament.participants.count() > tournament.number_of_players:
             return JsonResponse({'error': 'Le tournoi est complet'}, status=400)
 
         print("player:..........", player)
@@ -607,6 +618,20 @@ def register_to_tournament(request, tournament_id):
                 },
             }
         )
+        print("nbre participant = ", tournament.participants_count)
+
+        if tournament.participants_count == tournament.number_of_players:
+            channel_layer = get_channel_layer()
+            for participant in tournament.participants.all():
+                if participant.user.socket_id:  # Assurez-vous que l'utilisateur a un ID de socket valide
+                    async_to_sync(channel_layer.send)(participant.user.socket_id, {
+                        "type": "websocket.send",
+                        "text": json.dumps({
+                            "type": "tournament_full",
+                            "message": f"Le tournoi '{tournament.name}' est maintenant complet. Confirmez votre participation.",
+                            "tournament_id": tournament.id
+                        })
+                    })
 
         return JsonResponse({'message': 'Inscription réussie', 'current_participants': tournament.participants.count()}, status=200)
     except Tournament.DoesNotExist:
@@ -624,7 +649,7 @@ def unregister_from_tournament(request, tournament_id):
         if tournament.participants.count() >= tournament.number_of_players:
             return JsonResponse({'error': 'Le tournoi est complet'}, status=400)
 
-        print("player:..........", player)
+        print("player unregister:..........", player)
         tournament.participants.remove(player)
         tournament.participants_count = tournament.participants.count()
         tournament.save()
@@ -705,3 +730,83 @@ def tournament_details(request, tournament_id):
         return JsonResponse(data, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def set_player_ready(request, tournament_id):
+    try:
+        player = Player.objects.get(user=request.user)
+        tournament = Tournament.objects.get(id=tournament_id)
+        participation = TournamentParticipation.objects.get(player=player, tournament=tournament)
+
+        # Mettre à jour le statut 'is_ready' du joueur dans le tournoi
+        participation.is_ready = True
+        participation.save()
+
+        # Vérifier si tous les joueurs du tournoi sont prêts
+        all_ready = all(participant.is_ready for participant in TournamentParticipation.objects.filter(tournament=tournament))
+        
+        if all_ready:
+            # Tous les joueurs sont prêts, remplir les matches et démarrer le tournoi
+            fill_tournament_matches(tournament)
+
+        return JsonResponse({'message': 'Statut Ready mis à jour avec succès'}, status=200)
+    except Tournament.DoesNotExist:
+        return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
+    except Player.DoesNotExist:
+        return JsonResponse({'error': 'Joueur non trouvé'}, status=404)
+    except TournamentParticipation.DoesNotExist:
+        return JsonResponse({'error': 'Participation au tournoi non trouvée'}, status=404)
+
+
+
+def fill_tournament_matches(tournament):
+    participants = list(tournament.participants.all())
+    matches = list(Match.objects.filter(tournament=tournament).order_by('id'))
+
+    # Assurez-vous qu'il y a suffisamment de participants pour tous les matchs
+    if len(participants) < len(matches) * 2:
+        # Vous pouvez gérer les cas où il n'y a pas assez de participants ici
+        return
+
+    for match in matches:
+        if participants:
+            match.player_one = participants.pop(0)  # Assigner le premier joueur disponible
+        if participants:
+            match.player_two = participants.pop(0)  # Assigner le deuxième joueur disponible
+        match.save()
+
+    # Marquez le tournoi comme commencé
+    tournament.is_active = True
+    tournament.save()
+
+    
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def startTournament(request, tournament_id):
+#     try:
+#         tournament = Tournament.objects.get(id=tournament_id)
+
+#         # Vérifier si tous les joueurs sont prêts
+#         if not all(participant.is_ready for participant in tournament.participants.all()):
+#             return JsonResponse({'error': 'Tous les joueurs ne sont pas prêts'}, status=400)
+
+#         # Récupérer tous les participants prêts dans l'ordre de leur inscription
+#         ready_players = tournament.participants.filter(is_ready=True).order_by('id')
+
+#         # Remplir les matches avec les joueurs
+#         for match in tournament.matches.filter(player_one__isnull=True, player_two__isnull=True):
+#             if ready_players.exists():
+#                 match.player_one = ready_players.first()
+#                 ready_players = ready_players[1:]
+#             if ready_players.exists():
+#                 match.player_two = ready_players.first()
+#                 ready_players = ready_players[1:]
+#             match.save()
+
+#         return JsonResponse({'message': 'Le tournoi a commencé avec succès'}, status=200)
+#     except Tournament.DoesNotExist:
+#         return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
+
+
+
