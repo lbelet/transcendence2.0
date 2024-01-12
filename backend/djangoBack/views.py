@@ -735,6 +735,7 @@ def tournament_details(request, tournament_id):
 @permission_classes([IsAuthenticated])
 def set_player_ready(request, tournament_id):
     try:
+        print("inside setPlayerReady")
         player = Player.objects.get(user=request.user)
         tournament = Tournament.objects.get(id=tournament_id)
         participation = TournamentParticipation.objects.get(player=player, tournament=tournament)
@@ -747,6 +748,7 @@ def set_player_ready(request, tournament_id):
         all_ready = all(participant.is_ready for participant in TournamentParticipation.objects.filter(tournament=tournament))
         
         if all_ready:
+            print("all Ready")
             # Tous les joueurs sont prêts, remplir les matches et démarrer le tournoi
             fill_tournament_matches(tournament)
 
@@ -759,26 +761,43 @@ def set_player_ready(request, tournament_id):
         return JsonResponse({'error': 'Participation au tournoi non trouvée'}, status=404)
 
 
-
 def fill_tournament_matches(tournament):
-    participants = list(tournament.participants.all())
-    matches = list(Match.objects.filter(tournament=tournament).order_by('id'))
+    print("Remplissage des matches pour le tournoi:", tournament.name)
 
-    # Assurez-vous qu'il y a suffisamment de participants pour tous les matchs
-    if len(participants) < len(matches) * 2:
-        # Vous pouvez gérer les cas où il n'y a pas assez de participants ici
-        return
+    # Récupérer les participations des joueurs qui sont prêts
+    ready_participations = TournamentParticipation.objects.filter(
+        tournament=tournament, 
+        is_ready=True
+    ).order_by('id')
 
+    ready_players = [participation.player for participation in ready_participations]
+
+    # Récupérer les matches du tournoi
+    matches = list(tournament.matches.order_by('id'))
+
+    print("nbre de joueurs prets: ", len(ready_players))
+    print("nbre de matches a remplir: ", len(matches))
+    # Vérifier s'il y a suffisamment de joueurs prêts pour remplir les matches
+    # if len(ready_players) < len(matches) * 2:
+    #     print("Pas assez de joueurs prêts pour remplir les matches")
+    #     return
+
+    # Attribuer les joueurs aux matches
+    player_iterator = iter(ready_players)
     for match in matches:
-        if participants:
-            match.player_one = participants.pop(0)  # Assigner le premier joueur disponible
-        if participants:
-            match.player_two = participants.pop(0)  # Assigner le deuxième joueur disponible
-        match.save()
+        try:
+            match.player_one = next(player_iterator)
+            match.player_two = next(player_iterator)
+            match.save()
+        except StopIteration:
+            break
+
+    print("Matches du tournoi remplis avec succès")
+
 
     # Marquez le tournoi comme commencé
-    tournament.is_active = True
-    tournament.save()
+    # tournament.is_active = True
+    # tournament.save()
 
     
 # @api_view(['GET'])
