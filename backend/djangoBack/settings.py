@@ -37,6 +37,7 @@ DATABASES = {
 INSTALLED_APPS = [
     'djangoBack',  # Your Django application
     'channels',    # Add this line
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,6 +49,8 @@ INSTALLED_APPS = [
 
 # Django middleware
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,6 +59,15 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+ #configure CORS to allow all domains during development. This is not recommended for production:
+CORS_ALLOW_ALL_ORIGINS = True  # For development only
+#For production
+# CORS_ALLOWED_ORIGINS = [
+#     "https://example.com",
+#     "https://sub.example.com",
+#     "http://localhost:8000",
+#     "http://127.0.0.1:9000",
+# ]
 
 # URL configuration
 ROOT_URLCONF = 'djangoBack.urls'

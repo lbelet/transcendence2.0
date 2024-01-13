@@ -1,0 +1,19 @@
+#virtual environment 
+.venv/
+venv/
+env/
+#Compiled Python files: byte-compiled / optimized / DLL files:
+*.pyc
+*.pyo
+__pycache__
+#Local log files or directories
+*.log
+logs/
+.git
+.gitignore
+.gitattributes
+#OS generated files
+.DS_Store
+Thumbs.db
+#contain sensitive data
+.env

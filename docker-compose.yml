@@ -7,10 +7,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - .env
-    # environment:
-    #   - POSTGRES_DB=your_database_name
-    #   - POSTGRES_USER=user
-    #   - POSTGRES_PASSWORD=password
     ports:
       - "5432:5432"
 
@@ -18,9 +14,6 @@ services:
     image: dpage/pgadmin4
     env_file:
       - .env
-    # environment:
-    #   - PGADMIN_DEFAULT_EMAIL=your_email@example.com
-    #   - PGADMIN_DEFAULT_PASSWORD=your_password
     ports:
       - "5050:80"
 
@@ -32,13 +25,6 @@ services:
       - media_volume:/app/media
     env_file:
       - .env
-    # environment:
-    #   - POSTGRES_DB=your_database_name
-    #   - POSTGRES_USER=user
-    #   - POSTGRES_PASSWORD=password
-    #   - DJANGO_SECRET_KEY=your_secret_key
-    #   - DJANGO_DEBUG=True
-    #   - DJANGO_ALLOWED_HOSTS=192.168.8.102 192.168.8.101 192.168.8.100 localhost 127.0.0.1 [::1]
     depends_on:
       - db
       - redis

@@ -1,6 +1,7 @@
 # Standard library imports
 from django.db.models import Q
 import json
+import os
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, update_session_auth_hash
@@ -17,6 +18,7 @@ from asgiref.sync import async_to_sync
 import pyotp
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from django.db import transaction
 from django.db.models import Q
 # Importez directement les modèles nécessaires
@@ -32,9 +34,64 @@ from djangoBack.helpers import (
 
 # from django.db.models import F
 
-
 # import time
 
+def get_config(request):
+    config_data = {
+        'client_id': os.getenv('CLIENT_ID', 'default_client_id'),
+        'redirect_uri': os.getenv('REDIRECT_URI', 'default_redirect_uri'),
+        'oauth_url': os.getenv('OAUTH2_AUTH_URL', 'default_oauth_url'),
+        'scope': os.getenv('CLIENT_SCOPE', 'default_scope'),
+    }
+    return JsonResponse(config_data)
+
+def oauth_callback(request):
+    # Assuming the OAuth provider redirects back with a code in the URL
+    authorization_code = request.GET.get('code')
+
+    if authorization_code:
+        # Exchange the authorization code for an access token
+        token_url = os.getenv('TOKEN_URL', 'default_token_url')
+        client_id = os.getenv('CLIENT_ID')
+        client_secret = os.getenv('CLIENT_SECRET')
+        redirect_uri = os.getenv('REDIRECT_URI')
+
+        data = {
+            'grant_type': 'authorization_code',
+            'code': authorization_code,
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'redirect_uri': redirect_uri
+        }
+
+        response = requests.post(token_url, data=data)
+        if response.status_code == 200:
+            access_token = response.json().get('access_token')
+            # Additional logic to create/update user and create your own app's token
+            # ...
+            return JsonResponse({'status': 'success', 'access_token': access_token})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Failed to obtain access token'}, status=400)
+
+    return JsonResponse({'status': 'error', 'message': 'No authorization code provided'}, status=400)
+
+
+# def ouath_callback(request):
+#     authorization_code = request.GET.get('code', '')  # Assuming code is sent as a GET parameter
+#     token_url = os.getenv('OAUTH2_TOKEN_URL', 'default_token_url')
+#     client_id = os.getenv('CLIENT_ID', 'default_client_id')
+#     client_secret = os.getenv('CLIENT_SECRET', 'default_client_secret')
+#     redirect_uri = os.getenv('REDIRECT_URI', 'default_redirect_uri')
+
+#     response = requests.post(token_url, data={
+#         'grant_type': 'authorization_code',
+#         'code': authorization_code,
+#         'client_id': client_id,
+#         'client_secret': client_secret,
+#         'redirect_uri': redirect_uri
+#     })
+
+#     return JsonResponse(response.json())  # You might want to handle errors and format the response
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
