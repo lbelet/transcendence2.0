@@ -70,9 +70,6 @@ async function showAlert(key) {
     }
 }
 
-
-
-
 function logout() {
 
     if (websocket && websocket.readyState === WebSocket.OPEN) {

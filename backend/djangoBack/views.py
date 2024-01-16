@@ -751,6 +751,9 @@ def set_player_ready(request, tournament_id):
             print("all Ready")
             # Tous les joueurs sont prêts, remplir les matches et démarrer le tournoi
             fill_tournament_matches(tournament)
+            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! idee de genie
+            return JsonResponse({'message': 'all ready'}, status=200)
+
 
         return JsonResponse({'message': 'Statut Ready mis à jour avec succès'}, status=200)
     except Tournament.DoesNotExist:
@@ -789,6 +792,41 @@ def fill_tournament_matches(tournament):
             match.player_one = next(player_iterator)
             match.player_two = next(player_iterator)
             match.save()
+
+            group_name = f"pong_game_{match.id}"
+            print("groupNAME in views: ", group_name)
+            channel_layer = get_channel_layer()
+            
+            # Ajouter les ID de socket des joueurs à ce groupe
+            if match.player_one.user.game_socket_id:
+                async_to_sync(channel_layer.group_add)(group_name, match.player_one.user.game_socket_id)
+                print("player1, match: ", match.player_one.user.get_username(), match.id)
+            if match.player_two.user.game_socket_id:
+                async_to_sync(channel_layer.group_add)(group_name, match.player_two.user.game_socket_id)
+                print("player2, match: ",match.player_two.user.get_username(), match.id)
+            
+            if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
+                    # Envoyer les rôles des joueurs
+                async_to_sync(channel_layer.group_send)(
+                    group_name,
+                    {
+                        "type": "send_players_roles",
+                        "game_id": match.id,
+                        "player_one_username": match.player_one.user.username,
+                        "player_two_username": match.player_two.user.username
+                    }
+                )
+
+            if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
+                print("send gameStart to: ", group_name)
+                async_to_sync(channel_layer.group_send)(
+                    group_name,
+                {
+                    "type": "game_start",
+                    "game_id": match.id
+                }
+            )
+
         except StopIteration:
             break
 

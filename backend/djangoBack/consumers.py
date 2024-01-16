@@ -64,6 +64,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def game_loop(self):
         while self.game_active:
             print("game loop ok")
+            print("groupName: ", f'pong_game_{self.game_id}')
             await self.update_ball_position()
             await self.channel_layer.group_send(
                 f'pong_game_{self.game_id}',
@@ -94,6 +95,17 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.mark_player_joined(self.game_id, self.channel_name)
             if self.both_players_joined(self.game_id):
                 await self.send_game_start()
+        
+        # if data.get('type') == 'join_match_channel':
+        #     match_id = data['match_id']
+        #     self.match_group_name = f"match_{match_id}"
+        #     await self.channel_layer.group_add(self.match_group_name, self.channel_name)
+
+        #     # Envoyer confirmation de connexion au groupe de match
+        #     await self.send(text_data=json.dumps({
+        #         'type': 'match_channel_joined',
+        #         'match_id': match_id
+        #     }))
 
         if data.get('type') == 'paddle_move':
             move_amount = 2  # Ajustez selon les besoins
@@ -107,13 +119,13 @@ class GameConsumer(AsyncWebsocketConsumer):
                 game_state['paddles']['paddle2']['x'] += move_amount
             elif data['action'] == 'move_left_paddle2':
                 game_state['paddles']['paddle2']['x'] -= move_amount
-        await self.channel_layer.group_send(
-            f'pong_game_{self.game_id}',
-            {
-                'type': 'send_paddles_update',
-                'paddles_state': self.get_paddles_state()
-            }
-        )
+            await self.channel_layer.group_send(
+                f'pong_game_{self.game_id}',
+                {
+                    'type': 'send_paddles_update',
+                    'paddles_state': self.get_paddles_state()
+                }
+            )
 
     def mark_player_joined(self, game_id, channel_name):
         self.initialize_game_state(game_id)
@@ -153,7 +165,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         ball['x'] += ball['dx']
         ball['z'] += ball['dz']
 
-        print('ball z: ', ball['z'])
+        # print('ball z: ', ball['z'])
 
         if ball['z'] < -15 or ball['z'] > 15:
             print('out')
@@ -238,6 +250,15 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'game_start',
             'game_id': event['game_id']
+        }))
+
+    async def send_players_roles(self, event):
+        player_one_username = event['player_one_username']
+        player_two_username = event['player_two_username']
+        await self.send(text_data=json.dumps({
+            "type": "player_roles",
+            "player_one_username": player_one_username,
+            "player_two_username": player_two_username
         }))
 
     async def send_score_update(self, event):

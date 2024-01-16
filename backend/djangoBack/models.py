@@ -15,6 +15,7 @@ class UserManager(BaseUserManager):
         return user
 
 class User(AbstractBaseUser):
+    # pseudo42 = models.CharField (null=True, unique=True)
     username = models.CharField(max_length=100, unique=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)

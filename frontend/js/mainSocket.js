@@ -36,6 +36,15 @@ function openWebSocketConnection() {
             if (data.type === 'tournament_full') {
                 console.log("tournament full: ", data.message);
 
+                openGameWebSocketConnection()
+                    .then(gameSocketId => {
+                        console.log("Connexion WebSocket de jeu établie, ID:", gameSocketId);
+                        updateGameSocketId(gameSocketId);
+                    })
+                    .catch(error => {
+                        console.error("Erreur lors de l'établissement de la connexion WebSocket de jeu:", error);
+                    }); 
+
                 // Afficher un toast Bootstrap pour la notification
                 const toastElement = document.createElement('div');
                 toastElement.classList.add('toast');
@@ -74,8 +83,7 @@ function openWebSocketConnection() {
                     clearInterval(countdownInterval);
                     console.log("Le joueur est prêt.");
                     
-                    // Récupérer l'ID du tournoi à partir d'un endroit approprié, par exemple en le stockant quelque part lors de la création du toast
-                    const tournamentId = data.tournament_id; // Vous devez remplacer ceci par le moyen approprié pour obtenir l'ID du tournoi
+                    const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
                 
                     // Envoyer une requête au serveur pour confirmer la présence du joueur
                     fetch(`/api/set_player_ready/${tournamentId}/`, {
@@ -91,8 +99,16 @@ function openWebSocketConnection() {
                         if (data.error) {
                             alert(data.error);
                         } else {
-                            // Gérer la confirmation de la présence du joueur ici
-                            alert("Présence du joueur confirmée");
+                            console.log("Présence du joueur confirmée");
+                            // Ouvrir la connexion WebSocket pour le jeu
+                            // openGameWebSocketConnection()
+                            //     .then(gameSocketId => {
+                            //         console.log("Connexion WebSocket de jeu établie, ID:", gameSocketId);
+                            //         updateGameSocketId(gameSocketId);
+                            //     })
+                            //     .catch(error => {
+                            //         console.error("Erreur lors de l'établissement de la connexion WebSocket de jeu:", error);
+                            //     }); 
                         }
                     })
                     .catch(error => {
@@ -101,6 +117,7 @@ function openWebSocketConnection() {
                 
                     toast.dispose();
                 });
+                
                 
 
                 document.getElementById('noButton').addEventListener('click', function () {
@@ -204,7 +221,7 @@ function openGameWebSocketConnection() {
             try {
                 const data = JSON.parse(event.data);
                 // console.log("data gamesocket: ", data);
-                console.log("data type: ", data.type);
+                // console.log("data type: ", data.type);
 
                 if (data.game_socket_id) {
                     // console.log('Game Socket ID reçu:', data.game_socket_id);
@@ -212,6 +229,12 @@ function openGameWebSocketConnection() {
                 }
                 if (data.status === 'added_to_game') {
                     console.log('!!!!!!!dans le channel gameSocket');
+                }
+
+                if (data.type === 'player_roles') {
+                    var playerRole = (data.player_one_username === localStorage.getItem("username")) ? 1 : 2;
+                    localStorage.setItem('playerRole', playerRole);
+                    console.log("Mon rôle dans le match:", playerRole);
                 }
 
                 if (data.type === 'game_start') {
@@ -224,7 +247,7 @@ function openGameWebSocketConnection() {
                     applyGameState(data.paddles_state);
                 }
                 else if (data.type === 'ball_update') {
-                    console.log("ball_update ok")
+                    // console.log("ball_update ok")
                     applyBallState(data.ball_state);
                 }
                 else if (data.type === 'score_update') {
