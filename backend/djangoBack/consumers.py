@@ -4,7 +4,7 @@ import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
-from djangoBack.models import PongGame, User
+from djangoBack.models import Match, Player, PongGame, User
 from asgiref.sync import sync_to_async
 
 
@@ -75,6 +75,20 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
             await asyncio.sleep(0.10)
 
+    async def game_loop_tournament(self):
+        while self.game_active:
+            print("game loop ok")
+            print("groupName: ", f'pong_game_{self.game_id}')
+            await self.update_ball_position_tournament()
+            await self.channel_layer.group_send(
+                f'pong_game_{self.game_id}',
+                {
+                    'type': 'send_ball_update_tournament',
+                    'ball_state': self.get_ball_state()
+                }
+            )
+            await asyncio.sleep(0.10)
+
     async def receive(self, text_data):
         data = json.loads(text_data)
         print("Message reçu dans GameConsumer: ", data)
@@ -126,6 +140,26 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'paddles_state': self.get_paddles_state()
                 }
             )
+        
+        if data.get('type') == 'paddle_move_tournament':
+            move_amount = 2  # Ajustez selon les besoins
+            game_state = self.game_states[self.game_id]
+
+            if data['action'] == 'move_right_paddle1':
+                game_state['paddles']['paddle1']['x'] += move_amount
+            elif data['action'] == 'move_left_paddle1':
+                game_state['paddles']['paddle1']['x'] -= move_amount
+            elif data['action'] == 'move_right_paddle2':
+                game_state['paddles']['paddle2']['x'] += move_amount
+            elif data['action'] == 'move_left_paddle2':
+                game_state['paddles']['paddle2']['x'] -= move_amount
+            await self.channel_layer.group_send(
+                f'pong_game_{self.game_id}',
+                {
+                    'type': 'send_paddles_update_tournament',
+                    'paddles_state': self.get_paddles_state()
+                }
+            )
 
     def mark_player_joined(self, game_id, channel_name):
         self.initialize_game_state(game_id)
@@ -148,9 +182,21 @@ class GameConsumer(AsyncWebsocketConsumer):
             'paddles_state': event['paddles_state']
         }))
 
+    async def send_paddles_update_tournament(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'paddles_update_tournament',  
+            'paddles_state': event['paddles_state']
+        }))
+
     async def send_ball_update(self, event):
         await self.send(text_data=json.dumps({
             'type': 'ball_update', 
+            'ball_state': event['ball_state']
+        }))
+
+    async def send_ball_update_tournament(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'ball_update_tournament', 
             'ball_state': event['ball_state']
         }))
 
@@ -216,6 +262,68 @@ class GameConsumer(AsyncWebsocketConsumer):
         if game_state['score']['player1'] >= 3 or game_state['score']['player2'] >= 3:
             await self.end_game({'game_id': self.game_id})
 
+    async def update_ball_position_tournament(self):
+        game_state = self.game_states[self.game_id]
+        ball = game_state['ball']['ball']
+        paddle1 = game_state['paddles']['paddle1']
+        paddle2 = game_state['paddles']['paddle2']
+
+        base_horizontal_speed = 0.5  
+
+        ball['x'] += ball['dx']
+        ball['z'] += ball['dz']
+
+        # print('ball z: ', ball['z'])
+
+        if ball['z'] < -15 or ball['z'] > 15:
+            print('out')
+
+            if ball['z'] < -15:
+                game_state['score']['player2'] += 1
+            elif ball['z'] > 15:
+                game_state['score']['player1'] += 1
+            print('score send: ', game_state['score'])
+            await self.channel_layer.group_send(
+                f'pong_game_{self.game_id}',
+                {
+                    'type': 'send_score_update_tournament',
+                    'score_state': game_state['score']
+                }
+            )
+            ball['x'], ball['z'] = 0, 0
+            ball['dx'], ball['dz'] = 0, 1
+            paddle1['x'], paddle2['x'] = 0, 0
+            await self.channel_layer.group_send(
+                f'pong_game_{self.game_id}',
+                {
+                    'type': 'send_paddles_update_tournament',
+                    'paddles_state': self.get_paddles_state()
+                }
+            )
+        else:
+            paddles_positions = [(paddle1, -14), (paddle2, 14)]
+            for paddle, z_position in paddles_positions:
+                if abs(ball['z'] - z_position) < 1:  # Seuil de collision
+                    distance_x = ball['x'] - paddle['x']
+                    if abs(distance_x) < 3:  # Largeur de la raquette est 6, donc 3 de chaque côté
+                        ball['dz'] *= -1  # Inverser la direction verticale
+
+                        # Ajuster la direction horizontale selon la zone de collision
+                        if distance_x < -1:  # Tiers gauche
+                            ball['dx'] = -base_horizontal_speed
+                        elif distance_x > 1:  # Tiers droit
+                            ball['dx'] = base_horizontal_speed
+                        else:  # Tiers central
+                            ball['dx'] = 0
+
+            if ball['x'] >= 9.8 or ball['x'] <= -9.8:
+                ball['dx'] *= -1
+        game_state['ball']['ball'] = ball
+        game_state['paddles']['paddle1'] = paddle1
+        game_state['paddles']['paddle2'] = paddle2
+        if game_state['score']['player1'] >= 3 or game_state['score']['player2'] >= 3:
+            await self.end_game_tournament({'game_id': self.game_id})
+
     def get_paddles_state(self):
         if self.game_id in self.game_states:
             game_state = self.game_states[self.game_id]
@@ -258,7 +366,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         self.game_active = True
         self.game_id = game_id
-        asyncio.create_task(self.game_loop())
+        asyncio.create_task(self.game_loop_tournament())
         await self.send(text_data=json.dumps({
             'type': 'game_start_tournament',
             'game_id': event['game_id']
@@ -277,6 +385,13 @@ class GameConsumer(AsyncWebsocketConsumer):
         print('sendScoreUpdate: ', event['score_state'])
         await self.send(text_data=json.dumps({
             'type': 'score_update',
+            'score_state': event['score_state']
+        }))
+
+    async def send_score_update_tournament(self, event):
+        print('sendScoreUpdate: ', event['score_state'])
+        await self.send(text_data=json.dumps({
+            'type': 'score_update_tournament',
             'score_state': event['score_state']
         }))
 
@@ -301,6 +416,33 @@ class GameConsumer(AsyncWebsocketConsumer):
                 f'pong_game_{self.game_id}',
                 {
                     'type': 'send_score_update',
+                    'score_state': self.game_states[self.game_id]['score']
+                }
+            ) 
+        self.game_active = False
+        await self.channel_layer.group_send(
+            f'pong_game_{self.game_id}',
+            {
+                'type': 'send_game_over',
+            }
+        )
+
+    async def end_game_tournament(self, event):
+        print('end game ok')
+
+        score_player_one = self.game_states[self.game_id]['score']['player1']
+        score_player_two = self.game_states[self.game_id]['score']['player2']
+        game_state = self.game_states[self.game_id]
+        winner_channel_name = game_state['player1_channel'] if score_player_one > score_player_two else game_state['player2_channel']
+
+        await self.update_game_in_database_tournament(self.game_id, score_player_one, score_player_two, winner_channel_name)
+        if self.game_id in self.game_states:
+            self.game_states[self.game_id]['score']['player1'] = 0
+            self.game_states[self.game_id]['score']['player2'] = 0
+            await self.channel_layer.group_send(
+                f'pong_game_{self.game_id}',
+                {
+                    'type': 'send_score_update_tournament',
                     'score_state': self.game_states[self.game_id]['score']
                 }
             ) 
@@ -340,6 +482,35 @@ class GameConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             print(f"Erreur lors de l'enregistrement : {e}")
 
+    async def update_game_in_database_tournament(self, game_id, score_player_one, score_player_two, winner_channel_name):
+        await sync_to_async(self._update_game_in_database_tournament)(game_id, score_player_one, score_player_two, winner_channel_name)
+
+
+    def _update_game_in_database_tournament(self, game_id, score_player_one, score_player_two, winner_channel_name):
+        try:
+            match = Match.objects.get(id=game_id)
+            match.score_player_one = score_player_one
+            match.score_player_two = score_player_two
+
+            # Vérifier si le gagnant a déjà été déterminé pour ce jeu
+            if winner_channel_name and not match.winner:
+                winner_user = User.objects.get(game_socket_id=winner_channel_name)
+                winner_player = Player.objects.get(user=winner_user)
+                match.winner = winner_player
+
+                # Mise à jour du nombre de victoires seulement si le gagnant vient d'être déterminé
+                winner_user.won_game += 1
+                winner_user.save()
+
+            match.save()
+        except User.DoesNotExist:
+            print(f"User with game_socket_id {winner_channel_name} not found")
+        except Player.DoesNotExist:
+            print(f"Player for User with game_socket_id {winner_channel_name} not found")
+        except Match.DoesNotExist:
+            print(f"Match with id {game_id} not found")
+        except Exception as e:
+            print(f"Erreur lors de l'enregistrement : {e}")
 
 
     def initialize_game_state(self, game_id):
