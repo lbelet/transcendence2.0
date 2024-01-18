@@ -252,6 +252,18 @@ class GameConsumer(AsyncWebsocketConsumer):
             'game_id': event['game_id']
         }))
 
+    async def game_start_tournament(self, event):
+        game_id = event['game_id']
+        self.initialize_game_state(game_id)
+
+        self.game_active = True
+        self.game_id = game_id
+        asyncio.create_task(self.game_loop())
+        await self.send(text_data=json.dumps({
+            'type': 'game_start_tournament',
+            'game_id': event['game_id']
+        }))
+
     async def send_players_roles(self, event):
         player_one_username = event['player_one_username']
         player_two_username = event['player_two_username']

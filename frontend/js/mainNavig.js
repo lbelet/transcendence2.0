@@ -45,6 +45,7 @@ function hideAllSections() {
     document.getElementById('qrTwoFactor-section').classList.add('hidden');
     document.getElementById('tournament-section').classList.add('hidden');
     document.getElementById('tournamentBracket-section').classList.add('hidden');
+    document.getElementById('pongTournament-section').classList.add('hidden');
 }
 
 function navigateTo(sectionId) {

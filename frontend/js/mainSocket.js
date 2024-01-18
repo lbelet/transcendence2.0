@@ -242,6 +242,11 @@ function openGameWebSocketConnection() {
                     startPongGame(data.game_id);
                 }
 
+                if (data.type === 'game_start_tournament') {
+                    console.log('!!!!Le tournoi de Pong commence grace au sockets');
+                    startPongTournament(data.game_id);
+                }
+
                 else if (data.type === 'paddles_update') {
                     console.log("paddles_update ok")
                     applyGameState(data.paddles_state);
@@ -315,6 +320,40 @@ function startPongGame(gameId) {
     // Logique pour initialiser et démarrer la partie de Pong
     console.log('!!!!Démarrage de la partie de Pong STARTPONGGAME');
     navigateWithTokenCheck('pong');
+
+    window.setPlayerRole();
+}
+
+function startPongTournament(gameId) {
+    fetch('/api/update_nbre_games/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                console.error(data.error);
+                alert('Erreur lors du traitement de la demande');
+            } else {
+                console.log(data.message, 'Nombre de jeux:', data.nbre_games);
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors du traitement de la demande:', error);
+            alert('Erreur lors du traitement de la demande');
+        });
+
+    // Logique pour initialiser et démarrer la partie de Pong
+    console.log('!!!!Démarrage du tournoi pongTournament');
+    navigateWithTokenCheck('pongTournament');
 
     window.setPlayerRole();
 }
