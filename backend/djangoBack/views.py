@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-
+import logging
 
 # Third-party imports
 import pyotp
@@ -20,10 +20,13 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db import transaction
-from django.db.models import Q
+# from django.db.models import Q
 # Importez directement les modèles nécessaires
 from djangoBack.models import User, PongGame
 from djangoBack import settings
+
+from allauth.socialaccount.models import SocialToken
+from rest_framework.views import APIView
 
 # Local application imports
 from djangoBack.models import Player, Tournament, User, FriendRequest, PongGame, Match, TournamentParticipation
@@ -45,16 +48,17 @@ def get_config(request):
     }
     return JsonResponse(config_data)
 
+
 def oauth_callback(request):
     # Assuming the OAuth provider redirects back with a code in the URL
     authorization_code = request.GET.get('code')
 
     if authorization_code:
         # Exchange the authorization code for an access token
-        token_url = os.getenv('TOKEN_URL', 'default_token_url')
-        client_id = os.getenv('CLIENT_ID')
-        client_secret = os.getenv('CLIENT_SECRET')
-        redirect_uri = os.getenv('REDIRECT_URI')
+        token_url = 'https://oauth.provider.com/token'
+        client_id = os.getenv('OAUTH_CLIENT_ID')
+        client_secret = os.getenv('OAUTH_CLIENT_SECRET')
+        redirect_uri = os.getenv('OAUTH_REDIRECT_URI')
 
         data = {
             'grant_type': 'authorization_code',
@@ -74,6 +78,134 @@ def oauth_callback(request):
             return JsonResponse({'status': 'error', 'message': 'Failed to obtain access token'}, status=400)
 
     return JsonResponse({'status': 'error', 'message': 'No authorization code provided'}, status=400)
+
+
+
+@api_view(['POST'])
+def oauth_callback(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method is accepted'}, status=405)
+
+    data = request.data
+    # Extract OAuth token from the request data
+    oauth_token = data.get('oauth_token')
+
+    if not oauth_token:
+        return JsonResponse({'error': 'Invalid OAuth token'}, status=400)
+
+    try:
+        # Get the user associated with the OAuth token
+        social_token = SocialToken.objects.get(token=oauth_token)
+        user = social_token.account.user
+
+        # Check additional conditions if needed
+        # ...
+
+        # Generate tokens for the user
+        tokens = get_tokens_for_user(user)
+
+        return JsonResponse(tokens, status=200)
+    except SocialToken.DoesNotExist:
+        return JsonResponse({'error': 'Invalid OAuth token'}, status=400)
+
+# Example DRF view for protected resource
+class ProtectedResourceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Your logic for handling the protected resource
+        return JsonResponse({'message': 'Protected resource accessed successfully'})
+
+# def oauth_callback(request):
+#     authorization_code = request.GET.get('code')
+
+#     if authorization_code:
+#         token_url = os.getenv('TOKEN_URL', 'default_token_url')
+#         client_id = os.getenv('CLIENT_ID')
+#         client_secret = os.getenv('CLIENT_SECRET')
+#         redirect_uri = os.getenv('REDIRECT_URI')
+
+#         data = {
+#             'grant_type': 'authorization_code',
+#             'code': authorization_code,
+#             'client_id': client_id,
+#             'client_secret': client_secret,
+#             'redirect_uri': redirect_uri
+#         }
+
+#         response = requests.post(token_url, data=data)
+
+#         if response.status_code == 200:
+#             access_token = response.json().get('access_token')
+#             print('Received access_token')
+
+#             def get_user_info(access_token):
+#                 user_info_endpoint = 'https://api.intra.42.fr/v2/me'
+
+#                 user_info_response = requests.get(
+#                     user_info_endpoint,
+#                     headers={'Authorization': f'Bearer {access_token}'}
+#                 )
+
+#                 if user_info_response.status_code == 200:
+#                     user_info = user_info_response.json()
+#                     print('OAuth Provider Response:', response.content)
+#                     if user_info:
+#                         # Print the username
+#                         print('Received username:', user_info['username'])
+
+#                         username = user_info.get('username')
+#                         avatar_url = user_info.get('image_url')
+#                         return {'username': username, 'avatar_url': avatar_url}
+#                     else:
+#                         print('Error: User info is None')
+#                         return None
+#                 else:
+#                     print('Error fetching user info:', user_info_response.status_code, user_info_response.text)
+#                     return None
+
+#             return JsonResponse({'status': 'success', 'user_info': get_user_info(access_token)})
+#         else:
+#             return JsonResponse({'status': 'error', 'message': 'Failed to obtain access token'}, status=400)
+
+#     return JsonResponse({'status': 'error', 'message': 'No authorization code provided'}, status=400)
+
+
+# import requests
+
+# def get_user_info(access_token):
+#     # Replace 'USER_INFO_ENDPOINT' with the actual user info endpoint provided by your OAuth2 provider
+#     user_info_endpoint = 'https://api.intra.42.fr/v2/me'
+
+#     # Make a GET request to the user info endpoint
+#     response = requests.get(
+#         user_info_endpoint,
+#         headers={'Authorization': f'Bearer {access42_token}'}
+#     )
+
+#     if response.status_code == 200:
+#         # Parse the response JSON to get user information
+#         user_info = response.json()
+
+#         # Extract relevant information (replace with actual field names)
+#         username = user_info.get('username')
+#         # email = user_info.get('email')
+#         avatar_url = user_info.get('avatar_url')
+
+#         # Now you can use this information as needed in your application
+#         return {'username': username, 'avatar_url': avatar_url} #'email': email, 
+#     else:
+#         # Handle error
+#         print('Error fetching user info:', response.status_code, response.text)
+#         return None
+
+# Assuming you have the access token obtained earlier
+# access42_token = 'YOUR_ACCESS_TOKEN'
+
+# Call the function to get user information
+# user_info = get_user_info(access_token)
+
+# Now you can use the user_info dictionary in your application
 
 
 # def ouath_callback(request):

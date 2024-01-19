@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
+# class OAuthUser(models.Model):
+#     username = models.CharField(max_length=255)
+
 class UserManager(BaseUserManager):
     use_in_migrations = True
 

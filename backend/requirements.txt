@@ -1,4 +1,4 @@
-asgiref==3.5.0
+asgiref
 Django==3.2.12
 psycopg2-binary==2.9.9
 channels==4.0.0
@@ -10,3 +10,5 @@ uvicorn[standard]
 channels_redis
 python-dotenv
 django-cors-headers
+requests==2.26.0
+django-allauth
