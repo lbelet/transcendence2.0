@@ -148,24 +148,25 @@ scene.add(ambientLight);
 // outlinePass.selectedObjects = [paddle1, paddle2, wall1, wall2, ball];
 // composer.addPass(outlinePass);
 
-if (window.location.pathname === '/pong') {
-    document.addEventListener('keydown', (event) => {
-        console.log("event match ok")
-        // Votre logique existante pour gérer les touches du clavier
-        if (typeof gameWebsocket !== 'undefined' && gameWebsocket.readyState === WebSocket.OPEN) {
-            let action;
-            if (event.key === "ArrowRight") {
-                action = paddleUser == paddle1 ? 'move_right_paddle1' : 'move_right_paddle2';
-            } else if (event.key === "ArrowLeft") {
-                action = paddleUser == paddle1 ? 'move_left_paddle1' : 'move_left_paddle2';
-            }
-
-            if (action) {
-                gameWebsocket.send(JSON.stringify({ type: 'paddle_move', action }));
-            }
+// if (window.location.pathname === '/pong') {
+document.addEventListener('keydown', (event) => {
+    console.log("event match ok")
+    // Votre logique existante pour gérer les touches du clavier
+    if (typeof gameWebsocket !== 'undefined' && gameWebsocket.readyState === WebSocket.OPEN && window.location.pathname === '/pong') {
+        let action;
+        console.log("touches match ok")
+        if (event.key === "ArrowRight") {
+            action = paddleUser == paddle1 ? 'move_right_paddle1' : 'move_right_paddle2';
+        } else if (event.key === "ArrowLeft") {
+            action = paddleUser == paddle1 ? 'move_left_paddle1' : 'move_left_paddle2';
         }
-    });
-}
+
+        if (action) {
+            gameWebsocket.send(JSON.stringify({ type: 'paddle_move', action }));
+        }
+    }
+});
+// }
 
 window.updateGameFromState = function (newGameState) {
     console.log("Mise à jour de l'état des raquettes reçue:", newGameState);

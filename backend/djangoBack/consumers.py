@@ -77,7 +77,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def game_loop_tournament(self):
         while self.game_active:
-            print("game loop ok")
+            print("game loop tournament ok")
             print("groupName: ", f'pong_game_{self.game_id}')
             await self.update_ball_position_tournament()
             await self.channel_layer.group_send(
@@ -145,13 +145,13 @@ class GameConsumer(AsyncWebsocketConsumer):
             move_amount = 2  # Ajustez selon les besoins
             game_state = self.game_states[self.game_id]
 
-            if data['action'] == 'move_right_paddle1':
+            if data['action'] == 'move_right_paddle12':
                 game_state['paddles']['paddle1']['x'] += move_amount
-            elif data['action'] == 'move_left_paddle1':
+            elif data['action'] == 'move_left_paddle12':
                 game_state['paddles']['paddle1']['x'] -= move_amount
-            elif data['action'] == 'move_right_paddle2':
+            elif data['action'] == 'move_right_paddle22':
                 game_state['paddles']['paddle2']['x'] += move_amount
-            elif data['action'] == 'move_left_paddle2':
+            elif data['action'] == 'move_left_paddle22':
                 game_state['paddles']['paddle2']['x'] -= move_amount
             await self.channel_layer.group_send(
                 f'pong_game_{self.game_id}',
@@ -163,6 +163,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     def mark_player_joined(self, game_id, channel_name):
         self.initialize_game_state(game_id)
+
+        print("channel name: ", channel_name)
 
         if self.game_states[game_id]['player1_channel'] is None:
             self.game_states[game_id]['player1_channel'] = channel_name
@@ -463,7 +465,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             game = PongGame.objects.get(id=game_id)
             game.score_player_one = score_player_one
             game.score_player_two = score_player_two
-
             # Vérifier si le gagnant a déjà été déterminé pour ce jeu
             if winner_channel_name and not game.winner:
                 winner_user = User.objects.get(game_socket_id=winner_channel_name)
@@ -492,8 +493,12 @@ class GameConsumer(AsyncWebsocketConsumer):
             match.score_player_one = score_player_one
             match.score_player_two = score_player_two
 
+            print("le winner est: ", winner_channel_name)
+
+
             # Vérifier si le gagnant a déjà été déterminé pour ce jeu
             if winner_channel_name and not match.winner:
+                print("dans le if")
                 winner_user = User.objects.get(game_socket_id=winner_channel_name)
                 winner_player = Player.objects.get(user=winner_user)
                 match.winner = winner_player

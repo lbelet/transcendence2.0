@@ -254,17 +254,17 @@ function openGameWebSocketConnection() {
 
                 else if (data.type === 'paddles_update_tournament') {
                     console.log("paddles_update_tournament ok")
-                    applyGameState(data.paddles_state);
+                    applyGameState_tournament(data.paddles_state);
                 }
 
                 else if (data.type === 'ball_update') {
-                    // console.log("ball_update ok")
+                    console.log("ball_update ok: ", data.ball_state)
                     applyBallState(data.ball_state);
                 }
 
                 else if (data.type === 'ball_update_tournament') {
-                    // console.log("ball_update ok")
-                    applyBallState(data.ball_state);
+                    console.log("ball_update_tournament ok: ", data.ball_state)
+                    applyBallState_tournament(data.ball_state);
                 }
 
                 else if (data.type === 'score_update') {
@@ -276,7 +276,7 @@ function openGameWebSocketConnection() {
                 else if (data.type === 'score_update_tournament') {
                     console.log("data update score: ", data)
                     console.log("score1: ", data.score_state.player1, "score2: ", data.score_state.player2)
-                    window.updateScores(data.score_state.player1, data.score_state.player2);
+                    window.updateScores_tournament(data.score_state.player1, data.score_state.player2);
                 }
 
                 else if (data.type === 'game_over') {
@@ -306,6 +306,18 @@ function applyGameState(newGameState) {
 function applyBallState(newBallState) {
     if (window.updateBallFromState) {
         window.updateBallFromState(newBallState);
+    }
+}
+
+function applyGameState_tournament(newGameState) {
+    if (window.updateGameFromState) {
+        window.updateGameFromState_tournament(newGameState);
+    }
+}
+
+function applyBallState_tournament(newBallState) {
+    if (window.updateBallFromState_tournament) {
+        window.updateBallFromState_tournament(newBallState);
     }
 }
 
@@ -374,7 +386,7 @@ function startPongTournament(gameId) {
     console.log('!!!!Démarrage du tournoi pongTournament');
     navigateWithTokenCheck('pongTournament');
 
-    window.setPlayerRole();
+    window.setPlayerRole_tournament();
 }
 
 
