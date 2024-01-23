@@ -368,11 +368,23 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         self.game_active = True
         self.game_id = game_id
+
+        match = await sync_to_async(Match.objects.get)(id=game_id)
+
+        # Enveloppez les appels pour obtenir les joueurs dans sync_to_async
+        player1_id = await sync_to_async(lambda: match.player_one.id)()
+        player2_id = await sync_to_async(lambda: match.player_two.id)()
+
+        if self.game_id in self.game_states:
+            self.game_states[self.game_id]['player1_channel'] = player1_id
+            self.game_states[self.game_id]['player2_channel'] = player2_id
+
         asyncio.create_task(self.game_loop_tournament())
         await self.send(text_data=json.dumps({
             'type': 'game_start_tournament',
             'game_id': event['game_id']
         }))
+
 
     async def send_players_roles(self, event):
         player_one_username = event['player_one_username']
@@ -499,7 +511,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             # Vérifier si le gagnant a déjà été déterminé pour ce jeu
             if winner_channel_name and not match.winner:
                 print("dans le if")
-                winner_user = User.objects.get(game_socket_id=winner_channel_name)
+                winner_user = User.objects.get(id=winner_channel_name)
                 winner_player = Player.objects.get(user=winner_user)
                 match.winner = winner_player
 
