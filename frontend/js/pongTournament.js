@@ -201,14 +201,14 @@ window.setPlayerRole_tournament = function () {
     }
 }
 
-window.updateScores_tournament = function(player1Score_tournament, player2Score_tournament) {
+window.updateScores_tournament = function(player1Score_tournament, player2Score_tournament, player1_name, player2_name) {
     // Supprimer l'ancien Mesh de la scène
     if (window.scoreText12) {
         scene2.remove(window.scoreText12);
         window.scoreText12.geometry.dispose();
     }
 
-    const newText2 = `player1: ${player1Score_tournament} | player2: ${player2Score_tournament}`;
+    const newText2 = `${player1_name}: ${player1Score_tournament} | ${player2_name}: ${player2Score_tournament}`;
     const textMaterial2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
     // Créer une nouvelle géométrie de texte

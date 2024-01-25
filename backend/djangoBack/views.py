@@ -72,7 +72,7 @@ def join_game_queue(request):
             status='waiting'
         )
 
-        return JsonResponse({'message': 'Vous êtes en file d attente pour une nouvelle partie', 'game_id': new_game.id, 'player_role': 1})
+        return JsonResponse({'message': 'waitingRoomAccess', 'game_id': new_game.id, 'player_role': 1})
 
 
 @api_view(['POST'])
@@ -559,29 +559,29 @@ def create_tournament(request):
                 # Créer les demi-finales et la finale
                 for i in range(1, 3):
                     Match.objects.create(
-                        tournament=tournament, round="Demi-finale")
-                Match.objects.create(tournament=tournament, round="Finale")
-            elif number_of_players == 8:
-                # Créer les quarts de finale, les demi-finales et la finale
-                for i in range(1, 5):
-                    Match.objects.create(
-                        tournament=tournament, round="Quart de finale")
-                for i in range(1, 3):
-                    Match.objects.create(
-                        tournament=tournament, round="Demi-finale")
-                Match.objects.create(tournament=tournament, round="Finale")
-            elif number_of_players == 16:
-                # Créer les huitièmes de finale, les quarts de finale, les demi-finales et la finale
-                for i in range(1, 9):
-                    Match.objects.create(
-                        tournament=tournament, round="Huitième de finale")
-                for i in range(1, 5):
-                    Match.objects.create(
-                        tournament=tournament, round="Quart de finale")
-                for i in range(1, 3):
-                    Match.objects.create(
-                        tournament=tournament, round="Demi-finale")
-                Match.objects.create(tournament=tournament, round="Finale")
+                        tournament=tournament, round="Semifinal")
+                Match.objects.create(tournament=tournament, round="Final")
+            # elif number_of_players == 8:
+            #     # Créer les quarts de finale, les demi-finales et la finale
+            #     for i in range(1, 5):
+            #         Match.objects.create(
+            #             tournament=tournament, round="Quart de finale")
+            #     for i in range(1, 3):
+            #         Match.objects.create(
+            #             tournament=tournament, round="Demi-finale")
+            #     Match.objects.create(tournament=tournament, round="Finale")
+            # elif number_of_players == 16:
+            #     # Créer les huitièmes de finale, les quarts de finale, les demi-finales et la finale
+            #     for i in range(1, 9):
+            #         Match.objects.create(
+            #             tournament=tournament, round="Huitième de finale")
+            #     for i in range(1, 5):
+            #         Match.objects.create(
+            #             tournament=tournament, round="Quart de finale")
+            #     for i in range(1, 3):
+            #         Match.objects.create(
+            #             tournament=tournament, round="Demi-finale")
+            #     Match.objects.create(tournament=tournament, round="Finale")
 
             return JsonResponse({'success': 'Tournament created successfully', 'tournament_id': tournament.id}, status=201)
 
@@ -751,6 +751,8 @@ def set_player_ready(request, tournament_id):
             print("all Ready")
             # Tous les joueurs sont prêts, remplir les matches et démarrer le tournoi
             fill_tournament_matches(tournament)
+            tournament.is_active = False
+            tournament.save()
             # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! idee de genie
             return JsonResponse({'message': 'all ready'}, status=200)
 

@@ -115,7 +115,7 @@ class TournamentParticipation(models.Model):
 
 class Match(models.Model):
     tournament = models.ForeignKey(Tournament, related_name='matches', on_delete=models.CASCADE)
-    round = models.CharField(max_length=50)  # Exemple: "Quarterfinal", "Semifinal", "Final"
+    round = models.CharField(max_length=50, choices=[('semifinal', 'Semifinal'), ('final', 'Final')], default='NONE')  # Exemple: "Quarterfinal", "Semifinal", "Final"
     player_one = models.ForeignKey(Player, related_name='matches_as_player_one', on_delete=models.CASCADE, null=True)
     player_two = models.ForeignKey(Player, related_name='matches_as_player_two', on_delete=models.CASCADE, null=True)
     date_time = models.DateTimeField(null=True)

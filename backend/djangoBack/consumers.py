@@ -323,7 +323,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         game_state['ball']['ball'] = ball
         game_state['paddles']['paddle1'] = paddle1
         game_state['paddles']['paddle2'] = paddle2
-        if game_state['score']['player1'] >= 3 or game_state['score']['player2'] >= 3:
+        if game_state['score']['player1'] == 3 or game_state['score']['player2'] == 3:
             await self.end_game_tournament({'game_id': self.game_id})
 
     def get_paddles_state(self):
@@ -365,6 +365,8 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def game_start_tournament(self, event):
         game_id = event['game_id']
         self.initialize_game_state(game_id)
+
+        print("gameState: ", self.game_states)
 
         self.game_active = True
         self.game_id = game_id
@@ -414,6 +416,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             'type': 'game_over',
         }))
 
+    async def send_game_over_tournament(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'game_over_tournament',
+        }))
+
     async def end_game(self, event):
         print('end game ok')
 
@@ -457,14 +464,17 @@ class GameConsumer(AsyncWebsocketConsumer):
                 f'pong_game_{self.game_id}',
                 {
                     'type': 'send_score_update_tournament',
-                    'score_state': self.game_states[self.game_id]['score']
+                    'score_state': self.game_states[self.game_id]['score'],
+                    'player1_state': self.game_states[self.game_id]['player1_channel'],
+                    'player2_state': self.game_states[self.game_id]['player2_channel']
+
                 }
             ) 
         self.game_active = False
         await self.channel_layer.group_send(
             f'pong_game_{self.game_id}',
             {
-                'type': 'send_game_over',
+                'type': 'send_game_over_tournament',
             }
         )
 

@@ -104,6 +104,9 @@ async function joinGameQueue() {
                 console.log("!!!!!partie en cours ok")
                 // startPongGame(data.game_id);
             }
+            if (data.message.includes('waitingRoomAccess')) {
+                navigateWithTokenCheck('waitingRoom')
+            }
         }
     } catch (error) {
         console.error('Erreur lors de la tentative de rejoindre la file d attente:', error);

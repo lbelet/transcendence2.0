@@ -276,12 +276,18 @@ function openGameWebSocketConnection() {
                 else if (data.type === 'score_update_tournament') {
                     console.log("data update score: ", data)
                     console.log("score1: ", data.score_state.player1, "score2: ", data.score_state.player2)
-                    window.updateScores_tournament(data.score_state.player1, data.score_state.player2);
+                    window.updateScores_tournament(data.score_state.player1, data.score_state.player2, data.player1_state, data.player2_state);
                 }
 
                 else if (data.type === 'game_over') {
                     // Fermer la connexion WebSocket
                     gameWebsocket.close();
+                }
+
+                else if (data.type === 'game_over_tournament') {
+                    // Fermer la connexion WebSocket
+                    // gameWebsocket.close();
+                    navigateWithTokenCheck('waitingRoom')
                 }
 
             } catch (error) {

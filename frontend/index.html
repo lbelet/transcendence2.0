@@ -151,10 +151,18 @@
                 <div id="game-section" class="text-center hidden">
                     <h2>Bienvenue sur la page de jeu</h2>
                     <p>Bienvenue, <span id="user-name-game"></span>!</p>
-                    <button class="btn btn-outline-secondary" onclick="playPong()">practice playing Pong</button>
+                    <!-- <button class="btn btn-outline-secondary" onclick="playPong()">practice playing Pong</button> -->
                     <button class="btn btn-outline-secondary" onclick="joinGameQueue()">Rejoindre la partie</button>
                     <button class="btn btn-outline-secondary" onclick="goTournament()">tournois</button>
                     <div id="pending-requests-container"></div>
+                </div>
+
+                <div id="waitingRoom-section" class="text-center hidden">
+                    <h2>En attendant la suite...</h2>
+                    <audio id="myAudio">
+                        <source src="./locales/audio/glass-of-wine-143532.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                    </audio>
                 </div>
 
                 <div id="pong-section" class="text-center hidden">

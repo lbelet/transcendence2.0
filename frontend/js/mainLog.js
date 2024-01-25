@@ -101,6 +101,7 @@ function logout() {
             // localStorage.removeItem('language');
             localStorage.removeItem('gameSocket_ID');
             document.getElementById('hiddenNav').classList.add('hidden');
+            stopAudio();
             navigateTo('home');
         })
         .catch(error => {

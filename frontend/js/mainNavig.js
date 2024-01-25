@@ -18,6 +18,17 @@ function showQrTwoFactorForm() {
     navigateTo('qrTwoFactor');
 }
 
+function playAudio() {
+    var audio = document.getElementById('myAudio');
+    audio.play();
+}
+
+function stopAudio() {
+    var audio = document.getElementById('myAudio');
+    audio.pause();
+    audio.currentTime = 0;
+}
+
 async function navigateWithTokenCheck(sectionId) {
     const toktok = localStorage.getItem('access_token')
     if (toktok) {
@@ -26,6 +37,10 @@ async function navigateWithTokenCheck(sectionId) {
         if (!tokenIsValid && sectionId !== 'login' && sectionId !== 'home' && sectionId !== 'register') {
             navigateTo('home');
         } else {
+            if (sectionId == 'waitingRoom')
+                playAudio();
+            else
+                stopAudio();
             navigateTo(sectionId);
         }
     }
@@ -46,6 +61,7 @@ function hideAllSections() {
     document.getElementById('tournament-section').classList.add('hidden');
     document.getElementById('tournamentBracket-section').classList.add('hidden');
     document.getElementById('pongTournament-section').classList.add('hidden');
+    document.getElementById('waitingRoom-section').classList.add('hidden');
 }
 
 function navigateTo(sectionId) {
