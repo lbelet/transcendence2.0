@@ -391,7 +391,7 @@ function startPongTournament(gameId) {
     // Logique pour initialiser et démarrer la partie de Pong
     console.log('!!!!Démarrage du tournoi pongTournament');
     navigateWithTokenCheck('pongTournament');
-
+    localStorage.setItem('currentGameId', gameId)
     window.setPlayerRole_tournament();
 }
 

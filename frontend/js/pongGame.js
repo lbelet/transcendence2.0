@@ -156,9 +156,9 @@ document.addEventListener('keydown', (event) => {
         let action;
         console.log("touches match ok")
         if (event.key === "ArrowRight") {
-            action = paddleUser == paddle1 ? 'move_right_paddle1' : 'move_right_paddle2';
+            action = paddleUser == paddle1 ? 'move_left_paddle1' : 'move_right_paddle2';
         } else if (event.key === "ArrowLeft") {
-            action = paddleUser == paddle1 ? 'move_left_paddle1' : 'move_left_paddle2';
+            action = paddleUser == paddle1 ? 'move_right_paddle1' : 'move_left_paddle2';
         }
 
         if (action) {

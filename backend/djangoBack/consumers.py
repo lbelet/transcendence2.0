@@ -60,6 +60,11 @@ class GameConsumer(AsyncWebsocketConsumer):
                 f'pong_game_{self.game_id}',
                 self.channel_name
             )
+            await self.channel_layer.group_discard(
+                f'tournament_{self.game_id}',
+                self.channel_name
+            )
+            print("discard ok.........")
 
     async def game_loop(self):
         while self.game_active:
@@ -78,10 +83,10 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def game_loop_tournament(self):
         while self.game_active:
             print("game loop tournament ok")
-            print("groupName: ", f'pong_game_{self.game_id}')
+            print("groupName: ", f'tournament_{self.game_id}')
             await self.update_ball_position_tournament()
             await self.channel_layer.group_send(
-                f'pong_game_{self.game_id}',
+                f'tournament_{self.game_id}',
                 {
                     'type': 'send_ball_update_tournament',
                     'ball_state': self.get_ball_state()
@@ -94,6 +99,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         print("Message reçu dans GameConsumer: ", data)
 
         if 'game_id' in data:
+            print("received game_id............")
             self.game_id = data['game_id']
             await self.channel_layer.group_add(
                 f'pong_game_{self.game_id}',
@@ -154,7 +160,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             elif data['action'] == 'move_left_paddle22':
                 game_state['paddles']['paddle2']['x'] -= move_amount
             await self.channel_layer.group_send(
-                f'pong_game_{self.game_id}',
+                f'tournament_{self.game_id}',
                 {
                     'type': 'send_paddles_update_tournament',
                     'paddles_state': self.get_paddles_state()
@@ -286,7 +292,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 game_state['score']['player1'] += 1
             print('score send: ', game_state['score'])
             await self.channel_layer.group_send(
-                f'pong_game_{self.game_id}',
+                f'tournament_{self.game_id}',
                 {
                     'type': 'send_score_update_tournament',
                     'score_state': game_state['score']
@@ -296,7 +302,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             ball['dx'], ball['dz'] = 0, 1
             paddle1['x'], paddle2['x'] = 0, 0
             await self.channel_layer.group_send(
-                f'pong_game_{self.game_id}',
+                f'tournament_{self.game_id}',
                 {
                     'type': 'send_paddles_update_tournament',
                     'paddles_state': self.get_paddles_state()
@@ -449,7 +455,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         )
 
     async def end_game_tournament(self, event):
-        print('end game ok')
+        print('end game tournament ok')
 
         score_player_one = self.game_states[self.game_id]['score']['player1']
         score_player_two = self.game_states[self.game_id]['score']['player2']
@@ -461,7 +467,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             self.game_states[self.game_id]['score']['player1'] = 0
             self.game_states[self.game_id]['score']['player2'] = 0
             await self.channel_layer.group_send(
-                f'pong_game_{self.game_id}',
+                f'tournament_{self.game_id}',
                 {
                     'type': 'send_score_update_tournament',
                     'score_state': self.game_states[self.game_id]['score'],
@@ -472,7 +478,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             ) 
         self.game_active = False
         await self.channel_layer.group_send(
-            f'pong_game_{self.game_id}',
+            f'tournament_{self.game_id}',
             {
                 'type': 'send_game_over_tournament',
             }

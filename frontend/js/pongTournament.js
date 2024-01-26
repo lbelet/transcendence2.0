@@ -156,9 +156,9 @@ document.addEventListener('keydown', (event) => {
         console.log("touches tournoi ok")
         let action;
         if (event.key === "ArrowRight") {
-            action = paddleUser2 == paddle12 ? 'move_right_paddle12' : 'move_right_paddle22';
+            action = paddleUser2 == paddle12 ? 'move_left_paddle12' : 'move_right_paddle22';
         } else if (event.key === "ArrowLeft") {
-            action = paddleUser2 == paddle12 ? 'move_left_paddle12' : 'move_left_paddle22';
+            action = paddleUser2 == paddle12 ? 'move_right_paddle12' : 'move_left_paddle22';
         }
 
         if (action) {

@@ -488,6 +488,29 @@ def api_outGame(request):
     )
     return JsonResponse({'message': 'quitter le jeu réussie'}, status=200)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_outGame_tournament(request):
+    user = request.user
+    user.status = User.ONLINE
+    user.game_socket_id = "NONE"
+    user.save()
+
+    # Récupérer l'ID de la partie de la requête
+    game_id = request.data.get('game_id')
+    group_name = f'tournament_{game_id}'
+
+    # Envoyer un message au groupe pour arrêter la partie
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        {
+            'type': 'end_game_tournament',  # Vous devrez gérer ce type dans GameConsumer
+            'game_id': game_id
+        }
+    )
+    return JsonResponse({'message': 'quitter le tournoi réussie'}, status=200)
+
 
 def index(request):
     return render(request, 'index.html')
@@ -795,7 +818,7 @@ def fill_tournament_matches(tournament):
             match.player_two = next(player_iterator)
             match.save()
 
-            group_name = f"pong_game_{match.id}"
+            group_name = f"tournament_{match.id}"
             print("groupNAME in views: ", group_name)
             channel_layer = get_channel_layer()
             

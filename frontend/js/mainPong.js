@@ -56,6 +56,35 @@ function quitPong3D() {
         });
 }
 
+function quitPong3D_tournament() {
+    const gameId = localStorage.getItem('currentGameId');  // Récupérer l'ID de la partie
+
+    fetch('/api/api_outGame_tournament/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({ game_id: gameId })  // Envoyer l'ID de la partie dans le corps de la requête
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json(); // ou .text() si vous attendez du texte
+        })
+        .then(data => {
+            // console.log('Success:', data);
+            localStorage.removeItem('currentGameId');
+            localStorage.removeItem('playerRole');
+            localStorage.removeItem('')
+            navigateWithTokenCheck('game');
+        })
+        .catch(error => {
+            alert('Error');
+        });
+}
+
 function showGameForm() {
     const username = localStorage.getItem('username');
     // console.log("1 username: ", username)
