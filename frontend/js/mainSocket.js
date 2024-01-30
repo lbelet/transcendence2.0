@@ -221,7 +221,7 @@ function openGameWebSocketConnection() {
             try {
                 const data = JSON.parse(event.data);
                 // console.log("data gamesocket: ", data);
-                // console.log("data type: ", data.type);
+                console.log("data type: ", data.type);
 
                 if (data.game_socket_id) {
                     // console.log('Game Socket ID reçu:', data.game_socket_id);
@@ -240,11 +240,13 @@ function openGameWebSocketConnection() {
                 if (data.type === 'game_start') {
                     console.log('!!!!La partie de Pong commence grace au sockets');
                     startPongGame(data.game_id);
+                    playPong();
                 }
 
                 if (data.type === 'game_start_tournament') {
                     console.log('!!!!Le tournoi de Pong commence grace au sockets');
                     startPongTournament(data.game_id);
+                    playPong_tournament();
                 }
 
                 else if (data.type === 'paddles_update') {
@@ -288,6 +290,14 @@ function openGameWebSocketConnection() {
                     // Fermer la connexion WebSocket
                     // gameWebsocket.close();
                     navigateWithTokenCheck('waitingRoom')
+                }
+
+                else if (data.type === 'game_start_final') {
+                    // Fermer la connexion WebSocket
+                    // gameWebsocket.close();
+                    console.log("c est bon pour la finale.......")
+                    startPongTournament(data.game_id);
+                    playPong_tournament();
                 }
 
             } catch (error) {

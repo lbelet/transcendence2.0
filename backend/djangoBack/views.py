@@ -789,6 +789,75 @@ def set_player_ready(request, tournament_id):
         return JsonResponse({'error': 'Participation au tournoi non trouvée'}, status=404)
 
 
+# def fill_tournament_matches(tournament):
+#     print("Remplissage des matches pour le tournoi:", tournament.name)
+
+#     # Récupérer les participations des joueurs qui sont prêts
+#     ready_participations = TournamentParticipation.objects.filter(
+#         tournament=tournament, 
+#         is_ready=True
+#     ).order_by('id')
+
+#     ready_players = [participation.player for participation in ready_participations]
+
+#     # Récupérer les matches du tournoi
+#     matches = list(tournament.matches.order_by('id'))
+
+#     print("nbre de joueurs prets: ", len(ready_players))
+#     print("nbre de matches a remplir: ", len(matches))
+#     # Vérifier s'il y a suffisamment de joueurs prêts pour remplir les matches
+#     # if len(ready_players) < len(matches) * 2:
+#     #     print("Pas assez de joueurs prêts pour remplir les matches")
+#     #     return
+
+#     # Attribuer les joueurs aux matches
+#     player_iterator = iter(ready_players)
+#     for match in matches:
+#         try:
+#             match.player_one = next(player_iterator)
+#             match.player_two = next(player_iterator)
+#             match.save()
+
+#             group_name = f"tournament_{match.id}"
+#             print("groupNAME in views: ", group_name)
+#             channel_layer = get_channel_layer()
+            
+#             # Ajouter les ID de socket des joueurs à ce groupe
+#             if match.player_one.user.game_socket_id:
+#                 async_to_sync(channel_layer.group_add)(group_name, match.player_one.user.game_socket_id)
+#                 print("player1, match: ", match.player_one.user.get_username(), match.id)
+#             if match.player_two.user.game_socket_id:
+#                 async_to_sync(channel_layer.group_add)(group_name, match.player_two.user.game_socket_id)
+#                 print("player2, match: ",match.player_two.user.get_username(), match.id)
+            
+#             if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
+#                     # Envoyer les rôles des joueurs
+#                 async_to_sync(channel_layer.group_send)(
+#                     group_name,
+#                     {
+#                         "type": "send_players_roles",
+#                         "game_id": match.id,
+#                         "player_one_username": match.player_one.user.username,
+#                         "player_two_username": match.player_two.user.username
+#                     }
+#                 )
+
+#             if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
+#                 print("send gameStart to: ", group_name)
+#                 async_to_sync(channel_layer.group_send)(
+#                     group_name,
+#                 {
+#                     "type": "game_start_tournament",
+#                     "game_id": match.id
+#                 }
+#             )
+
+#         except StopIteration:
+#             break
+
+#     print("Matches du tournoi remplis avec succès")
+
+
 def fill_tournament_matches(tournament):
     print("Remplissage des matches pour le tournoi:", tournament.name)
 
@@ -799,63 +868,68 @@ def fill_tournament_matches(tournament):
     ).order_by('id')
 
     ready_players = [participation.player for participation in ready_participations]
-
-    # Récupérer les matches du tournoi
     matches = list(tournament.matches.order_by('id'))
 
     print("nbre de joueurs prets: ", len(ready_players))
     print("nbre de matches a remplir: ", len(matches))
-    # Vérifier s'il y a suffisamment de joueurs prêts pour remplir les matches
-    # if len(ready_players) < len(matches) * 2:
-    #     print("Pas assez de joueurs prêts pour remplir les matches")
-    #     return
 
-    # Attribuer les joueurs aux matches
+    # Déterminez si les matches sont des demi-finales ou une finale
+    if len(ready_players) == 4:
+        round_type = 'Semifinal'
+    elif len(ready_players) == 2:
+        round_type = 'Final'
+    else:
+        print("Nombre de joueurs ou de matches inattendu")
+        return
+
     player_iterator = iter(ready_players)
     for match in matches:
-        try:
-            match.player_one = next(player_iterator)
-            match.player_two = next(player_iterator)
-            match.save()
+        if match.round == round_type:
+            print("roundType: ", round_type)
+            try:
+                match.player_one = next(player_iterator)
+                match.player_two = next(player_iterator)
+                match.save()
+                # ... [Le reste de votre logique de traitement des matches] ...
+                group_name = f"tournament_{match.id}"
+                print("groupNAME in views: ", group_name)
+                channel_layer = get_channel_layer()
+                
+                # Ajouter les ID de socket des joueurs à ce groupe
+                if match.player_one.user.game_socket_id:
+                    async_to_sync(channel_layer.group_add)(group_name, match.player_one.user.game_socket_id)
+                    print("player1, match: ", match.player_one.user.get_username(), match.id)
+                if match.player_two.user.game_socket_id:
+                    async_to_sync(channel_layer.group_add)(group_name, match.player_two.user.game_socket_id)
+                    print("player2, match: ",match.player_two.user.get_username(), match.id)
+                
+                if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
+                        # Envoyer les rôles des joueurs
+                    async_to_sync(channel_layer.group_send)(
+                        group_name,
+                        {
+                            "type": "send_players_roles",
+                            "game_id": match.id,
+                            "player_one_username": match.player_one.user.username,
+                            "player_two_username": match.player_two.user.username
+                        }
+                    )
 
-            group_name = f"tournament_{match.id}"
-            print("groupNAME in views: ", group_name)
-            channel_layer = get_channel_layer()
-            
-            # Ajouter les ID de socket des joueurs à ce groupe
-            if match.player_one.user.game_socket_id:
-                async_to_sync(channel_layer.group_add)(group_name, match.player_one.user.game_socket_id)
-                print("player1, match: ", match.player_one.user.get_username(), match.id)
-            if match.player_two.user.game_socket_id:
-                async_to_sync(channel_layer.group_add)(group_name, match.player_two.user.game_socket_id)
-                print("player2, match: ",match.player_two.user.get_username(), match.id)
-            
-            if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
-                    # Envoyer les rôles des joueurs
-                async_to_sync(channel_layer.group_send)(
-                    group_name,
+                if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
+                    print("send gameStart to: ", group_name)
+                    async_to_sync(channel_layer.group_send)(
+                        group_name,
                     {
-                        "type": "send_players_roles",
-                        "game_id": match.id,
-                        "player_one_username": match.player_one.user.username,
-                        "player_two_username": match.player_two.user.username
+                        "type": "game_start_tournament",
+                        "game_id": match.id
                     }
                 )
-
-            if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
-                print("send gameStart to: ", group_name)
-                async_to_sync(channel_layer.group_send)(
-                    group_name,
-                {
-                    "type": "game_start_tournament",
-                    "game_id": match.id
-                }
-            )
-
-        except StopIteration:
-            break
+                    
+            except StopIteration:
+                break
 
     print("Matches du tournoi remplis avec succès")
+
 
 
     # Marquez le tournoi comme commencé

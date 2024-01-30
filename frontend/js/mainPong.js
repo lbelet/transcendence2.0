@@ -15,11 +15,39 @@ function playPong() {
             return response.json();  // ou .text() si vous attendez du texte
         })
         .then(data => {
-            // console.log('Success:', data);
-            openGameWebSocketConnection();
+            console.log('Success:', data);
+            // openGameWebSocketConnection();
 
-            navigateWithTokenCheck('pong');
+            // navigateWithTokenCheck('pong');
             // openGameWebSocketConnection()
+
+        })
+        .catch(error => {
+            alert('Error');
+        });
+}
+
+function playPong_tournament() {
+    fetch('/api/api_inGame/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({})  // Si vous avez des données à envoyer, sinon vous pouvez omettre cette ligne
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();  // ou .text() si vous attendez du texte
+        })
+        .then(data => {
+            console.log('Success:', data);
+            // openGameWebSocketConnection();
+
+            // navigateWithTokenCheck('pong');
+            // // openGameWebSocketConnection()
 
         })
         .catch(error => {

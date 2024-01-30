@@ -5,7 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
 from djangoBack.models import Match, Player, PongGame, User
-from asgiref.sync import sync_to_async
+from asgiref.sync import sync_to_async, async_to_sync
 
 
 
@@ -427,6 +427,11 @@ class GameConsumer(AsyncWebsocketConsumer):
             'type': 'game_over_tournament',
         }))
 
+    async def send_game_start_final(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'game_start_final',
+        }))
+
     async def end_game(self, event):
         print('end game ok')
 
@@ -457,6 +462,8 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def end_game_tournament(self, event):
         print('end game tournament ok')
 
+        print("LE GAME ID est : ", self.game_id)
+
         score_player_one = self.game_states[self.game_id]['score']['player1']
         score_player_two = self.game_states[self.game_id]['score']['player2']
         game_state = self.game_states[self.game_id]
@@ -483,6 +490,69 @@ class GameConsumer(AsyncWebsocketConsumer):
                 'type': 'send_game_over_tournament',
             }
         )
+
+        game_id = self.game_id
+        print("game id = ", game_id)
+        await self.handle_final_match(game_id)
+
+        # current_match_id  = self.game_id
+
+        # current_match = await sync_to_async(lambda: Match.objects.get(id=current_match_id))()
+        # print("current_match:....", current_match)
+        #     # Obtenez l'ID du tournoi
+        # tournament_id = current_match.tournament.id
+        # print("tournament_id:.......", tournament_id)
+        # # Obtenez l'objet Match final de manière asynchrone
+        # final_match = await sync_to_async(lambda: Match.objects.filter(tournament__id=tournament_id, round='Final').first())()
+        # print("final_match:........", final_match)
+        # # Vérifiez si final_match existe et si les conditions sont remplies pour commencer la finale
+        # if final_match:
+        #     player_one_id = await sync_to_async(lambda: final_match.player_one.id if final_match.player_one else None)()
+        #     player_two_id = await sync_to_async(lambda: final_match.player_two.id if final_match.player_two else None)()
+        #     winner_id = await sync_to_async(lambda: final_match.winner.id if final_match.winner else None)()
+
+        #     if player_one_id and player_two_id and not winner_id:
+        #         # Créer un groupe de canaux pour la finale
+        #         final_group_name = f"tournament_final_{final_match.id}"
+        #         await self.channel_layer.group_add(final_group_name, player_one_id)
+        #         await self.channel_layer.group_add(final_group_name, player_two_id)
+
+        #         print("ajouter a la finale......................")
+
+        #         # Envoyer un message pour démarrer la finale
+        #         await self.channel_layer.group_send(
+        #             final_group_name,
+        #             {
+        #                 'type': 'game_start_final',
+        #                 'game_id': final_match.id
+        #             }
+        #         )
+    async def handle_final_match(self, game_id):
+        await sync_to_async(self._handle_final_match)(game_id)
+
+    def _handle_final_match(self, game_id):
+        try:
+            match = Match.objects.get(id=game_id)
+            print("le match est :.......", match)
+            final_match = Match.objects.filter(tournament=match.tournament, round='Final').first()
+            print("la finale est :......", final_match, "avec l id:...", final_match.id)
+            if final_match and final_match.player_one and final_match.player_two and not final_match.winner:
+            # Créer un groupe de canaux pour la finale
+                tournament_id = final_match.tournament.id
+
+                final_group_name = f"tournament_final_{tournament_id}"
+                async_to_sync(self.channel_layer.group_add)(final_group_name, final_match.player_one.user.game_socket_id)
+                async_to_sync(self.channel_layer.group_add)(final_group_name, final_match.player_two.user.game_socket_id)
+                async_to_sync(self.channel_layer.group_send)(
+                    final_group_name,
+                    {
+                        'type': 'send_game_start_final',
+                        'game_id': final_match.id
+                    }
+                )
+        except Exception as e:
+            print(f"Erreur lors de la gestion de la finale : {e}")
+
 
     async def update_game_in_database(self, game_id, score_player_one, score_player_two, winner_channel_name):
         await sync_to_async(self._update_game_in_database)(game_id, score_player_one, score_player_two, winner_channel_name)
@@ -523,7 +593,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             print("le winner est: ", winner_channel_name)
 
-
             # Vérifier si le gagnant a déjà été déterminé pour ce jeu
             if winner_channel_name and not match.winner:
                 print("dans le if")
@@ -535,6 +604,15 @@ class GameConsumer(AsyncWebsocketConsumer):
                 winner_user.won_game += 1
                 winner_user.save()
 
+                if match.round == 'Semifinal':
+                    final_match = Match.objects.filter(tournament=match.tournament, round='Final').first()
+                    if final_match:
+                        if not final_match.player_one:
+                            final_match.player_one = winner_player
+                        elif not final_match.player_two:
+                            final_match.player_two = winner_player
+                        final_match.save()
+
             match.save()
         except User.DoesNotExist:
             print(f"User with game_socket_id {winner_channel_name} not found")
@@ -544,6 +622,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             print(f"Match with id {game_id} not found")
         except Exception as e:
             print(f"Erreur lors de l'enregistrement : {e}")
+
 
 
     def initialize_game_state(self, game_id):
