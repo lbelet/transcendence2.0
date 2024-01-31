@@ -1,6 +1,7 @@
 // store.js
 
 const initialState = {
+    userID: null,
     username: null,
     access_token: null,
     refresh_token: null,

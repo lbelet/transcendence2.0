@@ -221,7 +221,7 @@ function openGameWebSocketConnection() {
             try {
                 const data = JSON.parse(event.data);
                 // console.log("data gamesocket: ", data);
-                console.log("data type: ", data.type);
+                console.log("data type: ", data);
 
                 if (data.game_socket_id) {
                     // console.log('Game Socket ID reçu:', data.game_socket_id);
@@ -255,7 +255,7 @@ function openGameWebSocketConnection() {
                 }
 
                 else if (data.type === 'paddles_update_tournament') {
-                    console.log("paddles_update_tournament ok")
+                    // console.log("paddles_update_tournament ok")
                     applyGameState_tournament(data.paddles_state);
                 }
 
@@ -265,18 +265,18 @@ function openGameWebSocketConnection() {
                 }
 
                 else if (data.type === 'ball_update_tournament') {
-                    console.log("ball_update_tournament ok: ", data.ball_state)
+                    // console.log("ball_update_tournament ok: ", data.ball_state)
                     applyBallState_tournament(data.ball_state);
                 }
 
                 else if (data.type === 'score_update') {
-                    console.log("data update score: ", data)
+                    // console.log("data update score: ", data)
                     console.log("score1: ", data.score_state.player1, "score2: ", data.score_state.player2)
                     window.updateScores(data.score_state.player1, data.score_state.player2);
                 }
 
                 else if (data.type === 'score_update_tournament') {
-                    console.log("data update score: ", data)
+                    // console.log("data update score: ", data)
                     console.log("score1: ", data.score_state.player1, "score2: ", data.score_state.player2)
                     window.updateScores_tournament(data.score_state.player1, data.score_state.player2, data.player1_state, data.player2_state);
                 }
@@ -290,13 +290,25 @@ function openGameWebSocketConnection() {
                     // Fermer la connexion WebSocket
                     // gameWebsocket.close();
                     localStorage.removeItem('playerRole')
-                    navigateWithTokenCheck('waitingRoom')
+                    console.log("les donnees sont:.....", data)
+                    console.log("donc le winner_id est:....", data.winner_id)
+                    const currentUserId = localStorage.getItem('userID');
+                    console.log("mon currentUserID est:....", currentUserId)
+                    if (data.winner_id && data.winner_id == currentUserId) {
+                        console.log('Vous avez gagné le tournoi !');
+                        navigateWithTokenCheck('waitingRoom');
+                    } else {
+                        console.log('Le tournoi est terminé. Vous n\'êtes pas le gagnant.');
+                        navigateWithTokenCheck('game');
+                    }
+                    // localStorage.removeItem('playerRole')
                 }
 
                 else if (data.type === 'game_start_tournament_final') {
                     // Fermer la connexion WebSocket
                     // gameWebsocket.close();
                     console.log("c est bon pour la finale......id:...", data.game_id)
+                    console.log("mon playerRole pour la finale: ", localStorage.getItem('playerRole'))
                     startPongTournament(data.game_id);
                     playPong_tournament();
                 }

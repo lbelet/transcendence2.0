@@ -17,6 +17,7 @@ document.getElementById('EmailTwoFactorForm').addEventListener('submit', functio
     })
         .then(response => {
             if (!response.ok) {
+                localStorage.removeItem('username');
                 throw new Error('Network response was not ok');
             }
             return response.json();
@@ -67,6 +68,7 @@ document.getElementById('qrTwoFactorForm').addEventListener('submit', function (
     })
         .then(response => {
             if (!response.ok) {
+                localStorage.removeItem('username')
                 throw new Error('Network response was not ok');
             }
             return response.json();

@@ -30,8 +30,10 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     localStorage.setItem('access_token', obj.body.access);
                     localStorage.setItem('refresh_token', obj.body.refresh);
                     localStorage.setItem('language', obj.body.language);
-
-                    console.log("refresssshhhh: ", localStorage.getItem('refresh_token'))
+                    localStorage.setItem('userID', obj.body.id);
+                    // localStorage.setItem('username', username);
+                    console.log("mon userID est: ", localStorage.getItem('userID'));
+                    // console.log("refresssshhhh: ", localStorage.getItem('refresh_token'))
 
                     setupTokenRefresh();
 

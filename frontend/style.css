@@ -154,6 +154,7 @@ body, html {
 }
 
 .matches-container {
+  background-color: #ecf0f1; /* Couleur de fond pour chaque match */
   border: 2px solid #ccc; /* Bordure autour de la zone des matchs */
   padding: 10px;
   margin-bottom: 15px;

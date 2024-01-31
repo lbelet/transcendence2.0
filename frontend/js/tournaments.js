@@ -147,7 +147,7 @@ function displayTournaments(tournaments) {
         tournamentButton.innerHTML = `${tournament.name} - Début : ${tournament.start_date} - Participants : ${tournament.current_participants}/${tournament.number_of_players}`;
 
         tournamentButton.onclick = function () {
-            displayTournamentDetails(tournament);
+            fetchTournamentDetails(tournament.id);
         };
 
         container.appendChild(tournamentButton);
@@ -155,6 +155,7 @@ function displayTournaments(tournaments) {
 }
 
 function displayTournamentDetails(tournamentData) {
+    console.log("les details du tournoi sont: ", tournamentData)
     // Mettre à jour le nom du tournoi
     document.getElementById('tournamentName').textContent = tournamentData.name;
 
@@ -169,10 +170,28 @@ function displayTournamentDetails(tournamentData) {
     document.getElementById('semi-finals').innerHTML = ''; // Nettoyer les demi-finales existantes
     document.getElementById('semi-finals').appendChild(semiFinals);
 
-    // Créer et ajouter la finale
-    const final = createRound('final', []);
-    document.getElementById('final').innerHTML = ''; // Nettoyer la finale existante
+    const final = createRound('final', tournamentData.participants.slice(0, 2), tournamentData.final_players);
+    document.getElementById('final').innerHTML = '';
     document.getElementById('final').appendChild(final);
+
+    const winnerDiv = document.createElement('div');
+    winnerDiv.id = 'winner';
+    winnerDiv.className = 'winner my-3';
+    
+    // Définir le contenu de la div du gagnant
+    if (tournamentData.final_winner) {
+        document.getElementById('winner').innerHTML = '';
+        winnerDiv.textContent = `${tournamentData.final_winner}`;
+    } else {
+        document.getElementById('winner').innerHTML = '';
+        winnerDiv.textContent = "En attente";
+    }
+    
+    // Ajouter la div du gagnant à la section finale
+    document.getElementById('winner').appendChild(winnerDiv);
+
+    // document.getElementById('winner').innerHTML = '';
+    // document.getElementById('winner').
 
     // Ajouter le bouton d'inscription
     let registerButton = document.getElementById('tournament-register-button');
@@ -200,7 +219,7 @@ function displayTournamentDetails(tournamentData) {
     tournamentSection.appendChild(registerButton);
 }
 
-function createRound(roundType, participants) {
+function createRound(roundType, participants, finalPlayers = null) {
     const roundDiv = document.createElement('div');
     roundDiv.id = roundType;
     if (roundType == 'semi-final') {
@@ -209,11 +228,9 @@ function createRound(roundType, participants) {
             roundDiv.appendChild(match);
         }
     }
-    if (roundType == 'final') {
-        for (let i = 0; i < 2; i += 2) {
-            const match = createMatchElement(`${roundType}-${(i / 2) + 1}`, participants[i], participants[i + 1]);
-            roundDiv.appendChild(match);
-        }
+    if (roundType == 'final' && finalPlayers) {
+        const finalMatch = createFinalElement(`${roundType}-1`, finalPlayers);
+        roundDiv.appendChild(finalMatch);
     }
 
     return roundDiv;
@@ -234,6 +251,29 @@ function createMatchElement(matchId, player1, player2) {
     const player2Div = document.createElement('div');
     player2Div.className = 'player';
     player2Div.textContent = player2 ? player2.username : "En attente";
+
+    matchDiv.appendChild(player1Div);
+    matchDiv.appendChild(vsDiv);
+    matchDiv.appendChild(player2Div);
+
+    return matchDiv;
+}
+
+function createFinalElement(matchId, finalPlayers) {
+    const matchDiv = document.createElement('div');
+    matchDiv.id = matchId;
+    matchDiv.className = 'match my-3';
+
+    const player1Div = document.createElement('div');
+    player1Div.className = 'player';
+    player1Div.textContent = finalPlayers[0] && finalPlayers[0].username ? finalPlayers[0].username : "En attente";
+
+    const vsDiv = document.createElement('div');
+    vsDiv.textContent = 'vs';
+
+    const player2Div = document.createElement('div');
+    player2Div.className = 'player';
+    player2Div.textContent = finalPlayers[1] && finalPlayers[1].username ? finalPlayers[1].username : "En attente";
 
     matchDiv.appendChild(player1Div);
     matchDiv.appendChild(vsDiv);
@@ -301,6 +341,7 @@ function fetchTournamentDetails(tournamentId) {
     })
         .then(response => response.json())
         .then(tournamentData => {
+            console.log("les details du tournoi sont: ", tournamentData)
             displayTournamentDetails(tournamentData);
         })
         .catch(error => {

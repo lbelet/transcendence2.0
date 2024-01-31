@@ -182,7 +182,7 @@ window.updateGameFromState_tournament = function (newGameState) {
 window.updateBallFromState_tournament = function (newBallState_tournament) {
 
     if (newBallState_tournament.ball) {
-        console.log("balle update: ", newBallState_tournament.ball)
+        // console.log("balle update: ", newBallState_tournament.ball)
         ball2.position.set(newBallState_tournament.ball.x, 1, newBallState_tournament.ball.z);
     }
 };

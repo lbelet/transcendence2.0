@@ -82,8 +82,8 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def game_loop_tournament(self):
         while self.game_active:
-            print("game loop tournament ok")
-            print("groupName: ", f'tournament_{self.game_id}')
+            # print("game loop tournament ok")
+            # print("groupName: ", f'tournament_{self.game_id}')
             await self.update_ball_position_tournament()
             await self.channel_layer.group_send(
                 f'tournament_{self.game_id}',
@@ -225,9 +225,14 @@ class GameConsumer(AsyncWebsocketConsumer):
             print('out')
 
             if ball['z'] < -15:
+                print("AVANT scoreState Player 2: ", game_state['score']['player2'])
                 game_state['score']['player2'] += 1
+                print("APRES scoreState Player 2: ", game_state['score']['player2'])
             elif ball['z'] > 15:
+                print("AVANT scoreState Player 1: ", game_state['score']['player1'])
                 game_state['score']['player1'] += 1
+                print("APRES scoreState Player 1: ", game_state['score']['player1'])
+
             print('score send: ', game_state['score'])
             await self.channel_layer.group_send(
                 f'pong_game_{self.game_id}',
@@ -287,9 +292,14 @@ class GameConsumer(AsyncWebsocketConsumer):
             print('out')
 
             if ball['z'] < -15:
+                print("AVANT scoreState Player 2: ", game_state['score']['player2'])
                 game_state['score']['player2'] += 1
+                print("APRES scoreState Player 2: ", game_state['score']['player2'])
             elif ball['z'] > 15:
+                print("AVANT scoreState Player 1: ", game_state['score']['player1'])
                 game_state['score']['player1'] += 1
+                print("APRES scoreState Player 1: ", game_state['score']['player1'])
+                
             print('score send: ', game_state['score'])
             await self.channel_layer.group_send(
                 f'tournament_{self.game_id}',
@@ -359,6 +369,12 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def game_start(self, event):
         game_id = event['game_id']
         self.initialize_game_state(game_id)
+
+        match = await sync_to_async(Match.objects.get)(id=game_id)
+        player_one = match.player_one
+        player_two = match.player_two
+        self.game_states[self.game_id]['player1_channel'] = player_one
+        self.game_states[self.game_id]['player2_channel'] = player_two
 
         self.game_active = True
         self.game_id = game_id
@@ -447,9 +463,12 @@ class GameConsumer(AsyncWebsocketConsumer):
         }))
 
     async def send_game_over_tournament(self, event):
+        winner_id = event.get('winner', None)  # Obtenez l'ID du gagnant, ou None si non présent
         await self.send(text_data=json.dumps({
             'type': 'game_over_tournament',
+            'winner_id': winner_id
         }))
+
 
     async def send_game_start_final(self, event):
         await self.send(text_data=json.dumps({
@@ -505,7 +524,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'score_state': self.game_states[self.game_id]['score'],
                     'player1_state': self.game_states[self.game_id]['player1_channel'],
                     'player2_state': self.game_states[self.game_id]['player2_channel']
-
                 }
             ) 
         self.game_active = False
@@ -513,12 +531,16 @@ class GameConsumer(AsyncWebsocketConsumer):
             f'tournament_{self.game_id}',
             {
                 'type': 'send_game_over_tournament',
+                'winner': winner_channel_name,
             }
         )
 
         game_id = self.game_id
         print("game id = ", game_id)
-        await self.handle_final_match(game_id)
+        current_match = await sync_to_async(lambda: Match.objects.get(id=game_id))()
+        if current_match.round == 'Semifinal':
+            print("c etait une demi-finale.....")
+            await self.handle_final_match(self.game_id)
 
         # current_match_id  = self.game_id
 

@@ -202,6 +202,7 @@ def api_login(request):
         tokens = get_tokens_for_user(user)
         # Ajouter la langue de l'utilisateur à la réponse
         tokens['language'] = user.language
+        tokens['id'] = user.id
         return JsonResponse(tokens, status=200)
 
     return JsonResponse({'error': 'Invalid username or password'}, status=400)
@@ -700,8 +701,7 @@ def unregister_from_tournament(request, tournament_id):
 @permission_classes([IsAuthenticated])
 def available_tournaments(request):
     try:
-        tournaments = Tournament.objects.filter(
-            is_active=True).prefetch_related('participants__user')
+        tournaments = Tournament.objects.filter().prefetch_related('participants__user')
         data = [{
             'id': tournament.id,
             'name': tournament.name,
@@ -730,9 +730,12 @@ def tournament_details(request, tournament_id):
     try:
         tournament = Tournament.objects.filter(
             id=tournament_id).prefetch_related('participants__user').first()
+        print("tournament: ", tournament)
         if not tournament:
             return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
-
+        
+        final_match = Match.objects.filter(tournament=tournament, round='Final').first()
+        print("final match: ", final_match)
         data = {
             'id': tournament.id,
             'name': tournament.name,
@@ -747,6 +750,12 @@ def tournament_details(request, tournament_id):
                 }
                 for player in tournament.participants.all()
             ],
+            'final_players': [
+                {'id': final_match.player_one.id, 'username': final_match.player_one.user.username} if final_match and final_match.player_one else {},
+                {'id': final_match.player_two.id, 'username': final_match.player_two.user.username} if final_match and final_match.player_two else {},
+            ],
+
+            'final_winner': final_match.winner.user.username if final_match and final_match.winner else None,
             # ...
         }
 
