@@ -393,6 +393,30 @@ class GameConsumer(AsyncWebsocketConsumer):
             'game_id': event['game_id']
         }))
 
+    async def send_game_start_tournament_final(self, event):
+        game_id = event['game_id']
+        self.initialize_game_state(game_id)
+
+        print("gameState: ", self.game_states)
+
+        self.game_active = True
+        self.game_id = game_id
+
+        match = await sync_to_async(Match.objects.get)(id=game_id)
+
+        # Enveloppez les appels pour obtenir les joueurs dans sync_to_async
+        player1_id = await sync_to_async(lambda: match.player_one.id)()
+        player2_id = await sync_to_async(lambda: match.player_two.id)()
+
+        if self.game_id in self.game_states:
+            self.game_states[self.game_id]['player1_channel'] = player1_id
+            self.game_states[self.game_id]['player2_channel'] = player2_id
+
+        asyncio.create_task(self.game_loop_tournament())
+        await self.send(text_data=json.dumps({
+            'type': 'game_start_tournament_final',
+            'game_id': event['game_id']
+        }))
 
     async def send_players_roles(self, event):
         player_one_username = event['player_one_username']
@@ -430,6 +454,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def send_game_start_final(self, event):
         await self.send(text_data=json.dumps({
             'type': 'game_start_final',
+            'game_id': event['game_id']
         }))
 
     async def end_game(self, event):
@@ -538,18 +563,31 @@ class GameConsumer(AsyncWebsocketConsumer):
             print("la finale est :......", final_match, "avec l id:...", final_match.id)
             if final_match and final_match.player_one and final_match.player_two and not final_match.winner:
             # Créer un groupe de canaux pour la finale
-                tournament_id = final_match.tournament.id
+                # tournament_id = final_match.tournament.id
 
-                final_group_name = f"tournament_final_{tournament_id}"
+                final_group_name = f"tournament_{final_match.id}"
                 async_to_sync(self.channel_layer.group_add)(final_group_name, final_match.player_one.user.game_socket_id)
                 async_to_sync(self.channel_layer.group_add)(final_group_name, final_match.player_two.user.game_socket_id)
-                async_to_sync(self.channel_layer.group_send)(
-                    final_group_name,
-                    {
-                        'type': 'send_game_start_final',
-                        'game_id': final_match.id
-                    }
-                )
+
+                if final_match.player_one.user.game_socket_id and final_match.player_two.user.game_socket_id:
+                        # Envoyer les rôles des joueurs
+                    async_to_sync(self.channel_layer.group_send)(
+                        final_group_name,
+                        {
+                            "type": "send_players_roles",
+                            "game_id": final_match.id,
+                            "player_one_username": final_match.player_one.user.username,
+                            "player_two_username": final_match.player_two.user.username
+                        }
+                    )
+
+                    async_to_sync(self.channel_layer.group_send)(
+                        final_group_name,
+                        {
+                            'type': 'send_game_start_tournament_final',
+                            'game_id': final_match.id
+                        }
+                    )
         except Exception as e:
             print(f"Erreur lors de la gestion de la finale : {e}")
 

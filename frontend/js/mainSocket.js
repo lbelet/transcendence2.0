@@ -282,20 +282,21 @@ function openGameWebSocketConnection() {
                 }
 
                 else if (data.type === 'game_over') {
-                    // Fermer la connexion WebSocket
                     gameWebsocket.close();
+                    navigateWithTokenCheck('game')
                 }
 
                 else if (data.type === 'game_over_tournament') {
                     // Fermer la connexion WebSocket
                     // gameWebsocket.close();
+                    localStorage.removeItem('playerRole')
                     navigateWithTokenCheck('waitingRoom')
                 }
 
-                else if (data.type === 'game_start_final') {
+                else if (data.type === 'game_start_tournament_final') {
                     // Fermer la connexion WebSocket
                     // gameWebsocket.close();
-                    console.log("c est bon pour la finale.......")
+                    console.log("c est bon pour la finale......id:...", data.game_id)
                     startPongTournament(data.game_id);
                     playPong_tournament();
                 }
