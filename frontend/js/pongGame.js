@@ -110,12 +110,14 @@ let paddleUser;
 
 // Caméra
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 5, 24);
+camera.position.set(0, 5, 28);
 
 // Renderer
 const canvas = document.getElementById('pong-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas: canvas });
-renderer.setSize(800, 600);
+const width = window.innerWidth * 0.45;
+const height = window.innerHeight * 0.45;
+renderer.setSize(width, height);
 
 // Ajout de lumière
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -216,7 +218,7 @@ window.setPlayerRole = function (player1Name, player2Name) {
     if (playerRole == 1) {
         paddleUser = paddle1;
         console.log("playerRole: ", playerRole)
-        camera.position.set(0, 5, -24); // Position inversée de la caméra pour le joueur 2
+        camera.position.set(0, 5, -28); // Position inversée de la caméra pour le joueur 2
         camera.rotation.y = Math.PI;
         newScoreText.rotation.y = Math.PI; // Rotation de 180 degrés sur l'axe Y
         newScoreText.position.set(15, 15, 0);
@@ -224,7 +226,8 @@ window.setPlayerRole = function (player1Name, player2Name) {
     } else if (playerRole == 2) {
         paddleUser = paddle2;
         console.log("playerRole: ", playerRole)
-        camera.position.set(0, 5, 24); // Position inversée de la caméra pour le joueur 2
+        camera.position.set(0, 5, 28); // Position inversée de la caméra pour le joueur 2
+        camera.rotation.y = 0;
     }
 }
 
@@ -267,7 +270,28 @@ window.updateScores = function(player1Score, player2Score, player1Name, player2N
         newScoreText.position.set(-15, 15, 0);
 };
 
+window.addEventListener('resize', onWindowResize, false);
 
+function onWindowResize() {
+    // Rapport d'aspect fixe
+    const aspectRatio = 800 / 600;
+
+    // Calculer la largeur et la hauteur en conservant le rapport d'aspect
+    let width = window.innerWidth * 0.45;
+    let height = width / aspectRatio;
+
+    // Ajuster si la hauteur calculée est trop grande pour la fenêtre
+    if (height > window.innerHeight * 0.45) {
+        height = window.innerHeight * 0.45;
+        width = height * aspectRatio;
+    }
+
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+}
+
+onWindowResize();
 
 function animate() {
     requestAnimationFrame(animate);
