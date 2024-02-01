@@ -220,6 +220,24 @@ function getGamePlayers(gameId) {
         .catch(error => console.error('Erreur: ', error));
 }
 
+function getGamePlayers_tournament(gameId) {
+    fetch(`/api/get_game_players_tournament/${gameId}/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Joueurs: ", data);
+            localStorage.setItem('player_one', data.player_one);
+            localStorage.setItem('player_two', data.player_two);
+            // Mettez à jour l'état du jeu ou l'interface utilisateur ici avec les données des joueurs
+        })
+        .catch(error => console.error('Erreur: ', error));
+}
+
 // ----------------------------------------------------------------------------------------------------
 
 function openGameWebSocketConnection() {
@@ -271,8 +289,13 @@ function openGameWebSocketConnection() {
                 }
 
                 if (data.type === 'game_start_tournament') {
+                    getGamePlayers_tournament(data.game_id);
+
+                    const player1Name = localStorage.getItem('player_one')
+                    const player2Name = localStorage.getItem('player_two')
+
                     console.log('!!!!Le tournoi de Pong commence grace au sockets');
-                    startPongTournament(data.game_id);
+                    startPongTournament(data.game_id, player1Name, player2Name);
                     playPong_tournament();
                 }
 
@@ -312,12 +335,17 @@ function openGameWebSocketConnection() {
 
                 else if (data.type === 'game_over') {
                     gameWebsocket.close();
+                    localStorage.removeItem('player_one')
+                    localStorage.removeItem('player_two')
+                    localStorage.removeItem('playerRole')
                     navigateWithTokenCheck('game')
                 }
 
                 else if (data.type === 'game_over_tournament') {
                     // Fermer la connexion WebSocket
                     // gameWebsocket.close();
+                    localStorage.removeItem('player_one')
+                    localStorage.removeItem('player_two')
                     localStorage.removeItem('playerRole')
                     console.log("les donnees sont:.....", data)
                     console.log("donc le winner_id est:....", data.winner_id)
@@ -335,10 +363,14 @@ function openGameWebSocketConnection() {
 
                 else if (data.type === 'game_start_tournament_final') {
                     // Fermer la connexion WebSocket
-                    // gameWebsocket.close();
+                    getGamePlayers_tournament(data.game_id);
+
+                    const player1Name = localStorage.getItem('player_one')
+                    const player2Name = localStorage.getItem('player_two')
+                    
                     console.log("c est bon pour la finale......id:...", data.game_id)
                     console.log("mon playerRole pour la finale: ", localStorage.getItem('playerRole'))
-                    startPongTournament(data.game_id);
+                    startPongTournament(data.game_id, player1Name, player2Name);
                     playPong_tournament();
                 }
 
@@ -413,7 +445,7 @@ function startPongGame(gameId, player1Name, player2Name) {
     window.setPlayerRole(player1Name, player2Name);
 }
 
-function startPongTournament(gameId) {
+function startPongTournament(gameId, player1Name, player2Name) {
     fetch('/api/update_nbre_games/', {
         method: 'POST',
         headers: {
@@ -444,7 +476,7 @@ function startPongTournament(gameId) {
     console.log('!!!!Démarrage du tournoi pongTournament');
     navigateWithTokenCheck('pongTournament');
     localStorage.setItem('currentGameId', gameId)
-    window.setPlayerRole_tournament();
+    window.setPlayerRole_tournament(player1Name, player2Name);
 }
 
 

@@ -56,6 +56,7 @@ urlpatterns = [
     # path('startTournament/<int:tournament_id>/', views.startTournament, name='startTournament'),
 
     path('get_game_players/<int:game_id>/', views.get_game_players, name='get_game_players'),
+    path('get_game_players_tournament/<int:game_id>/', views.get_game_players_tournament, name='get_game_players-tournament'),
 
 
     # Home page URL

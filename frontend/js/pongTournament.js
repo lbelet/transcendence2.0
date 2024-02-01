@@ -110,12 +110,14 @@ let paddleUser2;
 
 // Caméra
 const camera2 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera2.position.set(0, 5, 24);
+camera2.position.set(0, 5, 28);
 
 // Renderer
 const canvasT = document.getElementById('pongTournament-canvas');
 const renderer2 = new THREE.WebGLRenderer({ canvas: canvasT });
-renderer2.setSize(800, 600);
+const width2 = window.innerWidth * 0.45;
+const height2 = window.innerHeight * 0.45;
+renderer2.setSize(width2, height2);
 
 // Ajout de lumière
 const ambientLight2 = new THREE.AmbientLight(0xffffff, 0.5);
@@ -187,28 +189,17 @@ window.updateBallFromState_tournament = function (newBallState_tournament) {
     }
 };
 
-window.setPlayerRole_tournament = function () {
+window.setPlayerRole_tournament = function (player1Name, player2Name) {
     const playerRole2 = localStorage.getItem('playerRole');
-    if (playerRole2 == 1) {
-        paddleUser2 = paddle12;
-        console.log("playerRole: ", playerRole2)
-        camera2.position.set(0, 5, -24); // Position inversée de la caméra pour le joueur 2
-        camera2.rotation.y = Math.PI;
-    } else if (playerRole2 == 2) {
-        paddleUser2 = paddle22;
-        console.log("playerRole: ", playerRole2)
-        camera2.position.set(0, 5, 24); // Position inversée de la caméra pour le joueur 2
-    }
-}
 
-window.updateScores_tournament = function(player1Score_tournament, player2Score_tournament, player1_name, player2_name) {
-    // Supprimer l'ancien Mesh de la scène
-    if (window.scoreText12) {
+    if (window.scoreText1) {
         scene2.remove(window.scoreText12);
         window.scoreText12.geometry.dispose();
     }
 
-    const newText2 = `${player1_name}: ${player1Score_tournament} | ${player2_name}: ${player2Score_tournament}`;
+    // const playerOneName = localStorage.getItem('player_one')
+    // const playerTwoName = localStorage.getItem('player_Two')
+    const newText2 = `${player1Name}: 0 | ${player2Name}: 0`;
     const textMaterial2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
     // Créer une nouvelle géométrie de texte
@@ -225,9 +216,74 @@ window.updateScores_tournament = function(player1Score_tournament, player2Score_
 
     // Mettre à jour la référence globale
     window.scoreText12 = newScoreText2;
+    if (playerRole2 == 1) {
+        paddleUser2 = paddle12;
+        console.log("playerRole: ", playerRole2)
+        camera2.position.set(0, 5, -28); // Position inversée de la caméra pour le joueur 2
+        camera2.rotation.y = Math.PI;
+        newScoreText2.rotation.y = Math.PI; // Rotation de 180 degrés sur l'axe Y
+        newScoreText2.position.set(15, 15, 0);
+    } else if (playerRole2 == 2) {
+        paddleUser2 = paddle22;
+        console.log("playerRole: ", playerRole2)
+        camera2.position.set(0, 5, 28); // Position inversée de la caméra pour le joueur 2
+        camera2.rotation.y = 0;
+    }
+}
+
+window.updateScores_tournament = function(player1Score_tournament, player2Score_tournament, player1Name, player2Name) {
+    // Supprimer l'ancien Mesh de la scène
+    if (window.scoreText12) {
+        scene2.remove(window.scoreText12);
+        window.scoreText12.geometry.dispose();
+    }
+
+    const newText2 = `${player1Name}: ${player1Score_tournament} | ${player2Name}: ${player2Score_tournament}`;
+    const textMaterial2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+    // Créer une nouvelle géométrie de texte
+    const newGeometry2 = new TextGeometry(newText2, {
+        font: globalFont2, // Assurez-vous que 'font' est accessible ici
+        size: 2,
+        height: 0.2
+    });
+
+    // Créer un nouveau Mesh et l'ajouter à la scène
+    const newScoreText2 = new THREE.Mesh(newGeometry2, textMaterial2);
+    newScoreText2.position.set(-15, 15, 0);
+    scene2.add(newScoreText2);
+
+    // Mettre à jour la référence globale
+    window.scoreText12 = newScoreText2;
+    if(playerRole2 == 1)
+        newScoreText2.rotation.y = Math.PI;
+        newScoreText2.position.set(15, 15, 0);
+    if(playerRole2 == 2)
+        newScoreText2.position.set(-15, 15, 0);
 };
 
+window.addEventListener('resize', onWindowResize, false);
 
+function onWindowResize() {
+    // Rapport d'aspect fixe
+    const aspectRatio = 800 / 600;
+
+    // Calculer la largeur et la hauteur en conservant le rapport d'aspect
+    let width2 = window.innerWidth * 0.45;
+    let height2 = width2 / aspectRatio;
+
+    // Ajuster si la hauteur calculée est trop grande pour la fenêtre
+    if (height2 > window.innerHeight * 0.45) {
+        height2 = window.innerHeight * 0.45;
+        width2 = height2 * aspectRatio;
+    }
+
+    renderer2.setSize(width2, height2);
+    camera2.aspect = width2 / height2;
+    camera2.updateProjectionMatrix();
+}
+
+onWindowResize();
 
 function animate() {
     requestAnimationFrame(animate);
