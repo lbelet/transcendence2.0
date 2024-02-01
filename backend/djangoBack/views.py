@@ -34,6 +34,18 @@ from djangoBack.helpers import (
 
 
 # import time
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_game_players(request, game_id):
+    try:
+        game = PongGame.objects.get(id=game_id)
+        data = {
+            'player_one': game.player_one.username if game.player_one else "En attente",
+            'player_two': game.player_two.username if game.player_two else "En attente"
+        }
+        return JsonResponse(data)
+    except PongGame.DoesNotExist:
+        return JsonResponse({'error': 'Jeu non trouvé'}, status=404)
 
 
 @api_view(['POST'])

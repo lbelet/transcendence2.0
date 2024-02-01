@@ -9,6 +9,8 @@ const initialState = {
     gameSocket_ID: null,
     currentGameId: null,
     playerRole: 0,
+    player_one: null,
+    player_two: null,
     // autres variables...
 };
 

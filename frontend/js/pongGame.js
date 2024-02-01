@@ -185,28 +185,17 @@ window.updateBallFromState = function (newBallState) {
     }
 };
 
-window.setPlayerRole = function () {
+window.setPlayerRole = function (player1Name, player2Name) {
     const playerRole = localStorage.getItem('playerRole');
-    if (playerRole == 1) {
-        paddleUser = paddle1;
-        console.log("playerRole: ", playerRole)
-        camera.position.set(0, 5, -24); // Position inversée de la caméra pour le joueur 2
-        camera.rotation.y = Math.PI;
-    } else if (playerRole == 2) {
-        paddleUser = paddle2;
-        console.log("playerRole: ", playerRole)
-        camera.position.set(0, 5, 24); // Position inversée de la caméra pour le joueur 2
-    }
-}
 
-window.updateScores = function(player1Score, player2Score) {
-    // Supprimer l'ancien Mesh de la scène
     if (window.scoreText1) {
         scene.remove(window.scoreText1);
         window.scoreText1.geometry.dispose();
     }
 
-    const newText = `player1: ${player1Score} | player2: ${player2Score}`;
+    // const playerOneName = localStorage.getItem('player_one')
+    // const playerTwoName = localStorage.getItem('player_Two')
+    const newText = `${player1Name}: 0 | ${player2Name}: 0`;
     const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
     // Créer une nouvelle géométrie de texte
@@ -223,6 +212,59 @@ window.updateScores = function(player1Score, player2Score) {
 
     // Mettre à jour la référence globale
     window.scoreText1 = newScoreText;
+
+    if (playerRole == 1) {
+        paddleUser = paddle1;
+        console.log("playerRole: ", playerRole)
+        camera.position.set(0, 5, -24); // Position inversée de la caméra pour le joueur 2
+        camera.rotation.y = Math.PI;
+        newScoreText.rotation.y = Math.PI; // Rotation de 180 degrés sur l'axe Y
+        newScoreText.position.set(15, 15, 0);
+
+    } else if (playerRole == 2) {
+        paddleUser = paddle2;
+        console.log("playerRole: ", playerRole)
+        camera.position.set(0, 5, 24); // Position inversée de la caméra pour le joueur 2
+    }
+}
+
+window.updateScores = function(player1Score, player2Score, player1Name, player2Name) {
+    // Supprimer l'ancien Mesh de la scène
+    const playerRole = localStorage.getItem('playerRole');
+
+    if (window.scoreText1) {
+        scene.remove(window.scoreText1);
+        window.scoreText1.geometry.dispose();
+    }
+
+    // const playerOneName = localStorage.getItem('player_one')
+    // const playerTwoName = localStorage.getItem('player_Two')
+
+    console.log("playerOne: ", player1Name)
+
+    const newText = `${player1Name}: ${player1Score} | ${player2Name}: ${player2Score}`;
+    const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+    // Créer une nouvelle géométrie de texte
+    const newGeometry = new TextGeometry(newText, {
+        font: globalFont, // Assurez-vous que 'font' est accessible ici
+        size: 2,
+        height: 0.2
+    });
+
+    // Créer un nouveau Mesh et l'ajouter à la scène
+    const newScoreText = new THREE.Mesh(newGeometry, textMaterial);
+    // newScoreText.position.set(-15, 15, 0);
+    scene.add(newScoreText);
+
+    // Mettre à jour la référence globale
+    window.scoreText1 = newScoreText;
+    
+    if(playerRole == 1)
+        newScoreText.rotation.y = Math.PI;
+        newScoreText.position.set(15, 15, 0);
+    if(playerRole == 2)
+        newScoreText.position.set(-15, 15, 0);
 };
 
 

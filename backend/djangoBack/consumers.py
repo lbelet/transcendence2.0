@@ -370,11 +370,11 @@ class GameConsumer(AsyncWebsocketConsumer):
         game_id = event['game_id']
         self.initialize_game_state(game_id)
 
-        match = await sync_to_async(Match.objects.get)(id=game_id)
-        player_one = match.player_one
-        player_two = match.player_two
-        self.game_states[self.game_id]['player1_channel'] = player_one
-        self.game_states[self.game_id]['player2_channel'] = player_two
+        # match = await sync_to_async(Match.objects.get)(id=game_id)
+        # player_one = match.player_one
+        # player_two = match.player_two
+        # self.game_states[self.game_id]['player1_channel'] = player_one
+        # self.game_states[self.game_id]['player2_channel'] = player_two
 
         self.game_active = True
         self.game_id = game_id
