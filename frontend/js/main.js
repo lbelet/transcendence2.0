@@ -26,3 +26,32 @@ window.onpopstate = function (event) {
         navigateWithTokenCheck('home');
     }
 };
+
+document.addEventListener('DOMContentLoaded', function() {
+    const userName = localStorage.getItem('username');
+    if (userName) {
+        document.getElementById('user-name-game').textContent = userName;
+    }
+    const avatar_url = localStorage.getItem('avatarURL')
+    console.log('avatarURL: ', avatar_url)
+    if (avatar_url) {
+        document.getElementById('user-avatar').src = avatar_url;    }
+});
+
+window.updateUserUI = function() {
+    const userName = localStorage.getItem('username');
+    const avatarUrl = localStorage.getItem('avatarURL');
+
+    if (userName) {
+        document.getElementById('user-name-game').textContent = userName;
+    }
+
+    if (avatarUrl) {
+        document.getElementById('user-avatar').src = avatarUrl;
+    }
+}
+
+// Appeler au chargement de la page
+document.addEventListener('DOMContentLoaded', updateUserUI);
+
+// Vous pouvez également appeler updateUserUI() après des actions utilisateur comme la connexion ou la mise à jour du profil

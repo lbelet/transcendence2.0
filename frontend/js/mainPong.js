@@ -113,14 +113,6 @@ function quitPong3D_tournament() {
         });
 }
 
-function showGameForm() {
-    const username = localStorage.getItem('username');
-    // console.log("1 username: ", username)
-    document.getElementById('user-name-game').textContent = username || 'Utilisateur';
-    // openGameWebSocketConnection();
-    navigateWithTokenCheck('game');
-}
-
 // document.getElementById('joinGameButton').addEventListener('click', joinGameQueue);
 // function updatePlayerRole(newRole) {
 //     localStorage.setItem('playerRole', newRole);

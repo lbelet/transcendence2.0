@@ -11,7 +11,7 @@ const initialState = {
     playerRole: 0,
     player_one: null,
     player_two: null,
-    // autres variables...
+    avatarURL: null,
 };
 
 // Initialiser le store si vide

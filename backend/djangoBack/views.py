@@ -224,10 +224,20 @@ def api_login(request):
                 qr_code_img = generate_qr_code(user)
                 return JsonResponse({'2fa_required': True, '2fa_method': 'qr', 'qr_code_img': qr_code_img})
 
+        # Construction de l'URL de l'avatar en HTTPS
+        if user.avatar:
+            avatar_url = 'https://' + request.get_host() + user.avatar.url
+        else:
+            # Fournir un chemin vers un avatar par défaut si nécessaire
+            avatar_url = 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png'
+
+        print("AVATAR url = ", avatar_url)
         tokens = get_tokens_for_user(user)
         # Ajouter la langue de l'utilisateur à la réponse
         tokens['language'] = user.language
         tokens['id'] = user.id
+        tokens['avatar_url'] = avatar_url
+
         return JsonResponse(tokens, status=200)
 
     return JsonResponse({'error': 'Invalid username or password'}, status=400)

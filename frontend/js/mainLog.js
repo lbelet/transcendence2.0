@@ -31,13 +31,16 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     localStorage.setItem('refresh_token', obj.body.refresh);
                     localStorage.setItem('language', obj.body.language);
                     localStorage.setItem('userID', obj.body.id);
+                    localStorage.setItem('avatarURL', obj.body.avatar_url);
                     // localStorage.setItem('username', username);
+                    console.log("avatar setItem = ", obj.body.avatar_url)
                     console.log("mon userID est: ", localStorage.getItem('userID'));
                     // console.log("refresssshhhh: ", localStorage.getItem('refresh_token'))
 
                     setupTokenRefresh();
 
                     loadTranslations(obj.body.language);
+                    window.updateUserUI();
                     // showWelcome();
                     navigateWithTokenCheck('game');
                     openWebSocketConnection();
