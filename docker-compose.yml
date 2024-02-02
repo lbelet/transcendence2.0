@@ -3,48 +3,50 @@ version: '3.8'
 services:
   db:
     image: postgres:13
+    restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - .env
-    # environment:
-    #   - POSTGRES_DB=your_database_name
-    #   - POSTGRES_USER=user
-    #   - POSTGRES_PASSWORD=password
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
     image: dpage/pgadmin4
+    restart: always
     env_file:
       - .env
-    # environment:
-    #   - PGADMIN_DEFAULT_EMAIL=your_email@example.com
-    #   - PGADMIN_DEFAULT_PASSWORD=your_password
     ports:
       - "5050:80"
 
   backend:
     build: ./backend
+    restart: always
     command: sh -c "python3 manage.py makemigrations && python3 manage.py migrate && uvicorn djangoBack.asgi:application --host 0.0.0.0 --port 8000"
     volumes:
       - ./backend:/app
       - media_volume:/app/media
     env_file:
       - .env
-    # environment:
-    #   - POSTGRES_DB=your_database_name
-    #   - POSTGRES_USER=user
-    #   - POSTGRES_PASSWORD=password
-    #   - DJANGO_SECRET_KEY=your_secret_key
-    #   - DJANGO_DEBUG=True
-    #   - DJANGO_ALLOWED_HOSTS=192.168.8.102 192.168.8.101 192.168.8.100 localhost 127.0.0.1 [::1]
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8000/health/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   frontend:
     build: ./frontend
+    restart: always
     command: npm run dev -- --host 0.0.0.0
     ports:
       - "5173:5173"
@@ -52,10 +54,12 @@ services:
       - ./frontend:/app
       - /app/node_modules
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
   nginx:
     image: nginx:latest
+    restart: always
     ports:
       - "80:80"
       - "443:443"
@@ -65,16 +69,20 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - media_volume:/media
     depends_on:
-      - frontend
-      - backend
+      frontend:
+        condition: service_started
+      backend:
+        condition: service_started
 
   redis:
     image: "redis:alpine"
+    restart: always
     ports:
       - "6379:6379"
 
 volumes:
   postgres_data:
   media_volume:
+
 
 

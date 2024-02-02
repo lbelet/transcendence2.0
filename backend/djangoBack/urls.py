@@ -61,6 +61,8 @@ urlpatterns = [
 
     # Home page URL
     path('', views.index, name='index'),
+    path('health/', views.health_check, name='health-check'),
+
 ]
 
 if settings.DEBUG:

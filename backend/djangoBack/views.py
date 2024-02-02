@@ -32,6 +32,12 @@ from djangoBack.helpers import (
 
 # from django.db.models import F
 
+@api_view(['GET'])
+@csrf_exempt
+def health_check(request):
+    # Logique pour vérifier la santé de l'application
+    return JsonResponse({"status": "healthy"})
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

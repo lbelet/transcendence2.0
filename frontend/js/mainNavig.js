@@ -87,7 +87,6 @@ function navigateTo(sectionId) {
     }
 }
 
-
 async function isValidToken() {
     try {
         const response = await fetch('/api/verify_token/', {
