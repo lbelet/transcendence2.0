@@ -37,6 +37,8 @@ async function navigateWithTokenCheck(sectionId) {
         if (!tokenIsValid && sectionId !== 'login' && sectionId !== 'home' && sectionId !== 'register') {
             navigateTo('home');
         } else {
+            if (sectionId == 'home' || sectionId == 'login' || sectionId == 'register')
+                navigateWithTokenCheck('game');
             if (sectionId == 'waitingRoom')
                 playAudio();
             else
@@ -62,19 +64,24 @@ function hideAllSections() {
     document.getElementById('tournamentBracket-section').classList.add('hidden');
     document.getElementById('pongTournament-section').classList.add('hidden');
     document.getElementById('waitingRoom-section').classList.add('hidden');
+    document.getElementById('notFound-section').classList.add('hidden');
 }
 
 function navigateTo(sectionId) {
     hideAllSections();
-    document.getElementById(sectionId + '-section').classList.remove('hidden');
-
+    const sectionElement = document.getElementById(sectionId + '-section');
+    if (sectionElement) {
+        sectionElement.classList.remove('hidden');
+    } else {
+        document.getElementById('notFound-section').classList.remove('hidden');
+        window.history.pushState({ section: 'notFound' }, '', `/not-found`);
+    }
     console.log("navigateTo");
     if (sectionId === 'home') {
         startAnimation();
     } else {
         stopAnimation();
     }
-
     if (!window.location.pathname.endsWith(`/${sectionId}`)) {
         window.history.pushState({ section: sectionId }, '', `/${sectionId}`);
     }
