@@ -38,15 +38,15 @@ loader2.load('node_modules/three/examples/fonts/droid/droid_serif_regular.typefa
 
 const paddleMaterial12 = new THREE.MeshStandardMaterial({
     color: 0xffa500,
-    emissive: 0xff8c00,
-    emissiveIntensity: 0.5,
+    // emissive: 0xff8c00,
+    // emissiveIntensity: 0.5,
     wireframe: false
 });
 
 const paddleMaterial22 = new THREE.MeshStandardMaterial({
     color: 0x000000,
-    emissive: 0xff8c00,
-    emissiveIntensity: 0.5,
+    // emissive: 0xff8c00,
+    // emissiveIntensity: 0.5,
     wireframe: false
 });
 
@@ -67,7 +67,7 @@ scene2.add(paddle22);
 const ballGeometry2 = new THREE.SphereGeometry(1, 32, 32);
 const ballMaterial2 = new THREE.MeshStandardMaterial({
     color: 0x000000,
-    emissiveIntensity: 0
+    // emissiveIntensity: 0
 });
 const ball2 = new THREE.Mesh(ballGeometry2, ballMaterial2);
 window.ball2 = ball2;
@@ -80,7 +80,7 @@ const planeMaterial2 = new THREE.MeshBasicMaterial({
     color: 0xFFFFFF,
     side: THREE.DoubleSide,
     wireframe: false,
-    emissive: 0x2222ff,
+    // emissive: 0x2222ff,
     transparent: true,
     opacity: 0.8
 });
@@ -94,10 +94,10 @@ const wallGeometry2 = new THREE.BoxGeometry(0.2, 1, 30);
 const wallMaterial2 = new THREE.MeshBasicMaterial({
     color: 0x2222ff,
     wireframe: true,
-    emissive: 0x2222ff,
+    // emissive: 0x2222ff,
     transparent: false,
     opacity: 0.5,
-    emissiveIntensity: 2
+    // emissiveIntensity: 2
 });
 const wall12 = new THREE.Mesh(wallGeometry2, wallMaterial2);
 wall12.position.set(10, 0, 0);
@@ -232,6 +232,8 @@ window.setPlayerRole_tournament = function (player1Name, player2Name) {
 }
 
 window.updateScores_tournament = function(player1Score_tournament, player2Score_tournament, player1Name, player2Name) {
+    const playerRole2 = localStorage.getItem('playerRole');
+
     // Supprimer l'ancien Mesh de la scène
     if (window.scoreText12) {
         scene2.remove(window.scoreText12);

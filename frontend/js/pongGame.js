@@ -38,15 +38,15 @@ loader.load('node_modules/three/examples/fonts/droid/droid_serif_regular.typefac
 
 const paddleMaterial1 = new THREE.MeshStandardMaterial({
     color: 0xffa500,
-    emissive: 0xff8c00,
-    emissiveIntensity: 0.5,
+    // emissive: 0xff8c00,
+    // emissiveIntensity: 0.5,
     wireframe: false
 });
 
 const paddleMaterial2 = new THREE.MeshStandardMaterial({
     color: 0x000000,
-    emissive: 0xff8c00,
-    emissiveIntensity: 0.5,
+    // emissive: 0xff8c00,
+    // emissiveIntensity: 0.5,
     wireframe: false
 });
 
@@ -67,7 +67,7 @@ scene.add(paddle2);
 const ballGeometry = new THREE.SphereGeometry(1, 32, 32);
 const ballMaterial = new THREE.MeshStandardMaterial({
     color: 0x000000,
-    emissiveIntensity: 0
+    // emissiveIntensity: 0
 });
 const ball = new THREE.Mesh(ballGeometry, ballMaterial);
 window.ball = ball;
@@ -80,7 +80,7 @@ const planeMaterial = new THREE.MeshBasicMaterial({
     color: 0xFFFFFF,
     side: THREE.DoubleSide,
     wireframe: false,
-    emissive: 0x2222ff,
+    // emissive: 0x2222ff,
     transparent: true,
     opacity: 0.8
 });
@@ -94,10 +94,10 @@ const wallGeometry = new THREE.BoxGeometry(0.2, 1, 30);
 const wallMaterial = new THREE.MeshBasicMaterial({
     color: 0x2222ff,
     wireframe: true,
-    emissive: 0x2222ff,
+    // emissive: 0x2222ff,
     transparent: false,
     opacity: 0.5,
-    emissiveIntensity: 2
+    // emissiveIntensity: 2
 });
 const wall1 = new THREE.Mesh(wallGeometry, wallMaterial);
 wall1.position.set(10, 0, 0);
