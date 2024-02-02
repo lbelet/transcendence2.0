@@ -1,4 +1,4 @@
-document.getElementById('avatar').addEventListener('change', function (event) {
+document.getElementById('avatar1').addEventListener('change', function (event) {
     var file = event.target.files[0];
     if (file) {
         var validTypes = ['image/jpeg', 'image/png'];
@@ -30,7 +30,7 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
     formData.append('email', document.getElementById('email').value);
     formData.append('password', document.getElementById('password').value);
 
-    let avatarFile = document.getElementById('avatar').files[0];
+    let avatarFile = document.getElementById('avatar1').files[0];
     if (avatarFile) {
         formData.append('avatar', avatarFile);
     }
@@ -62,47 +62,46 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
 document.getElementById('editUserModal').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    const selectedTwoFactorMethod = document.getElementById('twoFactorMethod').value;
-    const selectedLanguage = document.getElementById('language').value;
-    const newEmail = document.getElementById('newEmail').value
-    const newUsername = document.getElementById('newUsername').value
-    const newFirstname = document.getElementById('newFirstname').value
-    const currentPassword = document.getElementById('currentPassword').value
-    const newPassword = document.getElementById('newPassword').value
+    const formData = new FormData();
+
+    // Ajouter les données du formulaire à l'objet FormData
+    formData.append('twoFactorMethod', document.getElementById('twoFactorMethod').value);
+    formData.append('language', document.getElementById('language').value);
+    formData.append('email', document.getElementById('newEmail').value);
+    formData.append('username', document.getElementById('newUsername').value);
+    formData.append('firstname', document.getElementById('newFirstname').value);
+    formData.append('oldPassword', document.getElementById('currentPassword').value);
+    formData.append('newPassword', document.getElementById('newPassword').value);
+
+    // Ajouter l'avatar s'il est présent
+    const avatarFile = document.getElementById('avatar2').files[0]; // Assurez-vous que l'ID correspond à votre champ de fichier d'avatar
+    if (avatarFile) {
+        formData.append('avatar', avatarFile);
+    }
 
     fetch('/api/user/update', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            // Ne définissez pas Content-Type pour multipart/form-data; le navigateur le fera automatiquement, incluant le boundary.
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         },
-        body: JSON.stringify({
-            // username: localStorage.getItem('username'),
-            username: newUsername,
-            twoFactorMethod: selectedTwoFactorMethod,
-            language: selectedLanguage, // Include the selected language in the request
-            email: newEmail,
-            firstname: newFirstname,
-            oldPassword: currentPassword,
-            newPassword: newPassword
-        })
+        body: formData // Utilisez l'objet FormData comme corps de la requête
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(() => {
-            alert(`Preferences updated. 2FA method: ${selectedTwoFactorMethod.toUpperCase()}, Language: ${selectedLanguage}`);
-            loadTranslations(selectedLanguage); // Load the new language translations
-            navigateWithTokenCheck('game');
-        })
-        .catch(error => {
-            // console.error('Error updating 2FA preference:', error);
-            alert('Error updating 2FA preference. Please try again.');
-        });
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(() => {
+        alert('Preferences updated.');
+        // Gérez la logique post-réponse ici
+    })
+    .catch(error => {
+        alert('Error updating preferences. Please try again.');
+    });
 });
+
 
 // Define the applyTranslations function
 function applyTranslations(translations) {

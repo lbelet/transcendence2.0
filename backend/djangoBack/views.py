@@ -236,19 +236,18 @@ def api_login(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def update_user(request):
-    data = json.loads(request.body)
-    two_factor_method = data.get('twoFactorMethod')
-    language = data.get('language', 'fr')  # Default to English if not provided
-    email = data.get('email')
-    username = data.get('username')
-    firstname = data.get('firstname')
-
-    old_password = data.get('oldPassword')
-    new_password = data.get('newPassword')
+    # Utilisez request.data pour les champs de données et request.FILES pour les fichiers
+    two_factor_method = request.data.get('twoFactorMethod')
+    language = request.data.get('language', 'fr')
+    email = request.data.get('email')
+    username = request.data.get('username')
+    firstname = request.data.get('firstname')
+    old_password = request.data.get('oldPassword')
+    new_password = request.data.get('newPassword')
+    avatar = request.FILES.get('avatar')
 
     user = request.user
-    user.two_factor_method = two_factor_method
-    user.language = language  # Update the user's language preference
+
     if email:
         user.email = email
     if username:
@@ -257,40 +256,28 @@ def update_user(request):
         user.first_name = firstname
 
     if old_password and new_password:
-        # Vérifiez d'abord que l'ancien mot de passe est correct
         if not user.check_password(old_password):
             return JsonResponse({'error': 'L’ancien mot de passe est incorrect'}, status=400)
-
-        # Mettre à jour vers le nouveau mot de passe
         user.set_password(new_password)
-        # user.save()
+        user.save()
+        update_session_auth_hash(request, user)  # Mise à jour de la session d'authentification
+        # Pas besoin de retourner immédiatement, continuez si d'autres mises à jour sont nécessaires
 
-        # Mettez à jour la session d'authentification pour ne pas déconnecter l'utilisateur
-        update_session_auth_hash(request, user)
-
-        # Vous pouvez ajouter une réponse pour indiquer la réussite de la mise à jour du mot de passe
-        return JsonResponse({'success': 'Mot de passe mis à jour avec succès'}, status=200)
-
-    if two_factor_method == 'qr':
-        if not user.totp_secret:
-            user.totp_secret = pyotp.random_base32()
-        user.is_two_factor_enabled = True
+    if avatar:
+        file_path = f'avatars/{username}/{avatar.name}'
+        saved_path = default_storage.save(file_path, ContentFile(avatar.read()))
+        user.avatar = saved_path
         user.save()
 
-        qr_code_img = generate_qr_code(user)
-        return JsonResponse({'success': 'Profile updated successfully', 'qr_code_data': qr_code_img}, status=200)
+    # Mettez à jour two_factor_method et language après le traitement de l'avatar pour éviter de renvoyer avant la fin
+    user.two_factor_method = two_factor_method
+    user.language = language
+    # Activez ou désactivez la méthode 2FA selon la valeur de two_factor_method
+    # (ajustez votre logique ici en fonction des besoins spécifiques de votre application)
+    user.save()
 
-    elif two_factor_method == 'email':
-        user.is_two_factor_enabled = True
-        user.save()
+    return JsonResponse({'success': 'Profil mis à jour avec succès'}, status=200)
 
-        # send_two_factor_email(user.email, user)
-        return JsonResponse({'success': 'Profile updated successfully'}, status=200)
-
-    else:
-        user.is_two_factor_enabled = False
-        user.save()
-        return JsonResponse({'success': 'Two-factor authentication disabled'}, status=200)
 
 
 @csrf_exempt
