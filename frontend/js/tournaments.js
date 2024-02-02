@@ -1,14 +1,14 @@
-document.getElementById('startAtSpecificTime').addEventListener('change', function () {
-    document.getElementById('specificDateTime').disabled = !this.checked;
-});
+// document.getElementById('startAtSpecificTime').addEventListener('change', function () {
+//     document.getElementById('specificDateTime').disabled = !this.checked;
+// });
 
 document.getElementById('createTournamentForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
     const tournamentName = document.getElementById('tournamentNameBis').value;
     console.log('tournament name: ', tournamentName)
-    const numberOfPlayers = document.querySelector('input[name="numberOfPlayers"]:checked').value;
-    const startDateOption = document.querySelector('input[name="startDateOption"]:checked').value;
+    // const numberOfPlayers = document.querySelector('input[name="numberOfPlayers"]:checked').value;
+    const startDateOption = "whenFull";
     let specificStartDate = null;
 
     if (startDateOption === 'specificTime') {
@@ -16,7 +16,7 @@ document.getElementById('createTournamentForm').addEventListener('submit', funct
     }
     const data = {
         name: tournamentName,
-        number_of_players: numberOfPlayers,
+        number_of_players: "4",
         start_date_option: startDateOption,
         specific_start_date: specificStartDate
     };
