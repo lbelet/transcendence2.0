@@ -50,9 +50,9 @@ body, html {
 
 
 #pongTournament-canvas {
-  width: 800px;
-  height: 600px;
-  border: 1px solid black;
+  width: 100%;
+  height: 100%;
+  border: 10px solid rgb(251, 255, 0);
 }
 
 .modal {

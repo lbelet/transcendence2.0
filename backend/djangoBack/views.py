@@ -153,16 +153,11 @@ def update_GameSocket_id(request):
 def get_user_avatar(request):
     user = request.user
     if user.avatar:
-        # Construction de l'URL en HTTPS si nécessaire
-        avatar_url = request.build_absolute_uri(user.avatar.url)
-        if request.is_secure():
-            avatar_url = avatar_url.replace('http://', 'https://')
+        # Assurez-vous que l'URL est toujours construite avec HTTPS
+        avatar_url = 'https://' + request.get_host() + user.avatar.url
     else:
-        # URL de l'avatar par défaut
-        avatar_url = request.build_absolute_uri(
-            settings.MEDIA_URL + 'avatars/default.png')
-        if request.is_secure():
-            avatar_url = avatar_url.replace('http://', 'https://')
+        # URL de l'avatar par défaut, également en HTTPS
+        avatar_url = 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png'
     return JsonResponse({'avatarUrl': avatar_url})
 
 
@@ -343,7 +338,7 @@ def search_users(request):
         user_data = {
             'id': user.id,
             'username': user.username,
-            'avatarUrl': request.build_absolute_uri(user.avatar.url) if user.avatar else None,
+            'avatarUrl': ('https://' + request.get_host() + user.avatar.url) if user.avatar else None,
             'nbreGames': user.nbre_games,
             'victories': user.won_game
         }
@@ -453,7 +448,7 @@ def get_friends(request):
 
     friends_data = [{
         'username': friend.username,
-        'avatarUrl': request.build_absolute_uri(friend.avatar.url) if friend.avatar else None,
+        'avatarUrl': ('https://' + request.get_host() + friend.avatar.url) if friend.avatar else None,
         'status': friend.status,
         'nbreGames': friend.nbre_games,
         'victories': friend.won_game,

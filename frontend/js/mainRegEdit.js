@@ -6,7 +6,7 @@ document.getElementById('avatar').addEventListener('change', function (event) {
 
         // Check if the file type is valid
         if (!validTypes.includes(file.type)) {
-            alert('Avatar1 : Seuls les fichiers JPEG et PNG sont autorisés.');
+            alert('Avatar1 : Seuls les fichiers JPEG et PNG sont autorisés et 1Mo max.');
             event.target.value = ''; // Clear the file input
             return; // Exit the function
         }
