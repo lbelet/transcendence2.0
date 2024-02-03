@@ -82,7 +82,7 @@
                 <div id="notFound-section" class="hidden">
                     <h1>404 Not Found</h1>
                     <p>La page que vous cherchez n'existe pas.</p>
-                    <button class="btn btn-outline-secondary" onclick="navigateWithTokenCheck('game')">retour</button>
+                    <button class="btn btn-outline-secondary" onclick="navigateWithTokenCheck('game')">Retour</button>
                 </div>
 
                 <div id="login-section" class="text-center hidden">
@@ -124,41 +124,47 @@
                 </div>
 
                 <div id="emailTwoFactor-section" class="hidden">
-                    <h2>Two-Factor Authentication</h2>
+                    <h2>Authentification à deux facteurs par email</h2>
                     <form id="EmailTwoFactorForm">
                         <div class="form-group">
                             <label for="twoFactorCode">2FA Code</label>
                             <input type="text" class="form-control" id="twoFactorCode" required>
                         </div>
-                        <button type="submit" class="btn btn-outline-secondary">Verify</button>
+                        <button type="submit" class="btn btn-outline-secondary">Vérifier</button>
                     </form>
                 </div>
 
                 <div id="qrTwoFactor-section" class="hidden">
-                    <h2>QR Two-Factor Authentication</h2>
-                    <p>Scan the QR Code with your 2FA app and enter the code below.</p>
+                    <h2>Authentification à deux facteurs par QR code</h2>
+                    <p>Scannez le code QR avec votre application d'authentification et saisissez le code
+                        ci-dessous. Par exemple, vous pouvez utiliser Google Authenticator.</p>
                     <img id="qr-code-img" src="" alt="QR Code" class="mb-3">
                     <form id="qrTwoFactorForm">
                         <div class="form-group">
                             <label for="qrTwoFactorCode">2FA Code</label>
                             <input type="text" class="form-control" id="qrTwoFactorCode" required>
                         </div>
-                        <button type="submit" class="btn btn-outline-secondary">Verify</button>
+                        <button type="submit" class="btn btn-outline-secondary">Vérifier</button>
                     </form>
                 </div>
 
                 <div id="game-section" class="text-center hidden">
-                    <h2>Bienvenue sur la page de jeu</h2>
-                    <p>Bienvenue, <span id="user-name-game"></span>!</p>
+                    <h2>Bienvenue à toi, <span id="user-name-game"></span> </h2>
+                    <p>Défie tes adversaires en 1v1 et participe à des tournois. Amuse-toi et que le meilleur gagne !
+                    </p>
                     <img id="user-avatar" src="" alt="Avatar" style="width: 50px; height:auto;">
                     <!-- <button class="btn btn-outline-secondary" onclick="playPong()">practice playing Pong</button> -->
-                    <button class="btn btn-outline-secondary" onclick="joinGameQueue()">Rejoindre la partie</button>
-                    <button class="btn btn-outline-secondary" onclick="goTournament()">tournois</button>
+                    <button class="btn btn-outline-secondary" onclick="joinGameQueue()">Rejoindre la partie 1v1</button>
+                    <button class="btn btn-outline-secondary" onclick="goTournament()">Rejoindre la page des
+                        tournois</button>
                     <div id="pending-requests-container"></div>
                 </div>
 
                 <div id="waitingRoom-section" class="text-center hidden">
-                    <h2>En attendant la suite...</h2>
+                    <div class="d-flex flex-column align-items-center">
+                        <h2 role="status">En attente de la suite...</h2>
+                        <div class="spinner-border" aria-hidden="true"></div>
+                    </div>
                     <audio id="myAudio" muted>
                         <source src="./locales/audio/glass-of-wine-143532.mp3" type="audio/mpeg">
                         Votre navigateur ne supporte pas l'élément audio.
@@ -214,7 +220,7 @@
                 <!-- <div id="tournamentBracket-section" class="hidden"></div> -->
 
                 <div id="tournamentBracket-section" class="container hidden">
-                    <h2 id="tournamentName" class="text-center tournament-title">Nom du Tournoi</h2>
+                    <h2 id="tournamentName" class="text-center tournament-title">Nom du tournoi</h2>
 
                     <div class="row my-4 tournament-row">
                         <div class="col d-flex flex-column semi-finals">
@@ -242,7 +248,7 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="searchResultsLabel">Résultats de la Recherche</h5>
+                                <h5 class="modal-title" id="searchResultsLabel">Résultats de la recherche</h5>
                                 <button type="button" class="btn-close" onclick="closeSearchResultsModal()"
                                     aria-label="Close"></button>
                             </div>
@@ -270,17 +276,17 @@
                                     <div class="form-group">
                                         <!-- <label for="currentUsername">Username actuel:</label> -->
                                         <!-- <span id="currentUsername">Username</span> -->
-                                        <label for="newUsername">Nouveau username:</label>
+                                        <label for="newUsername">Nouveau nom d'utilisateur:</label>
                                         <input type="username" class="form-control" id="newUsername"
                                             placeholder="Entrez le nouveau username">
                                         <!-- <label for="currentFirstName">firstname actuel:</label> -->
                                         <!-- <span id="currentFirstName">firstname</span> -->
-                                        <label for="newFirstname">Nouveau firstname:</label>
+                                        <label for="newFirstname">Nouveau prénom:</label>
                                         <input type="firstname" class="form-control" id="newFirstname"
                                             placeholder="Entrez le nouveau firstname">
                                         <!-- <label for="currentEmail">Email Actuel:</label> -->
                                         <!-- <span id="currentEmail">email@example.com</span> -->
-                                        <label for="newEmail">Nouvel Email:</label>
+                                        <label for="newEmail">Nouvel email:</label>
                                         <input type="email" class="form-control" id="newEmail"
                                             placeholder="Entrez le nouvel email">
                                         <!-- <label for="currentPassword">Mot de passe actuel:</label> -->
@@ -290,8 +296,10 @@
                                         <input type="password" class="form-control" id="newPassword"
                                             placeholder="Entrez le nouveau mot de passe">
                                         <label for="avatar2">Avatar:</label>
-                                        <input type="file" class="form-control" id="avatar2" accept="image/jpeg, image/png" name="avatar2">
-                                        <label for="twoFactorMethod">Choose 2FA Method:</label>
+                                        <input type="file" class="form-control" id="avatar2"
+                                            accept="image/jpeg, image/png" name="avatar2">
+                                        <label for="twoFactorMethod">Choisissez une méthode de double
+                                            authentification:</label>
                                         <select class="form-control" id="twoFactorMethod">
                                             <option value="none">Aucune</option>
                                             <option value="email">Email</option>
@@ -319,7 +327,7 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="createTournamentLabel">Créer un Nouveau Tournoi</h5>
+                                <h5 class="modal-title" id="createTournamentLabel">Créer un nouveau tournoi</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -331,7 +339,7 @@
                                             placeholder="Entrez le nom du tournoi" required>
                                     </div>
                                     <h2>Nombre de joueurs: 4</h2>
-                                    <h2>Demarre une fois complet</h2>
+                                    <h2>Le tournoi commence dès que l'effectif est au complet</h2>
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-outline-secondary">Créer</button>
                                     </div>
@@ -347,7 +355,7 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="friendsModalLabel">Liste des Amis</h5>
+                                <h5 class="modal-title" id="friendsModalLabel">Liste des amis</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
