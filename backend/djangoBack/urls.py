@@ -1,8 +1,8 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from django.conf.urls.static import static
-from .views import get_config
+from .views import get_config, oauth_callback
 from . import views
 
 from djangoBack import settings
@@ -21,8 +21,10 @@ urlpatterns = [
     path('logout/', views.api_logout, name='api_logout'),
 
     #API42 authentification
-    path('get-config/', views.get_config, name='get_config'),
-    path('oauth/callback', views.oauth_callback, name='oauth_callback'),
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('get_config/', views.get_config, name='get_config'),
+     path('oauth/callback', views.oauth_callback, name='oauth_callback'),
+    # path('handle_code/', views.handle_code, name='handle_code'),
     # path('api/get-config/', GetConfig.as_view(), name='get_config'),
 
     # JWT Token URLs

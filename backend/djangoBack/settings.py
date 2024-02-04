@@ -44,9 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount'
+    'oauth2_provider',
     # Add third-party applications here
 ]
 
@@ -61,7 +59,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
 ]
  #configure CORS to allow all domains during development. This is not recommended for production:
 CORS_ALLOW_ALL_ORIGINS = True  # For development only
@@ -157,3 +154,16 @@ SIMPLE_JWT = {
 # Media files configuration (needed for the avatar)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}

@@ -11,4 +11,4 @@ channels_redis
 python-dotenv
 django-cors-headers
 requests==2.26.0
-django-allauth
+django-oauth-toolkit

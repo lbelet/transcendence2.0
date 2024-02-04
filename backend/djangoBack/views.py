@@ -25,9 +25,13 @@ from django.db import transaction
 from djangoBack.models import User, PongGame
 from djangoBack import settings
 
-from allauth.socialaccount.models import SocialToken
 from rest_framework.views import APIView
 import requests
+
+from django.contrib.auth.models import User
+from django.db import IntegrityError
+from django.http import HttpResponseRedirect
+
 
 # Local application imports
 from djangoBack.models import Player, Tournament, User, FriendRequest, PongGame, Match, TournamentParticipation
@@ -36,10 +40,16 @@ from djangoBack.helpers import (
     retrieve_stored_2fa_code
 )
 
-# from django.db.models import F
+import logging
+from django.conf import settings
 
+import logging
+# from django.views.decorators.csrf import csrf_exempt
+
+logger = logging.getLogger(__name__)
 # import time
 
+logger.info("BLA")
 def get_config(request):
     config_data = {
         'client_id': os.getenv('CLIENT_ID', 'default_client_id'),
@@ -49,84 +59,99 @@ def get_config(request):
     }
     return JsonResponse(config_data)
 
-
-# def oauth_callback(request):
-#     # Assuming the OAuth provider redirects back with a code in the URL
-#     authorization_code = request.GET.get('code')
-
-#     if authorization_code:
-#         # Exchange the authorization code for an access token
-#         token_url = 'https://oauth.provider.com/token'
-#         client_id = os.getenv('OAUTH_CLIENT_ID')
-#         client_secret = os.getenv('OAUTH_CLIENT_SECRET')
-#         redirect_uri = os.getenv('OAUTH_REDIRECT_URI')
-
-#         data = {
-#             'grant_type': 'authorization_code',
-#             'code': authorization_code,
-#             'client_id': client_id,
-#             'client_secret': client_secret,
-#             'redirect_uri': redirect_uri
-#         }
-
-#         response = requests.post(token_url, data=data)
-#         if response.status_code == 200:
-#             access_token = response.json().get('access_token')
-#             # Additional logic to create/update user and create your own app's token
-#             # ...
-#             return JsonResponse({'status': 'success', 'access_token': access_token})
-#         else:
-#             return JsonResponse({'status': 'error', 'message': 'Failed to obtain access token'}, status=400)
-
-#     return JsonResponse({'status': 'error', 'message': 'No authorization code provided'}, status=400)
-
-# Now you can use the user_info dictionary in your application
 def oauth_callback(request):
-    authorization_code = request.GET.get('code')
-    print('Received authorization code:', authorization_code)
+    logger.info("getting into oauth_callback")
+    authorization_code = request.GET.get('code', '')
     if authorization_code:
-        token_url = os.getenv('TOKEN_URL', 'default_token_url')
-        client_id = os.getenv('CLIENT_ID')
-        client_secret = os.getenv('CLIENT_SECRET')
-        redirect_uri = os.getenv('REDIRECT_URI')
-
-        data = {
+        logger.info("BLA I have the code")
+        # Prepare data for the token request
+        token_request_data = {
             'grant_type': 'authorization_code',
             'code': authorization_code,
-            'client_id': client_id,
-            'client_secret': client_secret,
-            'redirect_uri': redirect_uri
+            'client_id': os.getenv('CLIENT_ID', 'default_client_id'),
+            'client_secret': os.getenv('CLIENT_SECRET', 'default_client_secret'),
+            'redirect_uri': os.getenv('REDIRECT_URI', 'default_redirect_uri'),
+            'scope': os.getenv('CLIENT_SCOPE', 'default_scope'),
         }
+        
+        token_url = os.getenv('OAUTH2_TOKEN_URL', 'default_token_url')
+        logger.debug("Token URL: %s", token_url)
+        try:
+            # Send request to the OAuth provider's token endpoint
+            response = requests.post(token_url, data=token_request_data)
+            logger.debug("Response: %s", response)
+        
+            if response.status_code == 200:
+                token_data = response.json()
+                access_token = token_data.get('access_token')
+                logger.info("Got the token")
+                if access_token:
+                    logger.info("BLA I have the token")
+                    user_url= os.getenv('OAUTH2_USER_URL', 'default_user_url')
+                    headers = {'Authorization': f'Bearer {access_token}'}
+                    user_data = {}
+                    try:
+                        # Send a GET request to the OAuth provider's user info endpoint
+                        user_response = requests.get(user_url, headers=headers)
+                        logger.info("User Response: %s", user_response)
+                    
+                        if response.status_code == 200:
+                            user_data = user_response.json()
+                            logger.info("user_data: %s", user_data.get("id"))
+                            logger.info("user_data: %s", user_data.get("login"))
 
-        response = requests.post(token_url, data=data)
+                            user_id = user_data.get('id')
+                            user_login = user_data.get('login')
+                            logger.info("User_id: %s", user_id)
+                            logger.info("User_login: %s", user_login)
 
-        if response.status_code == 200:
-            access_token = response.json().get('access_token')
+                            user_avatar_small = user_data.get('image', {}).get('versions', {}).get('small')
+                            logger.info("I got the image")
+                            image_response = None
+                            chosen_avatar_url = user_avatar_small
+                            if chosen_avatar_url:
+                                try:
+                                    image_response = requests.get(chosen_avatar_url, stream=True)
+                                    if image_response.status_code == 200 and 'image' in image_response.headers.get('Content-Type', ''):
+                                       # Construct a file path
+                                        image_filename = os.path.basename(chosen_avatar_url)
+                                        image_filepath = os.path.join(settings.MEDIA_ROOT, image_filename)
+                                        
+                                        # Write the image content to the file
+                                        with open(image_filepath, 'wb') as f:
+                                            for chunk in image_response.iter_content(chunk_size=1024):
+                                                if chunk:  # filter out keep-alive new chunks
+                                                    f.write(chunk)
+                                        logger.info(f"Image successfully saved to {image_filepath}")
+                                    else:
+                                        logger.error("Failed to retrieve the image. Status Code: %s", image_response.status_code)
+   
+                                except requests.RequestException as e:
+                                    logger.error("Network exception occurred while retrieving the image: %s", str(e))
+                            if image_response.status_code == 200 and 'image' in image_response.headers.get('Content-Type', ''):
+                                logger.info("Successfully retrieved the image.")
+                            else:
+                                logger.error("The URL did not return an image.")
+                            logger.info("Got the user data")
+                        else:
+                            logger.error("Failed to obtain user info. Status Code: %s", user_response.status_code)
+                            logger.error("Failed to obtain user info. Response: %s", user_response.text)    
+                    except requests.RequestException as e:
+                            logger.error("Network exception occurred while obtaining user info: %s", str(e))
+                            return JsonResponse({'status': 'error', 'message': 'Network error occurred while obtaining user info'}, status=500)
 
-            def get_user_info(access_token):
-                user_info_endpoint = 'https://api.intra.42.fr/v2/me'
-
-                user_info_response = requests.get(
-                    user_info_endpoint,
-                    headers={'Authorization': f'Bearer {access_token}'}
-                )
-
-                if user_info_response.status_code == 200:
-                    user_info = user_info_response.json()
-                    username = user_info.get('username')
-                    avatar_url = user_info.get('image_url')
-
-                    return {'username': username, 'avatar_url': avatar_url}
-                else:
-                    print('Error fetching user info:', user_info_response.status_code, user_info_response.text)
-                    return None
-
-            return JsonResponse({'status': 'success', 'user_info': get_user_info(access_token)})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'Failed to obtain access token'}, status=400)
-
-    return JsonResponse({'status': 'error', 'message': 'No authorization code provided'}, status=400)
-
+                return JsonResponse({'status': 'success', 'data': user_data})
+            else:
+                logger.error("Access token not obtained.")
+                # logger.error("Failed to obtain access token. Status Code: %s", response.status_code)
+                # logger.error("Failed to obtain access token. Response: %s", response.text)
+                return JsonResponse({'status': 'error', 'message': 'Failed to obtain access token'}, status=response.status_code)
+        except requests.RequestException as e:
+            logger.error("Network exception occurred: %s", str(e))
+            return JsonResponse({'status': 'error', 'message': 'Network error occurred while obtaining access token'}, status=500)
+    else:
+        logger.error("No authorization code provided")
+        return JsonResponse({'status': 'error', 'message': 'No authorization code provided'}, status=400)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
