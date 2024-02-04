@@ -1,5 +1,6 @@
 window.onload = async function () {
     console.log("onload....");
+    localStorage.setItem('inGame', false)
     if (localStorage.getItem('access_token')) {
         try {
             await refreshToken();
@@ -55,3 +56,9 @@ window.updateUserUI = function() {
 document.addEventListener('DOMContentLoaded', updateUserUI);
 
 // Vous pouvez également appeler updateUserUI() après des actions utilisateur comme la connexion ou la mise à jour du profil
+window.addEventListener('beforeunload', function (e) {
+    if (localStorage.getItem('inGame') === 'true') {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});

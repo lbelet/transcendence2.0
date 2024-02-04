@@ -85,6 +85,10 @@ function closeFriendsModal() {
     document.getElementById('friendsModal').style.display = 'none';
 }
 
+function closeWarningModal() {
+    document.getElementById('warningModal').style.display = 'none';
+}
+
 function loadFriendsList() {
     fetch('/api/get_friends/', {
         method: 'GET',

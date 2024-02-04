@@ -308,6 +308,7 @@ async function registerForTournament(tournamentData) {
             throw new Error(data.error || 'Erreur lors de l\'inscription');
         }
         if (data.tournament_id) {
+            localStorage.setItem('inGame', true)
             // localStorage.setItem('currentGameId', data.game_id);
             sendGameIdToWebSocket_tournament(data.tournament_id);
             // localStorage.setItem('playerRole', data.player_role);  // Stocker le rôle du joueur

@@ -290,7 +290,8 @@
                                         <input type="password" class="form-control" id="newPassword"
                                             placeholder="Entrez le nouveau mot de passe">
                                         <label for="avatar2">Avatar:</label>
-                                        <input type="file" class="form-control" id="avatar2" accept="image/jpeg, image/png" name="avatar2">
+                                        <input type="file" class="form-control" id="avatar2"
+                                            accept="image/jpeg, image/png" name="avatar2">
                                         <label for="twoFactorMethod">Choose 2FA Method:</label>
                                         <select class="form-control" id="twoFactorMethod">
                                             <option value="none">Aucune</option>
@@ -353,6 +354,19 @@
                             </div>
                             <div class="modal-body">
                                 <div id="friends-list-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade text-center" id="warningModal" tabindex="-1" aria-labelledby="warningModalLabel"
+                    aria-hidden="true" data-bs-theme="dark">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="warningModalLabel">honte a toi</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
                             </div>
                         </div>
                     </div>

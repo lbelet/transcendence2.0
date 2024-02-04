@@ -156,6 +156,12 @@ function openFriendsModal() {
     myModal.show();
 }
 
+function openWarningModal() {
+    var myModal = new bootstrap.Modal(document.getElementById('warningModal'));
+    myModal.show();
+    return true
+}
+
 function closeFriendstModal() {
     var myModal = bootstrap.Modal.getInstance(document.getElementById('friendsModal'));
     myModal.hide();
