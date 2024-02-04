@@ -33,121 +33,121 @@ function openWebSocketConnection() {
                 addFriendRequestToDOM(data.request_id, data.sender);
             }
 
-            if (data.type === 'tournament_full') {
-                console.log("tournament full: ", data.message);
+            // if (data.type === 'tournament_full') {
+            //     console.log("tournament full: ", data.message);
 
-                openGameWebSocketConnection()
-                    .then(gameSocketId => {
-                        console.log("Connexion WebSocket de jeu établie, ID:", gameSocketId);
-                        updateGameSocketId(gameSocketId);
-                    })
-                    .catch(error => {
-                        console.error("Erreur lors de l'établissement de la connexion WebSocket de jeu:", error);
-                    }); 
+            //     // openGameWebSocketConnection()
+            //     //     .then(gameSocketId => {
+            //     //         console.log("Connexion WebSocket de jeu établie, ID:", gameSocketId);
+            //     //         updateGameSocketId(gameSocketId);
+            //     //     })
+            //     //     .catch(error => {
+            //     //         console.error("Erreur lors de l'établissement de la connexion WebSocket de jeu:", error);
+            //     //     }); 
 
-                // Afficher un toast Bootstrap pour la notification
-                const toastElement = document.createElement('div');
-                toastElement.classList.add('toast');
-                toastElement.setAttribute('role', 'alert');
-                toastElement.setAttribute('aria-live', 'assertive');
-                toastElement.setAttribute('aria-atomic', 'true');
-                toastElement.innerHTML = `
-                    <div class="toast-header">
-                        <strong class="mr-auto">Tournoi Complet</strong>
-                    </div>
-                    <div class="toast-body">
-                        ${data.message}
-                        <div id="countdown">59</div>
-                        <button id="readyButton" class="btn btn-success">Ready</button>
-                        <button id="noButton" class="btn btn-danger">No</button>
-                    </div>
-                `;
+            //     // Afficher un toast Bootstrap pour la notification
+            //     const toastElement = document.createElement('div');
+            //     toastElement.classList.add('toast');
+            //     toastElement.setAttribute('role', 'alert');
+            //     toastElement.setAttribute('aria-live', 'assertive');
+            //     toastElement.setAttribute('aria-atomic', 'true');
+            //     toastElement.innerHTML = `
+            //         <div class="toast-header">
+            //             <strong class="mr-auto">Tournoi Complet</strong>
+            //         </div>
+            //         <div class="toast-body">
+            //             ${data.message}
+            //             <div id="countdown">59</div>
+            //             <button id="readyButton" class="btn btn-success">Ready</button>
+            //             <button id="noButton" class="btn btn-danger">No</button>
+            //         </div>
+            //     `;
 
-                document.body.appendChild(toastElement);
+            //     document.body.appendChild(toastElement);
 
-                const toast = new bootstrap.Toast(toastElement, {
-                    autohide: false // Empêche le toast de se cacher automatiquement
-                });                
-                toast.show();
+            //     const toast = new bootstrap.Toast(toastElement, {
+            //         autohide: false // Empêche le toast de se cacher automatiquement
+            //     });                
+            //     toast.show();
 
-                const countdownDisplay = document.getElementById('countdown');
-                let countdownInterval = startCountdown(60, countdownDisplay, function () {
-                    // Logique lorsque le compte à rebours est terminé
-                    console.log("Le compte à rebours est terminé. Le tournoi est annulé.");
-                    // Envoyer une requête au serveur pour annuler le tournoi
-                    // ...
-                    toast.dispose();
-                });
+            //     const countdownDisplay = document.getElementById('countdown');
+            //     let countdownInterval = startCountdown(60, countdownDisplay, function () {
+            //         // Logique lorsque le compte à rebours est terminé
+            //         console.log("Le compte à rebours est terminé. Le tournoi est annulé.");
+            //         // Envoyer une requête au serveur pour annuler le tournoi
+            //         // ...
+            //         toast.dispose();
+            //     });
 
-                document.getElementById('readyButton').addEventListener('click', function() {
-                    clearInterval(countdownInterval);
-                    console.log("Le joueur est prêt.");
+            //     document.getElementById('readyButton').addEventListener('click', function() {
+            //         clearInterval(countdownInterval);
+            //         console.log("Le joueur est prêt.");
                     
-                    const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
+            //         const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
                 
-                    // Envoyer une requête au serveur pour confirmer la présence du joueur
-                    fetch(`/api/set_player_ready/${tournamentId}/`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Réponse du serveur:', data);
-                        if (data.error) {
-                            alert(data.error);
-                        } else {
-                            console.log("Présence du joueur confirmée");
-                            // Ouvrir la connexion WebSocket pour le jeu
-                            // openGameWebSocketConnection()
-                            //     .then(gameSocketId => {
-                            //         console.log("Connexion WebSocket de jeu établie, ID:", gameSocketId);
-                            //         updateGameSocketId(gameSocketId);
-                            //     })
-                            //     .catch(error => {
-                            //         console.error("Erreur lors de l'établissement de la connexion WebSocket de jeu:", error);
-                            //     }); 
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la confirmation de la présence du joueur:', error);
-                    });
+            //         // Envoyer une requête au serveur pour confirmer la présence du joueur
+            //         fetch(`/api/set_player_ready/${tournamentId}/`, {
+            //             method: 'POST',
+            //             headers: {
+            //                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            //                 'Content-Type': 'application/json'
+            //             }
+            //         })
+            //         .then(response => response.json())
+            //         .then(data => {
+            //             console.log('Réponse du serveur:', data);
+            //             if (data.error) {
+            //                 alert(data.error);
+            //             } else {
+            //                 console.log("Présence du joueur confirmée");
+            //                 // Ouvrir la connexion WebSocket pour le jeu
+            //                 // openGameWebSocketConnection()
+            //                 //     .then(gameSocketId => {
+            //                 //         console.log("Connexion WebSocket de jeu établie, ID:", gameSocketId);
+            //                 //         updateGameSocketId(gameSocketId);
+            //                 //     })
+            //                 //     .catch(error => {
+            //                 //         console.error("Erreur lors de l'établissement de la connexion WebSocket de jeu:", error);
+            //                 //     }); 
+            //             }
+            //         })
+            //         .catch(error => {
+            //             console.error('Erreur lors de la confirmation de la présence du joueur:', error);
+            //         });
                 
-                    toast.dispose();
-                });
+            //         toast.dispose();
+            //     });
                 
                 
 
-                document.getElementById('noButton').addEventListener('click', function () {
-                    clearInterval(countdownInterval);
-                    console.log("Le joueur a refusé.");
-                    // Envoyer une requête au serveur pour annuler le tournoi
-                    // ...
-                    toast.dispose();
-                });
-            }
+            //     document.getElementById('noButton').addEventListener('click', function () {
+            //         clearInterval(countdownInterval);
+            //         console.log("Le joueur a refusé.");
+            //         // Envoyer une requête au serveur pour annuler le tournoi
+            //         // ...
+            //         toast.dispose();
+            //     });
+            // }
 
         } catch (error) {
             console.error('Erreur de parsing JSON:', error);
         }
     };
 
-    function startCountdown(duration, display, onCountdownFinished) {
-        let timer = duration, minutes, seconds;
-        const countdownInterval = setInterval(function () {
-            seconds = parseInt(timer % 59, 10);
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-            display.textContent = seconds;
+    // function startCountdown(duration, display, onCountdownFinished) {
+    //     let timer = duration, minutes, seconds;
+    //     const countdownInterval = setInterval(function () {
+    //         seconds = parseInt(timer % 59, 10);
+    //         seconds = seconds < 10 ? "0" + seconds : seconds;
+    //         display.textContent = seconds;
 
-            if (--timer < 0) {
-                clearInterval(countdownInterval);
-                onCountdownFinished();
-            }
-        }, 1000);
-        return countdownInterval;
-    }
+    //         if (--timer < 0) {
+    //             clearInterval(countdownInterval);
+    //             onCountdownFinished();
+    //         }
+    //     }, 1000);
+    //     return countdownInterval;
+    // }
 
 
 
@@ -276,6 +276,100 @@ function openGameWebSocketConnection() {
                 }
                 if (data.status === 'added_to_game') {
                     console.log('!!!!!!!dans le channel gameSocket');
+                }
+
+                if (data.type === 'tournament_full') {
+                    console.log("tournament full: ", data.message);
+    
+                    // openGameWebSocketConnection()
+                    //     .then(gameSocketId => {
+                    //         console.log("Connexion WebSocket de jeu établie, ID:", gameSocketId);
+                    //         updateGameSocketId(gameSocketId);
+                    //     })
+                    //     .catch(error => {
+                    //         console.error("Erreur lors de l'établissement de la connexion WebSocket de jeu:", error);
+                    //     }); 
+    
+                    // Afficher un toast Bootstrap pour la notification
+                    const toastElement = document.createElement('div');
+                    toastElement.classList.add('toast');
+                    toastElement.setAttribute('role', 'alert');
+                    toastElement.setAttribute('aria-live', 'assertive');
+                    toastElement.setAttribute('aria-atomic', 'true');
+                    toastElement.innerHTML = `
+                        <div class="toast-header">
+                            <strong class="mr-auto">Tournoi Complet</strong>
+                        </div>
+                        <div class="toast-body">
+                            ${data.message}
+                            <div id="countdown">59</div>
+                            <button id="readyButton" class="btn btn-success">Ready</button>
+                            <button id="noButton" class="btn btn-danger">No</button>
+                        </div>
+                    `;
+    
+                    document.body.appendChild(toastElement);
+    
+                    const toast = new bootstrap.Toast(toastElement, {
+                        autohide: false // Empêche le toast de se cacher automatiquement
+                    });                
+                    toast.show();
+    
+                    const countdownDisplay = document.getElementById('countdown');
+                    let countdownInterval = startCountdown(60, countdownDisplay, function () {
+                        // Logique lorsque le compte à rebours est terminé
+                        console.log("Le compte à rebours est terminé. Le tournoi est annulé.");
+                        // Envoyer une requête au serveur pour annuler le tournoi
+                        // ...
+                        toast.dispose();
+                    });
+    
+                    document.getElementById('readyButton').addEventListener('click', function() {
+                        clearInterval(countdownInterval);
+                        console.log("Le joueur est prêt.");
+                        
+                        const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
+                    
+                        // Envoyer une requête au serveur pour confirmer la présence du joueur
+                        fetch(`/api/set_player_ready/${tournamentId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Réponse du serveur:', data);
+                            if (data.error) {
+                                alert(data.error);
+                            } else {
+                                console.log("Présence du joueur confirmée");
+                                // Ouvrir la connexion WebSocket pour le jeu
+                                // openGameWebSocketConnection()
+                                //     .then(gameSocketId => {
+                                //         console.log("Connexion WebSocket de jeu établie, ID:", gameSocketId);
+                                //         updateGameSocketId(gameSocketId);
+                                //     })
+                                //     .catch(error => {
+                                //         console.error("Erreur lors de l'établissement de la connexion WebSocket de jeu:", error);
+                                //     }); 
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de la confirmation de la présence du joueur:', error);
+                        });
+                    
+                        toast.dispose();
+                    });
+                    
+                    document.getElementById('noButton').addEventListener('click', function () {
+                        clearInterval(countdownInterval);
+                        console.log("Le joueur a refusé.");
+                        // Envoyer une requête au serveur pour annuler le tournoi
+                        // ...
+                        toast.dispose();
+                    });
                 }
 
                 if (data.type === 'player_roles') {
@@ -503,3 +597,26 @@ function sendGameIdToWebSocket(gameId) {
     }
 }
 
+function sendGameIdToWebSocket_tournament(tournamentId) {
+    if (gameWebsocket && gameWebsocket.readyState === WebSocket.OPEN) {
+        gameWebsocket.send(JSON.stringify({ tournament_id: tournamentId }));
+        console.log("connexion OK..........")
+    } else {
+        console.error("La connexion WebSocket n'est pas ouverte.");
+    }
+}
+
+function startCountdown(duration, display, onCountdownFinished) {
+    let timer = duration, minutes, seconds;
+    const countdownInterval = setInterval(function () {
+        seconds = parseInt(timer % 59, 10);
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        display.textContent = seconds;
+
+        if (--timer < 0) {
+            clearInterval(countdownInterval);
+            onCountdownFinished();
+        }
+    }, 1000);
+    return countdownInterval;
+}

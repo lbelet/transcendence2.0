@@ -107,6 +107,38 @@ def join_game_queue(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def join_tournament_queue(request):
+    # Récupérer l'utilisateur actuel
+    current_user = request.user
+    current_user.status = User.IN_GAME
+    current_user.save()
+
+    # game_socket_id = request.data.get('game_socket_id')
+
+    # Chercher une partie en attente
+    # game_waiting = PongGame.objects.filter(status='waiting').first()
+
+    # if game_waiting:
+    #     # S'il y a déjà une partie en attente, ajouter l'utilisateur actuel comme joueur deux
+    #     game_waiting.player_two = current_user
+    #     game_waiting.player_two_socket_id = game_socket_id
+    #     game_waiting.status = 'playing'
+    #     game_waiting.save()
+
+    #     return JsonResponse({'message': 'Partie en cours', 'game_id': game_waiting.id, 'status': 'playing', 'player_role': 2})
+    # else:
+    #     # S'il n'y a pas de partie en attente, créer une nouvelle partie
+    #     new_game = PongGame.objects.create(
+    #         player_one=current_user,
+    #         player_one_socket_id=game_socket_id,
+    #         status='waiting'
+    #     )
+
+    return JsonResponse({'message': 'tournament_in'})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def update_nbre_games(request):
     user = request.user
 
@@ -642,6 +674,9 @@ def register_to_tournament(request, tournament_id):
         tournament = Tournament.objects.get(id=tournament_id)
         player, created = Player.objects.get_or_create(user=request.user)
 
+        current_user = request.user
+        current_user.status = User.IN_GAME
+        current_user.save()
         # Vérifier si le tournoi a atteint son nombre maximum de joueurs
         if tournament.participants.count() > tournament.number_of_players:
             return JsonResponse({'error': 'Le tournoi est complet'}, status=400)
@@ -651,35 +686,25 @@ def register_to_tournament(request, tournament_id):
         tournament.participants_count = tournament.participants.count()
         tournament.save()
 
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            "tournament_updates",
-            {
-                "type": "tournament_update",
-                "message": {
-                    "name": tournament.name,
-                    "tournament_id": tournament.id,
-                    "username": request.user.username,
-                    "current_participants": tournament.participants.count(),
-                },
-            }
-        )
+        # channel_layer = get_channel_layer()
+        # async_to_sync(channel_layer.group_send)(
+        #     "tournament_updates",
+        #     {
+        #         "type": "tournament_update",
+        #         "message": {
+        #             "name": tournament.name,
+        #             "tournament_id": tournament.id,
+        #             "username": request.user.username,
+        #             "current_participants": tournament.participants.count(),
+        #         },
+        #     }
+        # )
         print("nbre participant = ", tournament.participants_count)
 
-        if tournament.participants_count == tournament.number_of_players:
-            channel_layer = get_channel_layer()
-            for participant in tournament.participants.all():
-                if participant.user.socket_id:  # Assurez-vous que l'utilisateur a un ID de socket valide
-                    async_to_sync(channel_layer.send)(participant.user.socket_id, {
-                        "type": "websocket.send",
-                        "text": json.dumps({
-                            "type": "tournament_full",
-                            "message": f"Le tournoi '{tournament.name}' est maintenant complet. Confirmez votre participation.",
-                            "tournament_id": tournament.id
-                        })
-                    })
+        if tournament.participants_count > tournament.number_of_players:
+            return({'message': 'Too late sry'})
 
-        return JsonResponse({'message': 'Inscription réussie', 'current_participants': tournament.participants.count()}, status=200)
+        return JsonResponse({'message': 'Inscription réussie', 'tournament_id': tournament.id, 'current_participants': tournament.participants.count()}, status=200)
     except Tournament.DoesNotExist:
         return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
 

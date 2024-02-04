@@ -13,11 +13,11 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
         await self.send(text_data=json.dumps({"socket_id": self.channel_name}))
-        await self.channel_layer.group_add("tournament_updates", self.channel_name)
+        # await self.channel_layer.group_add("tournament_updates", self.channel_name)
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard("tournament_updates", self.channel_name)
-        await self.channel_layer.group_discard("tournament_is_full", self.channel_name)
+        # await self.channel_layer.group_discard("tournament_updates", self.channel_name)
+        # await self.channel_layer.group_discard("tournament_is_full", self.channel_name)
 
 
         pass
@@ -36,16 +36,19 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     "message": event["message"]
                 }))
         
-    async def tournament_full(self, event):
-        print("websocket send tournament full")
-        await self.send(text_data=json.dumps({
-                    "type": "tournament_full",
-                    "message": event["message"]
-                }))
+    # async def tournament_full(self, event):
+    #     print("websocket send tournament full")
+    #     await self.send(text_data=json.dumps({
+    #                 "type": "tournament_full",
+    #                 "message": event["message"]
+    #             }))
 
 class GameConsumer(AsyncWebsocketConsumer):
 
+    tournament_full_sent = False  # Initialisation de la variable de contrôle
+
     players_connected = {}  # Dictionnaire pour suivre les joueurs connectés
+    players_connected_tournament = {}  # Dictionnaire pour suivre les joueurs connectés d'un tournoi
     game_states = {}  # Dictionnaire pour stocker l'état de chaque partie
 
     async def connect(self):
@@ -114,7 +117,37 @@ class GameConsumer(AsyncWebsocketConsumer):
             }))
             self.mark_player_joined(self.game_id, self.channel_name)
             if self.both_players_joined(self.game_id):
-                await self.send_game_start()
+                await self.send_game_start(self.game_id)
+
+        if 'tournament_id' in data:
+            print("received tournament_id............")
+            self.game_id = data['tournament_id']
+            await self.channel_layer.group_add(
+                f'pong_tournament_{self.game_id}',
+                self.channel_name
+            )
+            print(
+                f"Utilisateur ajouté au groupe: pong_tournament_{self.game_id}, channel_name: {self.channel_name}")
+
+            # await self.send(text_data=json.dumps({
+            #     "status": "added_to_tournament",
+            #     "game_id": self.game_id
+            # }))
+            self.mark_player_joined_tournament(self.game_id, self.channel_name)
+            if self.four_players_joined(self.game_id):
+                print("le tournoi est complet")
+                if not GameConsumer.tournament_full_sent:
+                    print("websocket send tournament full")
+                    await self.channel_layer.group_send(
+                        f'pong_tournament_{self.game_id}',
+                        {
+                            'type': 'send_tournament_full',
+                            'message': 'Veuillez confirmer votre presence'
+                        }        
+                    )
+                    GameConsumer.tournament_full_sent = True
+                else:
+                    print('elseeeeeeee')
         
         # if data.get('type') == 'join_match_channel':
         #     match_id = data['match_id']
@@ -170,7 +203,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     def mark_player_joined(self, game_id, channel_name):
         self.initialize_game_state(game_id)
 
-        print("channel name: ", channel_name)
+        print("channel name 2: ", channel_name)
 
         if self.game_states[game_id]['player1_channel'] is None:
             self.game_states[game_id]['player1_channel'] = channel_name
@@ -183,6 +216,52 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     def both_players_joined(self, game_id):
         return game_id in self.players_connected and len(self.players_connected[game_id]) == 2
+
+    def mark_player_joined_tournament(self, game_id, channel_name):
+        # self.initialize_game_state(game_id)
+
+        print("channel name 4: ", channel_name)
+
+        # if self.game_states[game_id]['player1_channel'] is None:
+        #     self.game_states[game_id]['player1_channel'] = channel_name
+        # elif self.game_states[game_id]['player2_channel'] is None and self.game_states[game_id]['player1_channel'] != channel_name:
+        #     self.game_states[game_id]['player2_channel'] = channel_name
+
+        if game_id not in self.players_connected_tournament:
+            self.players_connected_tournament[game_id] = set()
+        self.players_connected_tournament[game_id].add(channel_name)
+
+    def four_players_joined(self, game_id):
+        print("four players")
+        return game_id in self.players_connected_tournament and len(self.players_connected_tournament[game_id]) == 4
+
+    # async def send_tournament_full(self, event):
+    #     if not GameConsumer.tournament_full_sent:
+    #         print("websocket send tournament full")
+    #         await self.channel_layer.group_send(
+    #             f'pong_tournament_{self.game_id}',
+    #             {
+    #                 'type': 'tournament_full',
+    #                 'message': 'Veuillez confirmer votre presence'
+    #             }        
+    #         )
+    #         GameConsumer.tournament_full_sent = True
+    #     else:
+    #         print('elseeeeeeee')
+
+    async def send_tournament_full(self, event):
+        print("Sending tournament full message to group:", f'pong_tournament_{self.game_id}')
+        # Construct the message to be sent to all clients in the group
+        message = {
+            'type': 'tournament_full',
+            'message': 'Le tournoi est complet. Veuillez confirmer votre présence.',
+            'tournament_id': self.game_id,  # Inclure l'ID du tournoi ici
+
+        }
+        # Convert the message to JSON format and send
+        await self.send(text_data=json.dumps(message))
+
+
 
     async def send_paddles_update(self, event):
         await self.send(text_data=json.dumps({

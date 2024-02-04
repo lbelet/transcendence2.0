@@ -143,7 +143,9 @@ async function joinGameQueue() {
 
         const data = await response.json();
         // console.log('Réponse du serveur:', data);
-
+        if (!response.ok) {
+            throw new Error(data.error || 'Erreur pour rejoindre la file');
+        }
         if (data.game_id) {
             localStorage.setItem('currentGameId', data.game_id);
             sendGameIdToWebSocket(data.game_id);

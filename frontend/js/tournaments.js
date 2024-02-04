@@ -31,9 +31,9 @@ document.getElementById('createTournamentForm').addEventListener('submit', funct
     })
         .then(response => response.json())
         .then(data => {
-            console.log('Success:', data);
+            console.log('Success for tournament:', data);
             if (data.success) {
-                registerUserToTournament(data.tournament_id);
+                registerForTournament(data.tournament_id);
             }
         })
         .catch((error) => {
@@ -212,8 +212,8 @@ function displayTournamentDetails(tournamentData) {
         };
     } else {
         registerButton.textContent = "S'inscrire";
-        registerButton.onclick = function () {
-            registerForTournament(tournamentData);
+        registerButton.onclick = async function () {
+            await registerForTournament(tournamentData.id);
         };
     }
     tournamentSection.appendChild(registerButton);
@@ -284,29 +284,50 @@ function createFinalElement(matchId, finalPlayers) {
 
 // Assurez-vous d'appeler displayTournamentDetails avec les données appropriées
 
-function registerForTournament(tournamentData) {
-    console.log('tournament data:', tournamentData)
-    console.log(`Tentative d'inscription au tournoi avec l'ID : ${tournamentData.id}`);
-    const tournamentId = tournamentData.id
-    fetch(`/api/register_to_tournament/${tournamentId}/`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-            'Content-Type': 'application/json'
-        },
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                alert(data.error);
-            } else {
-                console.log(data);
-            }
-        })
-        .catch(error => {
-            console.error('Erreur lors de l\'inscription :', error);
+async function registerForTournament(tournamentData) {
+    try {
+        const gameSocketId = await openGameWebSocketConnection();
+        localStorage.setItem('gameSocket_ID', gameSocketId)
+        await updateGameSocketId(gameSocketId);
+
+        console.log('tournament data:', tournamentData);
+        console.log(`Tentative d'inscription au tournoi avec l'ID : ${tournamentData}`);
+        const tournamentId = tournamentData;
+
+        const response = await fetch(`/api/register_to_tournament/${tournamentId}/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ game_socket_id: gameSocketId })
         });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Erreur lors de l\'inscription');
+        }
+        if (data.tournament_id) {
+            // localStorage.setItem('currentGameId', data.game_id);
+            sendGameIdToWebSocket_tournament(data.tournament_id);
+            // localStorage.setItem('playerRole', data.player_role);  // Stocker le rôle du joueur
+            // updatePlayerRole(data.player_role);  // Mettre à jour le rôle du joueur
+            // if (data.message.includes('Partie en cours')) {
+            //     console.log("!!!!!partie en cours ok")
+            //     // startPongGame(data.game_id);
+            // }
+            if (data.message.includes('Inscription réussie')) {
+                navigateWithTokenCheck('waitingRoom')
+            }
+        }
+
+        console.log(data);
+    } catch (error) {
+        console.error('Erreur lors de l\'inscription :', error.message);
+        alert(error.message);
+    }
 }
+
 
 function unregisterFromTournament(tournamentData) {
     console.log('tournament data:', tournamentData)
