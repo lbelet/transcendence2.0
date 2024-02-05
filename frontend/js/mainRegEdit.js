@@ -39,25 +39,28 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
         fetch('/api/register/', {
             method: 'POST',
             body: formData
-            // Pas d'en-tête 'Content-Type' ici car il est automatiquement défini avec FormData
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Registered successfully:', data);
-                navigateTo('login');
-            })
-            .catch(error => {
-                alert('Erreur dans le formulaire');
-            });
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw err; // Renvoie l'erreur pour être traitée dans le catch suivant
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Registered successfully:', data);
+            navigateTo('login'); // Assurez-vous que cette fonction navigue correctement
+        })
+        .catch(error => {
+            // Vérifie si l'erreur contient un message personnalisé et l'affiche, sinon affiche un message d'erreur générique
+            alert(error.error || 'Erreur inattendue lors de l’enregistrement. Veuillez réessayer.');
+        });
     } else {
         alert('Passwords do not match!');
     }
 });
+
 
 document.getElementById('editUserModal').addEventListener('submit', function (event) {
     event.preventDefault();

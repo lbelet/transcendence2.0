@@ -1,6 +1,7 @@
 # Standard library imports
 from django.db.models import Q
 import json
+from django.forms import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, update_session_auth_hash
@@ -17,7 +18,7 @@ from asgiref.sync import async_to_sync
 import pyotp
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Q
 # Importez directement les modèles nécessaires
 from djangoBack.models import User, PongGame
@@ -198,16 +199,19 @@ def register(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST method is accepted'}, status=405)
 
-    # Use Django's request.POST and request.FILES for form data and file uploads
     username = request.POST.get('username')
     first_name = request.POST.get('first_name')
     last_name = request.POST.get('last_name')
     email = request.POST.get('email')
     password = request.POST.get('password')
-    avatar = request.FILES.get('avatar')  # Access the uploaded file
+    avatar = request.FILES.get('avatar')
 
     if not all([username, first_name, last_name, email, password]):
         return JsonResponse({'error': 'All fields are required'}, status=400)
+
+    # Vérifier si le nom d'utilisateur existe déjà
+    if (User.objects.filter(username=username).exists()) or (User.object.filter(email=email)) :
+        return JsonResponse({'error': 'Username or email already exists'}, status=409)
 
     try:
         user = User.objects.create_user(
@@ -217,19 +221,21 @@ def register(request):
             email=email,
             password=password
         )
-        # Save avatar if provided
         if avatar:
-            # Save the file under 'avatars/username/filename'
             file_path = f'avatars/{username}/{avatar.name}'
-            saved_path = default_storage.save(
-                file_path, ContentFile(avatar.read()))
-            user.avatar = saved_path  # Link the saved file path to the user's avatar field
+            saved_path = default_storage.save(file_path, ContentFile(avatar.read()))
+            user.avatar = saved_path
             user.save()
 
         return JsonResponse({'success': 'User created successfully'}, status=201)
+    except IntegrityError:
+        return JsonResponse({'error': 'A database error occurred. User could not be created.'}, status=400)
+    except ValidationError as e:
+        # Gérer ici les erreurs de validation spécifiques si nécessaire
+        return JsonResponse({'error': str(e.messages)}, status=400)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
+        # Une exception inattendue
+        return JsonResponse({'error': 'An unexpected error occurred'}, status=500)
 
 @csrf_exempt
 def api_login(request):
