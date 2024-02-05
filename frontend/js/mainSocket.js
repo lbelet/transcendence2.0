@@ -22,10 +22,10 @@ function openWebSocketConnection() {
                 updateSocketId(data.socket_id);
             }
 
-            if (data.type === 'tournament_update') {
-                // Récupérer les détails à jour du tournoi
-                fetchTournamentDetails(data.message.tournament_id)
-            }
+            // if (data.type === 'tournament_update') {
+            //     // Récupérer les détails à jour du tournoi
+            //     fetchTournamentDetails(data.message.tournament_id)
+            // }
 
             // Gestion des nouvelles demandes d'amis
             if (data.type === 'friend_request') {
@@ -264,10 +264,10 @@ function openGameWebSocketConnection() {
         };
 
         gameWebsocket.onmessage = function (event) {
-            // console.log('Message reçu du jeu :', event.data);
+            console.log('Message reçu du jeu :', event.data);
             try {
                 const data = JSON.parse(event.data);
-                // console.log("data gamesocket: ", data);
+                console.log("data gamesocket: ", data);
                 // console.log("data type: ", data);
 
                 if (data.game_socket_id) {
@@ -280,7 +280,11 @@ function openGameWebSocketConnection() {
 
                 if (data.type === 'tournament_full') {
                     console.log("tournament full: ", data.message);
-    
+
+                // if (data.type === 'tournament_update') {
+                //     console.log("bien recu! et le data tournamentID est:", data.tournamentId)
+                //     fetchTournamentDetailsWaitingPage(data.tournamentId);
+                // }
                     // openGameWebSocketConnection()
                     //     .then(gameSocketId => {
                     //         console.log("Connexion WebSocket de jeu établie, ID:", gameSocketId);
@@ -370,6 +374,11 @@ function openGameWebSocketConnection() {
                         // ...
                         toast.dispose();
                     });
+                }
+
+                if (data.type === 'tournament_update') {
+                    console.log("bien recu! et le data tournamentID est:", data.tournamentId)
+                    fetchTournamentDetailsWaitingPage(data.tournamentId);
                 }
 
                 if (data.type === 'player_roles') {

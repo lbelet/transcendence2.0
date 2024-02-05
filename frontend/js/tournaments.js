@@ -219,6 +219,71 @@ function displayTournamentDetails(tournamentData) {
     tournamentSection.appendChild(registerButton);
 }
 
+function displayTournamentDetailsWaitingPage(tournamentData) {
+    console.log("les details du tournoi sont: ", tournamentData)
+    // Mettre à jour le nom du tournoi
+    document.getElementById('tournamentNameWaitingPage').textContent = tournamentData.name;
+
+    // Afficher la section du tournoi
+    const tournamentSection = document.getElementById('waitingRoomTournament-section');
+    // tournamentSection.classList.remove('hidden');
+    navigateWithTokenCheck('waitingRoomTournament');
+
+
+    // Créer et ajouter les demi-finales
+    const semiFinals = createRound('semi-final', tournamentData.participants.slice(0, 4));
+    document.getElementById('semi-finalsWaitingPage').innerHTML = ''; // Nettoyer les demi-finales existantes
+    document.getElementById('semi-finalsWaitingPage').appendChild(semiFinals);
+
+    const final = createRound('final', tournamentData.participants.slice(0, 2), tournamentData.final_players);
+    document.getElementById('finalWaitingPage').innerHTML = '';
+    document.getElementById('finalWaitingPage').appendChild(final);
+
+    const winnerDiv = document.createElement('div');
+    winnerDiv.id = 'winnerWaitingPage';
+    winnerDiv.className = 'winner my-3';
+    
+    // Définir le contenu de la div du gagnant
+    if (tournamentData.final_winner) {
+        document.getElementById('winnerWaitingPage').innerHTML = '';
+        winnerDiv.textContent = `${tournamentData.final_winner}`;
+    } else {
+        document.getElementById('winnerWaitingPage').innerHTML = '';
+        winnerDiv.textContent = "En attente";
+    }
+    
+    // Ajouter la div du gagnant à la section finale
+    document.getElementById('winnerWaitingPage').appendChild(winnerDiv);
+
+    // document.getElementById('winner').innerHTML = '';
+    // document.getElementById('winner').
+
+    // Ajouter le bouton d'inscription
+    // let registerButton = document.getElementById('tournamentWaitingPage-register-button');
+    // if (!registerButton) {
+    //     registerButton = document.createElement('button');
+    //     registerButton.id = 'tournamentWaitingPage-register-button';
+    //     registerButton.className = 'btn btn-outline-secondary';
+    //     //    tournamentSection.appendChild(registerButton);
+    // }
+
+    // const username = localStorage.getItem('username');
+    // const isRegistered = tournamentData.participants.some(participant => participant.username === username);
+
+    // if (isRegistered) {
+    //     registerButton.textContent = "Se désinscrire";
+    //     registerButton.onclick = function () {
+    //         unregisterFromTournament(tournamentData.id);
+    //     };
+    // } else {
+    //     registerButton.textContent = "S'inscrire";
+    //     registerButton.onclick = async function () {
+    //         await registerForTournament(tournamentData.id);
+    //     };
+    // }
+    // tournamentSection.appendChild(registerButton);
+}
+
 function createRound(roundType, participants, finalPlayers = null) {
     const roundDiv = document.createElement('div');
     roundDiv.id = roundType;
@@ -309,6 +374,7 @@ async function registerForTournament(tournamentData) {
         }
         if (data.tournament_id) {
             localStorage.setItem('inGame', true)
+            localStorage.setItem('inTournament', true)
             // localStorage.setItem('currentGameId', data.game_id);
             sendGameIdToWebSocket_tournament(data.tournament_id);
             // localStorage.setItem('playerRole', data.player_role);  // Stocker le rôle du joueur
@@ -318,7 +384,7 @@ async function registerForTournament(tournamentData) {
             //     // startPongGame(data.game_id);
             // }
             if (data.message.includes('Inscription réussie')) {
-                navigateWithTokenCheck('waitingRoom')
+                fetchTournamentDetailsWaitingPage(data.tournament_id);
             }
         }
 
@@ -365,6 +431,23 @@ function fetchTournamentDetails(tournamentId) {
         .then(tournamentData => {
             console.log("les details du tournoi sont: ", tournamentData)
             displayTournamentDetails(tournamentData);
+        })
+        .catch(error => {
+            console.error('Erreur lors de la récupération des détails du tournoi :', error);
+        });
+}
+
+function fetchTournamentDetailsWaitingPage(tournamentId) {
+    fetch(`/api/tournament_details/${tournamentId}/`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+        .then(response => response.json())
+        .then(tournamentData => {
+            console.log("les details du tournoi sont: ", tournamentData)
+            displayTournamentDetailsWaitingPage(tournamentData);
         })
         .catch(error => {
             console.error('Erreur lors de la récupération des détails du tournoi :', error);

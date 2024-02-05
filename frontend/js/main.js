@@ -14,7 +14,7 @@ window.onload = async function () {
     }
     const path = window.location.pathname.substring(1);
     if (path) {
-        if (path == 'waitingRoom' && localStorage.getItem('inGame') == true)
+        if ((path == 'waitingRoom' || path == 'pong') && localStorage.getItem('inGame') == true)
             navigateWithTokenCheck(path);
         else{
             navigateWithTokenCheck('home');

@@ -704,7 +704,23 @@ def register_to_tournament(request, tournament_id):
         if tournament.participants_count > tournament.number_of_players:
             return({'message': 'Too late sry'})
 
-        return JsonResponse({'message': 'Inscription réussie', 'tournament_id': tournament.id, 'current_participants': tournament.participants.count()}, status=200)
+        else:
+            print("on est dans le else pour :", f'pong_tournament_{tournament_id}')
+            # channel_layer = get_channel_layer()
+            # async_to_sync(channel_layer.group_send)(
+            #     f'pong_tournament_{tournament_id}',
+            #     {
+            #         "type": "send_tournament_update",
+            #         "message": {
+            #             # "name": tournament.name,
+            #             "tournament.id": tournament.id,
+            #             # "username": request.user.username,
+            #             # "current_participants": tournament.participants.count(),
+            #         },
+            #     }
+            # )
+
+        return JsonResponse({'message': 'Inscription réussie', 'tournament_id': tournament.id, 'tournamentName': tournament.name, 'username': request.user.username, 'current_participants': tournament.participants.count()}, status=200)
     except Tournament.DoesNotExist:
         return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
 

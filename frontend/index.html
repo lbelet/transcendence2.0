@@ -165,6 +165,34 @@
                     </audio>
                 </div>
 
+                <div id="waitingRoomTournament-section" class="text-center container hidden">
+                    <h2>En attendant la suite...</h2>
+                    <audio id="myAudio" muted>
+                        <source src="./locales/audio/glass-of-wine-143532.mp3" type="audio/mpeg">
+                        Votre navigateur ne supporte pas l'élément audio.
+                    </audio>
+                    <div id="tournamentBracketWaiting">
+                        <h2 id="tournamentNameWaitingPage" class="text-center tournamentWaitingPage-title">Nom du Tournoi</h2>
+    
+                        <div class="row my-4 tournament-row">
+                            <div class="col d-flex flex-column semi-finals">
+                                <h3>Demi-finales</h3>
+                                <div id="semi-finalsWaitingPage" class="matches-container"></div>
+                            </div>
+    
+                            <div class="col d-flex flex-column justify-content-center final">
+                                <h3>Finale</h3>
+                                <div id="finalWaitingPage" class="matches-container"></div>
+                            </div>
+    
+                            <div class="col d-flex flex-column justify-content-center winner">
+                                <h3>Vainqueur</h3>
+                                <div id="winnerWaitingPage" class="matches-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="pong-section" class="text-center hidden">
                     <h2>Pong 3D</h2>
                     <button class="btn btn-outline-secondary" onclick="quitPong3D()">Quitter</button>

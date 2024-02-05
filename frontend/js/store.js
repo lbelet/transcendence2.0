@@ -13,6 +13,8 @@ const initialState = {
     player_two: null,
     avatarURL: null,
     inGame: false,
+    inTournament: false,
+    inPongGame: false,
 };
 
 // Initialiser le store si vide

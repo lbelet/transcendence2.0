@@ -28,13 +28,13 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def websocket_send(self, event):
         await self.send(event["text"])
 
-    async def tournament_update(self, event):
-    # Envoie le message à tous les clients WebSocket connectés
-        print("websocket send tournament")
-        await self.send(text_data=json.dumps({
-                    "type": "tournament_update",
-                    "message": event["message"]
-                }))
+    # async def send_tournament_update(self, event):
+    # # Envoie le message à tous les clients WebSocket connectés
+    #     print("websocket send tournament")
+    #     await self.send(text_data=json.dumps({
+    #                 "type": "tournament_update",
+    #                 "message": event["message"]
+    #             }))
         
     # async def tournament_full(self, event):
     #     print("websocket send tournament full")
@@ -45,7 +45,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
 class GameConsumer(AsyncWebsocketConsumer):
 
-    tournament_full_sent = False  # Initialisation de la variable de contrôle
+    # tournament_full_sent = False  # Initialisation de la variable de contrôle
 
     players_connected = {}  # Dictionnaire pour suivre les joueurs connectés
     players_connected_tournament = {}  # Dictionnaire pour suivre les joueurs connectés d'un tournoi
@@ -57,7 +57,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         self.game_active = False
-        print('disconnect ok')
+        print('disconnect gamesocket: ', self.channel_name)
         if self.game_id:
             await self.channel_layer.group_discard(
                 f'pong_game_{self.game_id}',
@@ -67,6 +67,17 @@ class GameConsumer(AsyncWebsocketConsumer):
                 f'tournament_{self.game_id}',
                 self.channel_name
             )
+            await self.channel_layer.group_discard(
+                f'pong_tournament_{self.game_id}',
+                self.channel_name
+            )
+
+            if self.game_id in self.players_connected_tournament and self.channel_name in self.players_connected_tournament[self.game_id]:
+                print(f"User {self.channel_name} was part of the tournament {self.game_id}")
+
+                self.players_connected_tournament[self.game_id].discard(self.channel_name)
+                if len(self.players_connected_tournament[self.game_id]) == 0:
+                    del self.players_connected_tournament[self.game_id]  # Supprimer l'entrée du dictionnaire si vide
             print("discard ok.........")
 
     async def game_loop(self):
@@ -134,20 +145,31 @@ class GameConsumer(AsyncWebsocketConsumer):
             #     "game_id": self.game_id
             # }))
             self.mark_player_joined_tournament(self.game_id, self.channel_name)
+            await self.channel_layer.group_send(
+                f'pong_tournament_{self.game_id}',
+                {
+                    "type": "send_tournament_update",
+                    "message": {
+                        "tournamentId": self.game_id,
+                    },
+                }
+            )
+            await asyncio.sleep(1)  # 1 seconde de pause, ajustez selon le besoin
+            
             if self.four_players_joined(self.game_id):
                 print("le tournoi est complet")
-                if not GameConsumer.tournament_full_sent:
-                    print("websocket send tournament full")
-                    await self.channel_layer.group_send(
-                        f'pong_tournament_{self.game_id}',
-                        {
-                            'type': 'send_tournament_full',
-                            'message': 'Veuillez confirmer votre presence'
-                        }        
-                    )
-                    GameConsumer.tournament_full_sent = True
-                else:
-                    print('elseeeeeeee')
+                # if not GameConsumer.tournament_full_sent:
+                print("websocket send tournament full")
+                await self.channel_layer.group_send(
+                    f'pong_tournament_{self.game_id}',
+                    {
+                        'type': 'send_tournament_full',
+                        'message': 'Veuillez confirmer votre presence'
+                    }        
+                )
+                    # GameConsumer.tournament_full_sent = True
+                # else:
+                #     print('elseeeeeeee')
         
         # if data.get('type') == 'join_match_channel':
         #     match_id = data['match_id']
@@ -776,3 +798,11 @@ class GameConsumer(AsyncWebsocketConsumer):
         else:
             # Ajoutez ici la logique pour compléter ou mettre à jour l'état si nécessaire
             pass
+
+    async def send_tournament_update(self, event):
+        # Envoie le message à tous les clients WebSocket connectés
+        print("websocket send tournament update")
+        await self.send(text_data=json.dumps({
+                    "type": "tournament_update",
+                    "tournamentId": event["message"]["tournamentId"],
+                }))
