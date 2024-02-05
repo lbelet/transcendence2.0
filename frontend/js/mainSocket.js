@@ -320,12 +320,11 @@ function openGameWebSocketConnection() {
                     toast.show();
     
                     const countdownDisplay = document.getElementById('countdown');
-                    let countdownInterval = startCountdown(60, countdownDisplay, function () {
-                        // Logique lorsque le compte à rebours est terminé
+                    let countdownInterval = startCountdown(59, countdownDisplay, function () {
                         console.log("Le compte à rebours est terminé. Le tournoi est annulé.");
-                        // Envoyer une requête au serveur pour annuler le tournoi
-                        // ...
-                        toast.dispose();
+                        // Logique pour annuler le tournoi ici
+                        // Par exemple, envoyer une requête au serveur
+                        toast.dispose(); // Assurez-vous que 'toast' est correctement initialisé et accessible
                     });
     
                     document.getElementById('readyButton').addEventListener('click', function() {
@@ -616,9 +615,9 @@ function sendGameIdToWebSocket_tournament(tournamentId) {
 }
 
 function startCountdown(duration, display, onCountdownFinished) {
-    let timer = duration, minutes, seconds;
+    let timer = duration, seconds;
     const countdownInterval = setInterval(function () {
-        seconds = parseInt(timer % 59, 10);
+        seconds = parseInt(timer % 60, 10); // Corrigé à % 60 pour calcul correct des secondes
         seconds = seconds < 10 ? "0" + seconds : seconds;
         display.textContent = seconds;
 
@@ -629,3 +628,4 @@ function startCountdown(duration, display, onCountdownFinished) {
     }, 1000);
     return countdownInterval;
 }
+

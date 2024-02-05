@@ -89,7 +89,7 @@ class Player(models.Model):
         return self.user.username
 
 class Tournament(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     start_date = models.DateTimeField(null=True)
     end_date = models.DateTimeField(null=True)
     number_of_players = models.IntegerField()
