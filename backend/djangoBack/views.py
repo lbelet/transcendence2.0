@@ -32,7 +32,7 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 
-
+from django.contrib.auth.decorators import login_required
 # Local application imports
 from djangoBack.models import Player, Tournament, User, FriendRequest, PongGame, Match, TournamentParticipation
 from djangoBack.helpers import (
@@ -57,101 +57,134 @@ def get_config(request):
         'oauth_url': os.getenv('OAUTH2_AUTH_URL', 'default_oauth_url'),
         'scope': os.getenv('CLIENT_SCOPE', 'default_scope'),
     }
-    return JsonResponse(config_data)
+    return JsonResponse(config_data)	
+
+import os
+import requests
+import logging
+from django.http import JsonResponse
+from django.conf import settings
+from django.core.files.base import ContentFile
+
+logger = logging.getLogger(__name__)
+
+def get_access_token(authorization_code):
+    token_request_data = {
+        'grant_type': 'authorization_code',
+        'code': authorization_code,
+        'client_id': os.getenv('CLIENT_ID', 'default_client_id'),
+        'client_secret': os.getenv('CLIENT_SECRET', 'default_client_secret'),
+        'redirect_uri': os.getenv('REDIRECT_URI', 'default_redirect_uri'),
+        'scope': os.getenv('CLIENT_SCOPE', 'default_scope'),
+    }
+    token_url = os.getenv('OAUTH2_TOKEN_URL', 'default_token_url')
+    try:
+        response = requests.post(token_url, data=token_request_data)
+        if response.status_code == 200:
+            token_data = response.json()
+            return token_data.get('access_token')
+        else:
+            logger.error("Failed to obtain access token. Status Code: %s", response.status_code)
+            logger.error("Failed to obtain access token. Response: %s", response.text)
+    except requests.RequestException as e:
+        logger.error("Network exception occurred while obtaining access token: %s", str(e))
+    return None
+
+def get_user_info(access_token):
+    user_url = os.getenv('OAUTH2_USER_URL', 'default_user_url')
+    headers = {'Authorization': f'Bearer {access_token}'}
+    try:
+        response = requests.get(user_url, headers=headers)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logger.error("Failed to obtain user info. Status Code: %s", response.status_code)
+            logger.error("Failed to obtain user info. Response: %s", response.text)
+    except requests.RequestException as e:
+        logger.error("Network exception occurred while obtaining user info: %s", str(e))
+    return None
+
+def save_user_image(image_url):
+    try:
+        response = requests.get(image_url, stream=True)
+        if response.status_code == 200 and 'image' in response.headers.get('Content-Type', ''):
+            image_filename = os.path.basename(image_url)
+            image_filepath = os.path.join(settings.MEDIA_ROOT, image_filename)
+            # os.makedirs(image_dir, exist_ok=True)  # Create the directory if it does not exist
+            # image_filepath = os.path.join(image_dir, image_filename)
+            with open(image_filepath, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=1024):
+                    if chunk:
+                        f.write(chunk)
+            logger.info(f"Image successfully saved to {image_filepath}")
+            return image_filepath
+        else:
+            logger.error("Failed to retrieve the image. Status Code: %s", response.status_code)
+    except requests.RequestException as e:
+        logger.error("Network exception occurred while retrieving the image: %s", str(e))
+    return None
+
+def create_or_update_user(user_data, avatar_url):
+    username = user_data.get('login')  # Adjust the key according to your OAuth provider's response
+    email = user_data.get('email')  # Adjust the key
+    
+    # Check if the user already exists
+    user, created = User.objects.get_or_create(username=username, defaults={'email': email})
+    
+    # Update fields
+    user.first_name = user_data.get('first_name', '')  # Adjust the keys according to your OAuth provider's response
+    user.last_name = user_data.get('last_name', '')  # Adjust the keys
+    
+    # Handle avatar image
+    if avatar_url:
+        response = requests.get(avatar_url)
+        if response.status_code == 200:
+            user.avatar.save(f"{username}_avatar.jpg", ContentFile(response.content), save=True)
+        else:
+            logger.error(f"Failed to retrieve the avatar from {avatar_url}")
+    
+    # Save the user to the database
+    user.save()
+    return user
+
+from django.contrib.auth import login
+
+# ... [other imports and code]
 
 def oauth_callback(request):
-    logger.info("getting into oauth_callback")
+    logger.info("Getting into oauth_callback")
     authorization_code = request.GET.get('code', '')
-    if authorization_code:
-        logger.info("BLA I have the code")
-        # Prepare data for the token request
-        token_request_data = {
-            'grant_type': 'authorization_code',
-            'code': authorization_code,
-            'client_id': os.getenv('CLIENT_ID', 'default_client_id'),
-            'client_secret': os.getenv('CLIENT_SECRET', 'default_client_secret'),
-            'redirect_uri': os.getenv('REDIRECT_URI', 'default_redirect_uri'),
-            'scope': os.getenv('CLIENT_SCOPE', 'default_scope'),
-        }
-        
-        token_url = os.getenv('OAUTH2_TOKEN_URL', 'default_token_url')
-        logger.debug("Token URL: %s", token_url)
-        try:
-            # Send request to the OAuth provider's token endpoint
-            response = requests.post(token_url, data=token_request_data)
-            logger.debug("Response: %s", response)
-        
-            if response.status_code == 200:
-                token_data = response.json()
-                access_token = token_data.get('access_token')
-                logger.info("Got the token")
-                if access_token:
-                    logger.info("BLA I have the token")
-                    user_url= os.getenv('OAUTH2_USER_URL', 'default_user_url')
-                    headers = {'Authorization': f'Bearer {access_token}'}
-                    user_data = {}
-                    try:
-                        # Send a GET request to the OAuth provider's user info endpoint
-                        user_response = requests.get(user_url, headers=headers)
-                        logger.info("User Response: %s", user_response)
-                    
-                        if response.status_code == 200:
-                            user_data = user_response.json()
-                            logger.info("user_data: %s", user_data.get("id"))
-                            logger.info("user_data: %s", user_data.get("login"))
-
-                            user_id = user_data.get('id')
-                            user_login = user_data.get('login')
-                            logger.info("User_id: %s", user_id)
-                            logger.info("User_login: %s", user_login)
-
-                            user_avatar_small = user_data.get('image', {}).get('versions', {}).get('small')
-                            logger.info("I got the image")
-                            image_response = None
-                            chosen_avatar_url = user_avatar_small
-                            if chosen_avatar_url:
-                                try:
-                                    image_response = requests.get(chosen_avatar_url, stream=True)
-                                    if image_response.status_code == 200 and 'image' in image_response.headers.get('Content-Type', ''):
-                                       # Construct a file path
-                                        image_filename = os.path.basename(chosen_avatar_url)
-                                        image_filepath = os.path.join(settings.MEDIA_ROOT, image_filename)
-                                        
-                                        # Write the image content to the file
-                                        with open(image_filepath, 'wb') as f:
-                                            for chunk in image_response.iter_content(chunk_size=1024):
-                                                if chunk:  # filter out keep-alive new chunks
-                                                    f.write(chunk)
-                                        logger.info(f"Image successfully saved to {image_filepath}")
-                                    else:
-                                        logger.error("Failed to retrieve the image. Status Code: %s", image_response.status_code)
-   
-                                except requests.RequestException as e:
-                                    logger.error("Network exception occurred while retrieving the image: %s", str(e))
-                            if image_response.status_code == 200 and 'image' in image_response.headers.get('Content-Type', ''):
-                                logger.info("Successfully retrieved the image.")
-                            else:
-                                logger.error("The URL did not return an image.")
-                            logger.info("Got the user data")
-                        else:
-                            logger.error("Failed to obtain user info. Status Code: %s", user_response.status_code)
-                            logger.error("Failed to obtain user info. Response: %s", user_response.text)    
-                    except requests.RequestException as e:
-                            logger.error("Network exception occurred while obtaining user info: %s", str(e))
-                            return JsonResponse({'status': 'error', 'message': 'Network error occurred while obtaining user info'}, status=500)
-
-                return JsonResponse({'status': 'success', 'data': user_data})
-            else:
-                logger.error("Access token not obtained.")
-                # logger.error("Failed to obtain access token. Status Code: %s", response.status_code)
-                # logger.error("Failed to obtain access token. Response: %s", response.text)
-                return JsonResponse({'status': 'error', 'message': 'Failed to obtain access token'}, status=response.status_code)
-        except requests.RequestException as e:
-            logger.error("Network exception occurred: %s", str(e))
-            return JsonResponse({'status': 'error', 'message': 'Network error occurred while obtaining access token'}, status=500)
-    else:
-        logger.error("No authorization code provided")
+    if not authorization_code:
         return JsonResponse({'status': 'error', 'message': 'No authorization code provided'}, status=400)
+
+    access_token = get_access_token(authorization_code)
+    if not access_token:
+        return JsonResponse({'status': 'error', 'message': 'Failed to obtain access token'}, status=400)
+            
+    user_data = get_user_info(access_token)
+    if not user_data:
+        return JsonResponse({'status': 'error', 'message': 'Failed to obtain user info'}, status=400)
+
+    user_avatar_small = user_data.get('image', {}).get('small')
+    user = create_or_update_user(user_data, user_avatar_small)
+    
+    # Log the user in
+    login(request, user)  # This will create a session for the user
+    
+    # Prepare data to send back in the response
+    response_data = {
+        'status': 'success',
+        'message': 'User information saved successfully',
+        'data': {
+            'username': user.username,
+            'email': user.email,
+            # Add other fields as needed
+        }
+    }
+    if user.avatar:
+        response_data['data']['avatar_url'] = user.avatar.url
+
+    return JsonResponse(response_data)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
