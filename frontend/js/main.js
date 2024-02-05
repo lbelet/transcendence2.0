@@ -14,7 +14,11 @@ window.onload = async function () {
     }
     const path = window.location.pathname.substring(1);
     if (path) {
-        navigateWithTokenCheck(path);
+        if (path == 'waitingRoom' && localStorage.getItem('inGame') == true)
+            navigateWithTokenCheck(path);
+        else{
+            navigateWithTokenCheck('home');
+        }
     } else {
         navigateWithTokenCheck('home');
     }

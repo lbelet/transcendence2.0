@@ -117,7 +117,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             }))
             self.mark_player_joined(self.game_id, self.channel_name)
             if self.both_players_joined(self.game_id):
-                await self.send_game_start(self.game_id)
+                await self.send_game_start()
 
         if 'tournament_id' in data:
             print("received tournament_id............")

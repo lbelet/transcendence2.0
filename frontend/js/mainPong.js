@@ -156,6 +156,7 @@ async function joinGameQueue() {
                 // startPongGame(data.game_id);
             }
             if (data.message.includes('waitingRoomAccess')) {
+                localStorage.setItem('inGame', true)
                 navigateWithTokenCheck('waitingRoom')
             }
         }
