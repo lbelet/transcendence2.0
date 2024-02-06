@@ -74,7 +74,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             if self.game_id in self.players_connected_tournament and self.channel_name in self.players_connected_tournament[self.game_id]:
                 print(f"User {self.channel_name} was part of the tournament {self.game_id}")
-
                 self.players_connected_tournament[self.game_id].discard(self.channel_name)
                 if len(self.players_connected_tournament[self.game_id]) == 0:
                     del self.players_connected_tournament[self.game_id]  # Supprimer l'entrée du dictionnaire si vide
