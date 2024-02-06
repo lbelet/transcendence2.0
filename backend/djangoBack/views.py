@@ -914,6 +914,36 @@ def set_player_ready(request, tournament_id):
     except TournamentParticipation.DoesNotExist:
         return JsonResponse({'error': 'Participation au tournoi non trouvée'}, status=404)
 
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_tournament(request, tournament_id):
+    try:
+        print("Inside delete_tournament")
+        # Obtenez le tournoi correspondant
+        tournament = Tournament.objects.get(id=tournament_id)
+        send_delete_tournament(tournament_id)
+
+        # Supprimez le tournoi
+        tournament.delete()
+
+        return JsonResponse({'message': 'Tournament deleted'}, status=200)
+    except Tournament.DoesNotExist:
+        return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
+
+def send_delete_tournament(tournament_id):
+    # Obtenez une référence à la couche de canaux
+    channel_layer = get_channel_layer()
+
+    # Définissez le groupe WebSocket spécifique au tournoi
+    group_name = f'pong_tournament_{tournament_id}'
+
+    # Créez un message pour envoyer
+    message_data = {
+        'type': 'send_tournament_deleted',
+    }
+
+    # Utilisez async_to_sync pour envoyer le message de manière asynchrone
+    async_to_sync(channel_layer.group_send)(group_name, message_data)
 
 # def fill_tournament_matches(tournament):
 #     print("Remplissage des matches pour le tournoi:", tournament.name)

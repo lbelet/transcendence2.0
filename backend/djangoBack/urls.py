@@ -66,6 +66,9 @@ urlpatterns = [
     path('check_tournament_exists/<str:tournament_name>/', views.check_tournament_exists, name='check-tournament-exists'),
     path('check_user_exists/', views.check_user_exists, name='check_user_exists'),
 
+    path('delete_tournament/<int:tournament_id>/', views.delete_tournament, name='delete-tournament'),
+
+
 ]
 
 if settings.DEBUG:

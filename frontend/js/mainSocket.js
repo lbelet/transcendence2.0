@@ -250,6 +250,8 @@ function getGamePlayers_tournament(gameId) {
 
 
 // ----------------------------------------------------------------------------------------------------
+let toastElement = null
+let toast = null
 
 function openGameWebSocketConnection() {
     return new Promise((resolve, reject) => {
@@ -295,7 +297,7 @@ function openGameWebSocketConnection() {
                     //     }); 
     
                     // Afficher un toast Bootstrap pour la notification
-                    const toastElement = document.createElement('div');
+                    toastElement = document.createElement('div');
                     toastElement.classList.add('toast');
                     toastElement.setAttribute('role', 'alert');
                     toastElement.setAttribute('aria-live', 'assertive');
@@ -314,7 +316,7 @@ function openGameWebSocketConnection() {
     
                     document.body.appendChild(toastElement);
     
-                    const toast = new bootstrap.Toast(toastElement, {
+                    toast = new bootstrap.Toast(toastElement, {
                         autohide: false // Empêche le toast de se cacher automatiquement
                     });                
                     toast.show();
@@ -324,7 +326,8 @@ function openGameWebSocketConnection() {
                         console.log("Le compte à rebours est terminé. Le tournoi est annulé.");
                         // Logique pour annuler le tournoi ici
                         // Par exemple, envoyer une requête au serveur
-                        toast.dispose(); // Assurez-vous que 'toast' est correctement initialisé et accessible
+                        toast.dispose();
+                        toast = null; // Assurez-vous que 'toast' est correctement initialisé et accessible
                     });
     
                     document.getElementById('readyButton').addEventListener('click', function() {
@@ -364,17 +367,66 @@ function openGameWebSocketConnection() {
                         });
                     
                         toast.dispose();
+                        toast = null;
                     });
                     
                     document.getElementById('noButton').addEventListener('click', function () {
                         clearInterval(countdownInterval);
                         console.log("Le joueur a refusé.");
-                        // Envoyer une requête au serveur pour annuler le tournoi
-                        // ...
+                    
+                        const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
+                    
+                        // Envoyer une requête au serveur pour supprimer le tournoi
+                        fetch(`/api/delete_tournament/${tournamentId}/`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Réponse du serveur:', data);
+                            if (data.message === 'Tournament deleted') {
+                                console.log("Le tournoi a été supprimé avec succès.");
+                            } else {
+                                console.error("Erreur lors de la suppression du tournoi.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de la suppression du tournoi:', error);
+                        });
+                    
                         toast.dispose();
+                        toast = null;
+                        navigateWithTokenCheck('game')
                     });
                 }
 
+                if (data.type === 'tournament_deleted') {
+                    console.log('tournoi annule!!!!!!!!!')
+                    // if (toastElement) {
+                    //     console.log("il y a bien un toastElement")
+                    //     // Si un toast est actuellement affiché, fermez-le
+                    //     toastElement.dispose(); // Supprimez le toast du DOM
+                    //     toastElement = null; // Réinitialisez la référence
+                    // }
+                    if (toast != null) {
+                        console.log("Il y a bien un toast");
+                        // Si un toast est actuellement affiché, fermez-le
+                        toast.hide(); // Supprimez le toast du DOM
+                        // toast = null; // Réinitialisez la référence
+                    
+                        // Ajoutez ce code pour vérifier si le toastElement est supprimé
+                        // if (toastElement) {
+                        //     toastElement.remove(); // Supprimez le toastElement du DOM
+                        //     console.log("Toast Element supprimé");
+                        // }
+                    }
+                    navigateWithTokenCheck('game')
+                    
+                }
+                
                 if (data.type === 'tournament_update') {
                     console.log("bien recu! et le data tournamentID est:", data.tournamentId)
                     fetchTournamentDetailsWaitingPage(data.tournamentId);

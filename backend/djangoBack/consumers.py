@@ -807,3 +807,10 @@ class GameConsumer(AsyncWebsocketConsumer):
                     "type": "tournament_update",
                     "tournamentId": event["message"]["tournamentId"],
                 }))
+        
+    async def send_tournament_deleted(self, event):
+        # Vous pouvez personnaliser le message ici si nécessaire
+        # Envoyez le message personnalisé au client WebSocket
+        await self.send(text_data=json.dumps({
+            'type': 'tournament_deleted'
+        }))
