@@ -67,6 +67,7 @@ urlpatterns = [
     path('check_user_exists/', views.check_user_exists, name='check_user_exists'),
 
     path('delete_tournament/<int:tournament_id>/', views.delete_tournament, name='delete-tournament'),
+    path('user_games_history/', views.user_games_history, name='user-games-history'),
 
 
 ]

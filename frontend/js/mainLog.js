@@ -1,10 +1,81 @@
+// document.getElementById('loginForm').addEventListener('submit', function (event) {
+//     event.preventDefault();
+//     const username = document.getElementById('login-username').value;
+//     const password = document.getElementById('login-password').value;
+
+//     const errorMessageElement = document.getElementById('UserLoginErrorMessage');
+//     errorMessageElement.style.display = 'none';
+
+//     fetch('/api/api_login/', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify({
+//             username: username,
+//             password: password,
+//         })
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         localStorage.setItem('username', username);
+//         if (data['2fa_required']) {
+//             if (data['2fa_method'] === 'qr') {
+//                 const qrCodeImgSrc = data['qr_code_img'];
+//                 document.getElementById('qr-code-img').src = qrCodeImgSrc;
+//                 showQrTwoFactorForm();
+//             } else {
+//                 showTwoFactorForm();
+//             }
+//         }
+        
+//         if (data.login_successful) {
+//             console.log('login ok')
+//             localStorage.setItem('username', username);
+
+//             if (data['2fa_required']) {
+//                 if (data['2fa_method'] === 'qr') {
+//                     const qrCodeImgSrc = data['qr_code_img'];
+//                     document.getElementById('qr-code-img').src = qrCodeImgSrc;
+//                     showQrTwoFactorForm();
+//                 } else {
+//                     showTwoFactorForm();
+//                 }
+//             } else {
+//                 // Connexion réussie sans authentification à deux facteurs
+//                 localStorage.setItem('access_token', data.access);
+//                 localStorage.setItem('refresh_token', data.refresh);
+//                 localStorage.setItem('language', data.language);
+//                 localStorage.setItem('userID', data.id);
+//                 localStorage.setItem('avatarURL', data.avatar_url);
+
+//                 setupTokenRefresh();
+//                 loadTranslations(data.language);
+//                 window.updateUserUI();
+//                 navigateWithTokenCheck('game');
+//                 openWebSocketConnection();
+//                 document.getElementById('hiddenNav').classList.remove('hidden');
+//             }
+//         } else {
+//             console.log("data du login: ", data)
+//             console.log('login paaaaas ok')
+//             // Affichage d'un message d'erreur de connexion
+//             // errorMessageElement.textContent = data.message; // Utiliser le message renvoyé par le serveur
+//             // errorMessageElement.style.display = 'block'; // Assurez-vous que cet élément est correctement stylé pour afficher l'erreur
+//             displayErrorMessageLogin(data.message)
+//         }
+//     })
+//     .catch(error => {
+//         console.error('Une erreur est survenue lors de la tentative de connexion:', error);
+//         errorMessageElement.textContent = 'Une erreur technique est survenue. Veuillez réessayer plus tard.';
+//         errorMessageElement.style.display = 'block';
+//     });
+// });
+
 document.getElementById('loginForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
-
-    const errorMessageElement = document.getElementById('UserLoginErrorMessage');
-    errorMessageElement.style.display = 'none';
 
     fetch('/api/api_login/', {
         method: 'POST',
@@ -16,10 +87,13 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
             password: password,
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.login_successful) {
-            console.log('login ok')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
             localStorage.setItem('username', username);
 
             if (data['2fa_required']) {
@@ -31,33 +105,24 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     showTwoFactorForm();
                 }
             } else {
-                // Connexion réussie sans authentification à deux facteurs
+                console.log('Login successful:', data);
                 localStorage.setItem('access_token', data.access);
                 localStorage.setItem('refresh_token', data.refresh);
                 localStorage.setItem('language', data.language);
-                localStorage.setItem('userID', data.id);
-                localStorage.setItem('avatarURL', data.avatar_url);
-
-                setupTokenRefresh();
-                loadTranslations(data.language);
+                // Après une connexion réussie
                 window.updateUserUI();
                 navigateWithTokenCheck('game');
                 openWebSocketConnection();
                 document.getElementById('hiddenNav').classList.remove('hidden');
+
+                loadTranslations(data.language); // Charger les traductions pour la langue récupérée
+                // showWelcome();
+                openWebSocketConnection();
             }
-        } else {
-            console.log('login paaaaas ok')
-            // Affichage d'un message d'erreur de connexion
-            // errorMessageElement.textContent = data.message; // Utiliser le message renvoyé par le serveur
-            // errorMessageElement.style.display = 'block'; // Assurez-vous que cet élément est correctement stylé pour afficher l'erreur
-            displayErrorMessageLogin(data.message)
-        }
-    })
-    .catch(error => {
-        console.error('Une erreur est survenue lors de la tentative de connexion:', error);
-        errorMessageElement.textContent = 'Une erreur technique est survenue. Veuillez réessayer plus tard.';
-        errorMessageElement.style.display = 'block';
-    });
+        })
+        .catch(error => {
+            console.error('Login error:', error);
+        });
 });
 
 

@@ -47,6 +47,19 @@ def health_check(request):
     # Logique pour vérifier la santé de l'application
     return JsonResponse({"status": "healthy"})
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_games_history(request):
+    users_data = []
+    for user in User.objects.all():
+        games = PongGame.objects.filter(player_one=user) | PongGame.objects.filter(player_two=user)
+        games_data = [{
+            "opponent": game.player_two.username if game.player_one == user else game.player_one.username,
+            "result": "win" if game.winner == user else "lose",
+            "date": game.date.strftime('%Y-%m-%d %H:%M:%S') if game.date else 'Date not available'  # Formatage de la date
+        } for game in games]
+        users_data.append({"username": user.username, "games": games_data})
+    return JsonResponse(users_data, safe=False)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -267,6 +280,64 @@ def check_user_exists(request):
     return JsonResponse({'exists': False})
 
 
+# @csrf_exempt
+# def api_login(request):
+#     if request.method != 'POST':
+#         return JsonResponse({'error': 'Only POST method is accepted'}, status=405)
+
+#     data = json.loads(request.body)
+#     username = data.get('username')
+#     password = data.get('password')
+
+#     if not username or not password:
+#         return JsonResponse({'error': 'Username and password are required'}, status=409)
+
+#     user = authenticate(username=username, password=password)
+#     if user:
+#         user.status = User.ONLINE
+#         user.save()
+#         tokens = get_tokens_for_user(user)
+#         tokens.update({
+#             'language': user.language,
+#             'id': user.id,
+#             'avatar_url': 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png',
+#             'login_successful': True  # Ajouter le champ login_successful ici
+#         })
+
+#         if user.is_two_factor_enabled:
+#             if user.two_factor_method == 'email':
+#                 tokens.update({
+#                     'language': user.language,
+#                     'id': user.id,
+#                     'avatar_url': 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png',
+#                     'login_successful': True,
+#                     '2fa_required': True,
+#                     '2fa_method': 'email'
+#                 })
+#                 # Implémentez votre fonction send_two_factor_email ici
+#                 return JsonResponse(tokens, status=200)
+#             elif user.two_factor_method == 'qr':
+#                 totp_secret = pyotp.random_base32()
+#                 user.totp_secret = totp_secret
+#                 user.save()
+                
+#                 qr_code_img = generate_qr_code(user)
+#                 tokens.update({
+#                     'language': user.language,
+#                     'id': user.id,
+#                     'avatar_url': 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png',
+#                     'login_successful': True,
+#                     '2fa_required': True,
+#                     '2fa_method': 'qr',
+#                     'qr_code_img': qr_code_img
+#                 })
+#                 return JsonResponse(tokens, status=200)
+
+#         return JsonResponse(tokens, status=200)
+
+#     # Modifier ici pour utiliser un message neutre et retirer le statut 400
+#     return JsonResponse({'login_successful': False, 'message': 'Nom d’utilisateur ou mot de passe incorrect. Veuillez réessayer.'}, status=200)
+
 @csrf_exempt
 def api_login(request):
     if request.method != 'POST':
@@ -277,7 +348,7 @@ def api_login(request):
     password = data.get('password')
 
     if not username or not password:
-        return JsonResponse({'error': 'Username and password are required'}, status=409)
+        return JsonResponse({'error': 'Username and password are required'}, status=400)
 
     user = authenticate(username=username, password=password)
     if user:
@@ -286,32 +357,71 @@ def api_login(request):
 
         if user.is_two_factor_enabled:
             if user.two_factor_method == 'email':
-                # Implémentez votre fonction send_two_factor_email ici
+                send_two_factor_email(user.email, user)
                 return JsonResponse({'2fa_required': True, '2fa_method': 'email'})
             elif user.two_factor_method == 'qr':
-                # Implémentez votre fonction generate_qr_code ici
                 qr_code_img = generate_qr_code(user)
                 return JsonResponse({'2fa_required': True, '2fa_method': 'qr', 'qr_code_img': qr_code_img})
 
-        avatar_url = 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png'
-
         tokens = get_tokens_for_user(user)
-        tokens.update({
-            'language': user.language,
-            'id': user.id,
-            'avatar_url': 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png',
-            'login_successful': True  # Ajouter le champ login_successful ici
-        })
-
+        # Ajouter la langue de l'utilisateur à la réponse
+        tokens['language'] = user.language
         return JsonResponse(tokens, status=200)
 
-    # Modifier ici pour utiliser un message neutre et retirer le statut 400
-    return JsonResponse({'login_successful': False, 'message': 'Nom d’utilisateur ou mot de passe incorrect. Veuillez réessayer.'}, status=200)
+    return JsonResponse({'error': 'Invalid username or password'}, status=400)
 
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def update_user(request):
+#     # Utilisez request.data pour les champs de données et request.FILES pour les fichiers
+#     two_factor_method = request.data.get('twoFactorMethod')
+#     language = request.data.get('language', 'fr')
+#     email = request.data.get('email')
+#     username = request.data.get('username')
+#     firstname = request.data.get('firstname')
+#     old_password = request.data.get('oldPassword')
+#     new_password = request.data.get('newPassword')
+#     avatar = request.FILES.get('avatar')
+
+#     user = request.user
+
+#     if email:
+#         user.email = email
+#     if username:
+#         user.username = username
+#     if firstname:
+#         user.first_name = firstname
+
+#     if old_password and new_password:
+#         if not user.check_password(old_password):
+#             return JsonResponse({'error': 'L’ancien mot de passe est incorrect'}, status=400)
+#         user.set_password(new_password)
+#         user.save()
+#         update_session_auth_hash(request, user)  # Mise à jour de la session d'authentification
+#         # Pas besoin de retourner immédiatement, continuez si d'autres mises à jour sont nécessaires
+
+#     if avatar:
+#         file_path = f'avatars/{username}/{avatar.name}'
+#         saved_path = default_storage.save(file_path, ContentFile(avatar.read()))
+#         user.avatar = saved_path
+#         user.save()
+
+#     print("two_factor: ", two_factor_method)
+#     if two_factor_method != 'none':
+#         user.is_two_factor_enabled = True
+#         user.two_factor_method = two_factor_method
+#     else:
+#         user.is_two_factor_enabled = False
+#     user.language = language
+#     # Activez ou désactivez la méthode 2FA selon la valeur de two_factor_method
+#     # (ajustez votre logique ici en fonction des besoins spécifiques de votre application)
+#     user.save()
+
+#     return JsonResponse({'success': 'Profil mis à jour avec succès'}, status=200)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def update_user(request):
-    # Utilisez request.data pour les champs de données et request.FILES pour les fichiers
+    # data = json.loads(request.body)
     two_factor_method = request.data.get('twoFactorMethod')
     language = request.data.get('language', 'fr')
     email = request.data.get('email')
@@ -322,7 +432,8 @@ def update_user(request):
     avatar = request.FILES.get('avatar')
 
     user = request.user
-
+    user.two_factor_method = two_factor_method
+    user.language = language  # Update the user's language preference
     if email:
         user.email = email
     if username:
@@ -344,17 +455,63 @@ def update_user(request):
         user.avatar = saved_path
         user.save()
 
-    # Mettez à jour two_factor_method et language après le traitement de l'avatar pour éviter de renvoyer avant la fin
-    user.two_factor_method = two_factor_method
-    user.language = language
-    # Activez ou désactivez la méthode 2FA selon la valeur de two_factor_method
-    # (ajustez votre logique ici en fonction des besoins spécifiques de votre application)
-    user.save()
+    if two_factor_method == 'qr':
+        if not user.totp_secret:
+            user.totp_secret = pyotp.random_base32()
+        user.is_two_factor_enabled = True
+        user.save()
+
+        qr_code_img = generate_qr_code(user)
+        # return JsonResponse({'success': 'Profile updated successfully', 'qr_code_data': qr_code_img}, status=200)
+
+    elif two_factor_method == 'email':
+        user.is_two_factor_enabled = True
+        user.save()
+
+        # send_two_factor_email(user.email, user)
+        # return JsonResponse({'success': 'Profile updated successfully'}, status=200)
+
+    else:
+        user.is_two_factor_enabled = False
+        user.save()
+        # return JsonResponse({'success': 'Two-factor authentication disabled'}, status=200)
 
     return JsonResponse({'success': 'Profil mis à jour avec succès'}, status=200)
 
 
 
+# @csrf_exempt
+# def verify_two_factor_code(request):
+#     if request.method != 'POST':
+#         return JsonResponse({'error': 'Only POST method is accepted'}, status=405)
+
+#     data = json.loads(request.body)
+#     print("data recu dans verify: ", data)
+#     username = data.get('username')
+#     two_factor_code = data.get('two_factor_code')
+
+#     try:
+#         user = User.objects.get(username=username)
+#     except User.DoesNotExist:
+#         return JsonResponse({'error': 'Invalid username'}, status=400)
+
+#     if user.is_two_factor_enabled:
+#         if user.two_factor_method == 'email':
+#             stored_code = retrieve_stored_2fa_code(user)
+#             if two_factor_code == stored_code:
+#                 tokens = get_tokens_for_user(user)
+#                 return JsonResponse(tokens, status=200)
+#             else:
+#                 return JsonResponse({'error': 'Invalid 2FA code'}, status=400)
+#         elif user.two_factor_method == 'qr':
+#             totp = pyotp.TOTP(user.totp_secret)
+#             if totp.verify(two_factor_code):
+#                 tokens = get_tokens_for_user(user)
+#                 return JsonResponse(tokens, status=200)
+#             else:
+#                 return JsonResponse({'error': 'Invalid QR code'}, status=400)
+
+#     return JsonResponse({'error': '2FA is not enabled for this user'}, status=400)
 @csrf_exempt
 def verify_two_factor_code(request):
     if request.method != 'POST':
@@ -386,7 +543,6 @@ def verify_two_factor_code(request):
                 return JsonResponse({'error': 'Invalid QR code'}, status=400)
 
     return JsonResponse({'error': '2FA is not enabled for this user'}, status=400)
-
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

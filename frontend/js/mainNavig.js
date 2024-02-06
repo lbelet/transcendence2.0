@@ -70,6 +70,7 @@ function hideAllSections() {
     document.getElementById('waitingRoom-section').classList.add('hidden');
     document.getElementById('notFound-section').classList.add('hidden');
     document.getElementById('waitingRoomTournament-section').classList.add('hidden');
+    document.getElementById('accordion-section').classList.add('hidden');
 }
 
 function navigateTo(sectionId) {

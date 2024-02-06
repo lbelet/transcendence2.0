@@ -1,3 +1,36 @@
+function loadUserGamesHistory() {
+    fetch('/api/user_games_history/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+    }) // Assurez-vous que l'URL est correcte.
+        .then(response => response.json())
+        .then(data => {
+            const accordionElement = document.getElementById('accordion-section');
+            accordionElement.innerHTML = ''; // Nettoyer l'élément avant d'ajouter de nouveaux éléments d'accordéon.
+            data.forEach((user, index) => {
+                const userItem = `
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading${index}">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="true" aria-controls="collapse${index}">
+                                ${user.username}
+                            </button>
+                        </h2>
+                        <div id="collapse${index}" class="accordion-collapse collapse ${index === 0 ? "show" : ""}" aria-labelledby="heading${index}" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                ${user.games.map(game => `<p>${user.username} vs ${game.opponent}, winner: ${game.result === 'win' ? user.username : game.opponent}, Date: ${game.date}</p>`).join('')
+                            }
+                            </div>
+                        </div>
+                    </div>`;
+                accordionElement.innerHTML += userItem;
+            });
+        });
+        navigateWithTokenCheck('accordion');
+}
+
 
 function playPong() {
     fetch('/api/api_inGame/', {
