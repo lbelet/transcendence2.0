@@ -1,13 +1,37 @@
-// document.getElementById('startAtSpecificTime').addEventListener('change', function () {
-//     document.getElementById('specificDateTime').disabled = !this.checked;
-// });
-
 document.getElementById('createTournamentForm').addEventListener('submit', function (event) {
-    event.preventDefault();
+	event.preventDefault();
 
-    const tournamentName = document.getElementById('tournamentNameBis').value;
-    console.log('tournament name: ', tournamentName)
+	const errorMessageElement = document.getElementById('tournamentCreationErrorMessage');
+	errorMessageElement.style.display = 'none';
+
+	const tournamentName = document.getElementById('tournamentNameBis').value;
+	console.log('tournament name: ', tournamentName)
+	fetch(`/api/check_tournament_exists/${encodeURIComponent(tournamentName)}/`, {
+		headers: {
+			'accept': 'application/json',
+			'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+		},
+	})
+	.then(response => response.json())
+	.then(data => {
+		console.log("got data:", data)
+		if (data.exists) {
+			displayErrorMessage('A tournament with this name already exists.');
+
+		} else {
+			// Proceed with tournament creation
+			createTournament(tournamentName);
+		}
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+		displayErrorMessage('An unexpected error occurred while checking the tournament name.');
+	});
+});
+    
+function createTournament(tournamentName) {
     // const numberOfPlayers = document.querySelector('input[name="numberOfPlayers"]:checked').value;
+
     const startDateOption = "whenFull";
     let specificStartDate = null;
 
@@ -21,6 +45,7 @@ document.getElementById('createTournamentForm').addEventListener('submit', funct
         specific_start_date: specificStartDate
     };
     console.log('data send: ', data)
+
     fetch('/api/create_tournament/', {
         method: 'POST',
         headers: {
@@ -29,17 +54,59 @@ document.getElementById('createTournamentForm').addEventListener('submit', funct
         },
         body: JSON.stringify(data)
     })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success for tournament:', data);
-            if (data.success) {
-                registerForTournament(data.tournament_id);
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-});
+    .then(response => {
+        // First, check if the response is OK
+        if (!response.ok) {
+            // If not, convert the response body to JSON and throw it as an error
+            return response.json().then(data => {
+                const errorMessage = data.message || 'Ce tournoi existe déjà.';
+                throw new Error(errorMessage);
+            });
+        }
+        // If response is OK, convert it to JSON and proceed
+        return response.json();
+    })
+    .then(data => {
+        // Here, handle the successful case
+        console.log('Success for tournament:', data);
+        if (data.success) {
+            registerForTournament(data.tournament_id);
+            // Get the modal element
+            const modalElement = document.getElementById('createTournamentModal');
+            // Get the modal instance
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            // Hide the modal
+            modalInstance.hide();
+        } else {
+            // If data.success is not true, handle it as an error
+            console.error('Tournament creation failed:', data);
+            displayErrorMessage('Tournament creation failed for an unknown reason.');
+        }
+    })
+    .catch(error => {
+        // Here, handle any errors that occurred during the fetch or in the first then
+        console.error('Error:', error);
+        displayErrorMessage(error.message || 'An unexpected error occurred while creating the tournament.');
+    });
+    
+}
+
+function displayErrorMessage(message) {
+    const errorMessageElement = document.getElementById('tournamentCreationErrorMessage');
+    if (errorMessageElement) {
+        errorMessageElement.textContent = message; // Set the text content to the message
+        errorMessageElement.style.display = 'block'; // Make sure it's visible
+    } else {
+        console.error('Error message element not found');
+    }
+}
+
+
+// function displayErrorMessage(message) {
+//     const errorMessageElement = document.getElementById('tournamentCreationErrorMessage');
+//     errorMessageElement.textContent = message;
+//     errorMessageElement.style.display = 'block'; // Show the error message element
+// }
 
 function registerUserToTournament(tournamentId) {
     fetch(`/api/register_to_tournament/${tournamentId}/`, {
