@@ -77,6 +77,9 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
 
+    const errorMessageElement = document.getElementById('UserLoginErrorMessage');
+    errorMessageElement.style.display = 'none';
+
     fetch('/api/api_login/', {
         method: 'POST',
         headers: {
@@ -95,7 +98,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         })
         .then(data => {
             localStorage.setItem('username', username);
-
+            console.log("les datas sont: ", data)
             if (data['2fa_required']) {
                 if (data['2fa_method'] === 'qr') {
                     const qrCodeImgSrc = data['qr_code_img'];
@@ -105,23 +108,31 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     showTwoFactorForm();
                 }
             } else {
-                console.log('Login successful:', data);
-                localStorage.setItem('access_token', data.access);
-                localStorage.setItem('refresh_token', data.refresh);
-                localStorage.setItem('language', data.language);
-                // Après une connexion réussie
-                window.updateUserUI();
-                navigateWithTokenCheck('game');
-                openWebSocketConnection();
-                document.getElementById('hiddenNav').classList.remove('hidden');
+                if (data.login_successful == true) {
+                    console.log('Login successful:', data);
+                    localStorage.setItem('access_token', data.access);
+                    localStorage.setItem('refresh_token', data.refresh);
+                    localStorage.setItem('language', data.language);
+                    localStorage.setItem('avatarURL', data.avatar_url);
+                    localStorage.setItem('userID', data.id);
 
-                loadTranslations(data.language); // Charger les traductions pour la langue récupérée
-                // showWelcome();
-                openWebSocketConnection();
+                    // Après une connexion réussie
+                    window.updateUserUI();
+                    navigateWithTokenCheck('game');
+                    openWebSocketConnection();
+                    document.getElementById('hiddenNav').classList.remove('hidden');
+
+                    loadTranslations(data.language); // Charger les traductions pour la langue récupérée
+                    // showWelcome();
+                    openWebSocketConnection();
+                }
+                else{
+                    displayErrorMessageLogin(data.message)
+                }
             }
         })
         .catch(error => {
-            console.error('Login error:', error);
+            // console.error('Login error:', error);
         });
 });
 

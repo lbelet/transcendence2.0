@@ -366,9 +366,12 @@ def api_login(request):
         tokens = get_tokens_for_user(user)
         # Ajouter la langue de l'utilisateur à la réponse
         tokens['language'] = user.language
+        tokens['login_successful'] = True
+        tokens['avatar_url'] = 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png',
+        tokens['id'] = user.id
         return JsonResponse(tokens, status=200)
 
-    return JsonResponse({'error': 'Invalid username or password'}, status=400)
+    return JsonResponse({'login_successful': False, 'message': 'Nom d utilisateur ou mot de passe incorrect. Veuillez réessayer.'}, status=200)
 
 # @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
@@ -531,6 +534,10 @@ def verify_two_factor_code(request):
             stored_code = retrieve_stored_2fa_code(user)
             if two_factor_code == stored_code:
                 tokens = get_tokens_for_user(user)
+                tokens['language'] = user.language
+                tokens['login_successful'] = True
+                tokens['avatar_url'] = 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png',
+                tokens['id'] = user.id
                 return JsonResponse(tokens, status=200)
             else:
                 return JsonResponse({'error': 'Invalid 2FA code'}, status=400)

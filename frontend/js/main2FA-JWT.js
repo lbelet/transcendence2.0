@@ -127,6 +127,8 @@ document.getElementById('qrTwoFactorForm').addEventListener('submit', function (
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
             localStorage.setItem('language', data.language);
+            localStorage.setItem('avatarURL', data.avatar_url);
+            localStorage.setItem('userID', data.id);
             // Après une connexion réussie
             window.updateUserUI();
             navigateWithTokenCheck('game');
@@ -134,7 +136,7 @@ document.getElementById('qrTwoFactorForm').addEventListener('submit', function (
             document.getElementById('hiddenNav').classList.remove('hidden');
         })
         .catch(error => {
-            console.error('QR 2FA Verification error:', error);
-            alert('Invalid QR 2FA code. Please try again.');
+            // console.error('QR 2FA Verification error:', error);
+            // alert('Invalid QR 2FA code. Please try again.');
         });
 });

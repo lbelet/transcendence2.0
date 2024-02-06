@@ -20,6 +20,28 @@ document.getElementById('avatar1').addEventListener('change', function (event) {
     }
 });
 
+document.getElementById('avatar2').addEventListener('change', function (event) {
+    var file = event.target.files[0];
+    if (file) {
+        var validTypes = ['image/jpeg', 'image/png'];
+        var maxSize = 1048576; // 1MB in bytes
+
+        // Check if the file type is valid
+        if (!validTypes.includes(file.type)) {
+            alert('Avatar2 : Seuls les fichiers JPEG et PNG sont autorisés et 1Mo max.');
+            event.target.value = ''; // Clear the file input
+            return; // Exit the function
+        }
+
+        // Check if the file size exceeds the maximum size
+        if (file.size > maxSize) {
+            alert('Avatar2 : La taille du fichier doit être inférieure à 1 Mo.');
+            event.target.value = ''; // Clear the file input
+            return; // Exit the function
+        }
+    }
+});
+
 document.getElementById('registerForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
