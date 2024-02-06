@@ -322,12 +322,39 @@ function openGameWebSocketConnection() {
                     toast.show();
     
                     const countdownDisplay = document.getElementById('countdown');
-                    let countdownInterval = startCountdown(59, countdownDisplay, function () {
+                    let countdownInterval = startCountdown(15, countdownDisplay, function () {
                         console.log("Le compte à rebours est terminé. Le tournoi est annulé.");
-                        // Logique pour annuler le tournoi ici
-                        // Par exemple, envoyer une requête au serveur
-                        toast.dispose();
-                        toast = null; // Assurez-vous que 'toast' est correctement initialisé et accessible
+
+                        const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
+                    
+                        // Envoyer une requête au serveur pour supprimer le tournoi
+                        fetch(`/api/delete_tournament/${tournamentId}/`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Réponse du serveur:', data);
+                            if (data.message === 'Tournament deleted') {
+                                console.log("Le tournoi a été supprimé avec succès.");
+                            } else {
+                                console.log("le tournoi est deja supprime");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de la suppression du tournoi:', error);
+                        });
+                    
+                        // toast.dispose();
+                        // toast = null;
+                        // navigateWithTokenCheck('game')
+                        // // Logique pour annuler le tournoi ici
+                        // // Par exemple, envoyer une requête au serveur
+                        // toast.dispose();
+                        // toast = null; // Assurez-vous que 'toast' est correctement initialisé et accessible
                     });
     
                     document.getElementById('readyButton').addEventListener('click', function() {

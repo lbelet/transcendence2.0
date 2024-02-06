@@ -928,7 +928,7 @@ def delete_tournament(request, tournament_id):
 
         return JsonResponse({'message': 'Tournament deleted'}, status=200)
     except Tournament.DoesNotExist:
-        return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
+        return JsonResponse({'message': 'Tournoi non trouvé'}, status=200)
 
 def send_delete_tournament(tournament_id):
     # Obtenez une référence à la couche de canaux
