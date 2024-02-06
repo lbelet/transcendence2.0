@@ -24,12 +24,20 @@ from django.db.models import Q
 from djangoBack.models import User, PongGame
 from djangoBack import settings
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+
 # Local application imports
 from djangoBack.models import Player, Tournament, User, FriendRequest, PongGame, Match, TournamentParticipation
 from djangoBack.helpers import (
     get_tokens_for_user, send_two_factor_email, generate_qr_code,
     retrieve_stored_2fa_code
 )
+
+import logging
+
+# At the top of your file
+logger = logging.getLogger(__name__)
 
 # from django.db.models import F
 
@@ -210,7 +218,7 @@ def register(request):
         return JsonResponse({'error': 'All fields are required'}, status=400)
 
     # Vérifier si le nom d'utilisateur existe déjà
-    if (User.objects.filter(username=username).exists()) or (User.object.filter(email=email)) :
+    if (User.objects.filter(username=username).exists()) or (User.objects.filter(email=email)) :
         return JsonResponse({'error': 'Username or email already exists'}, status=409)
 
     try:
@@ -236,6 +244,14 @@ def register(request):
     except Exception as e:
         # Une exception inattendue
         return JsonResponse({'error': 'An unexpected error occurred'}, status=500)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_tournament_exists(request, tournament_name):
+    logger.info(tournament_name)
+    exists = Tournament.objects.filter(name=tournament_name).exists()
+    return JsonResponse({'exists': exists})
+
 
 @csrf_exempt
 def api_login(request):
@@ -669,7 +685,15 @@ def create_tournament(request):
 
             return JsonResponse({'success': 'Tournament created successfully', 'tournament_id': tournament.id}, status=201)
 
+    except IntegrityError as e:
+            if 'tournament_name_key' in str(e):
+                return JsonResponse({'error': 'A tournament with this name already exists'}, status=400)
+            else:
+                return JsonResponse({'error': 'An error occurred while creating the tournament'}, status=500)
+
     except Exception as e:
+        # Log the error for further investigation
+        logger.error('Error creating tournament', exc_info=True)
         return JsonResponse({'error': str(e)}, status=500)
 
 

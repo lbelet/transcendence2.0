@@ -628,6 +628,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             ) 
         self.game_active = False
+        print('is active ? ', self.game_active)
         await self.channel_layer.group_send(
             f'tournament_{self.game_id}',
             {

@@ -52,16 +52,18 @@ urlpatterns = [
 
     path('update_nbre_games/', views.update_nbre_games, name='update-nbre-games'),
 
-    path('set_player_ready/<int:tournament_id>/', views.set_player_ready, name='set_player_ready'),
+    path('set_player_ready/<int:tournament_id>/', views.set_player_ready, name='set-player-ready'),
     # path('startTournament/<int:tournament_id>/', views.startTournament, name='startTournament'),
 
-    path('get_game_players/<int:game_id>/', views.get_game_players, name='get_game_players'),
-    path('get_game_players_tournament/<int:game_id>/', views.get_game_players_tournament, name='get_game_players-tournament'),
+    path('get_game_players/<int:game_id>/', views.get_game_players, name='get-game-players'),
+    path('get_game_players_tournament/<int:game_id>/', views.get_game_players_tournament, name='get-game-players-tournament'),
 
 
     # Home page URL
     path('', views.index, name='index'),
     path('health/', views.health_check, name='health-check'),
+
+    path('check_tournament_exists/<str:tournament_name>/', views.check_tournament_exists, name='check-tournament-exists'),
 
 ]
 
