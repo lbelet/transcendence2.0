@@ -215,7 +215,7 @@ def register(request):
     avatar = request.FILES.get('avatar')
 
     if not all([username, first_name, last_name, email, password]):
-        return JsonResponse({'error': 'All fields are required'}, status=400)
+        return JsonResponse({'error': 'All fields are required'}, status=409)
 
     # Vérifier si le nom d'utilisateur existe déjà
     if (User.objects.filter(username=username).exists()) or (User.objects.filter(email=email)) :
@@ -240,7 +240,7 @@ def register(request):
         return JsonResponse({'error': 'A database error occurred. User could not be created.'}, status=400)
     except ValidationError as e:
         # Gérer ici les erreurs de validation spécifiques si nécessaire
-        return JsonResponse({'error': str(e.messages)}, status=400)
+        return JsonResponse({'error': str(e.messages)}, status=409)
     except Exception as e:
         # Une exception inattendue
         return JsonResponse({'error': 'An unexpected error occurred'}, status=500)
@@ -277,7 +277,7 @@ def api_login(request):
     password = data.get('password')
 
     if not username or not password:
-        return JsonResponse({'error': 'Username and password are required'}, status=400)
+        return JsonResponse({'error': 'Username and password are required'}, status=409)
 
     user = authenticate(username=username, password=password)
     if user:
@@ -286,30 +286,27 @@ def api_login(request):
 
         if user.is_two_factor_enabled:
             if user.two_factor_method == 'email':
-                send_two_factor_email(user.email, user)
+                # Implémentez votre fonction send_two_factor_email ici
                 return JsonResponse({'2fa_required': True, '2fa_method': 'email'})
             elif user.two_factor_method == 'qr':
+                # Implémentez votre fonction generate_qr_code ici
                 qr_code_img = generate_qr_code(user)
                 return JsonResponse({'2fa_required': True, '2fa_method': 'qr', 'qr_code_img': qr_code_img})
 
-        # Construction de l'URL de l'avatar en HTTPS
-        if user.avatar:
-            avatar_url = 'https://' + request.get_host() + user.avatar.url
-        else:
-            # Fournir un chemin vers un avatar par défaut si nécessaire
-            avatar_url = 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png'
+        avatar_url = 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png'
 
-        print("AVATAR url = ", avatar_url)
         tokens = get_tokens_for_user(user)
-        # Ajouter la langue de l'utilisateur à la réponse
-        tokens['language'] = user.language
-        tokens['id'] = user.id
-        tokens['avatar_url'] = avatar_url
+        tokens.update({
+            'language': user.language,
+            'id': user.id,
+            'avatar_url': 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png',
+            'login_successful': True  # Ajouter le champ login_successful ici
+        })
 
         return JsonResponse(tokens, status=200)
 
-    return JsonResponse({'error': 'Invalid username or password'}, status=400)
-
+    # Modifier ici pour utiliser un message neutre et retirer le statut 400
+    return JsonResponse({'login_successful': False, 'message': 'Nom d’utilisateur ou mot de passe incorrect. Veuillez réessayer.'}, status=200)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

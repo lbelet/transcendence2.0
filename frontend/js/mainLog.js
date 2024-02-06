@@ -3,6 +3,9 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
 
+    const errorMessageElement = document.getElementById('UserLoginErrorMessage');
+    errorMessageElement.style.display = 'none';
+
     fetch('/api/api_login/', {
         method: 'POST',
         headers: {
@@ -13,48 +16,50 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
             password: password,
         })
     })
-        .then(response => response.json().then(data => ({ status: response.status, body: data })))
-        .then(obj => {
-            if (obj.status === 200) {
-                localStorage.setItem('username', username);
+    .then(response => response.json())
+    .then(data => {
+        if (data.login_successful) {
+            console.log('login ok')
+            localStorage.setItem('username', username);
 
-                if (obj.body['2fa_required']) {
-                    if (obj.body['2fa_method'] === 'qr') {
-                        const qrCodeImgSrc = obj.body['qr_code_img'];
-                        document.getElementById('qr-code-img').src = qrCodeImgSrc;
-                        showQrTwoFactorForm();
-                    } else {
-                        showTwoFactorForm();
-                    }
+            if (data['2fa_required']) {
+                if (data['2fa_method'] === 'qr') {
+                    const qrCodeImgSrc = data['qr_code_img'];
+                    document.getElementById('qr-code-img').src = qrCodeImgSrc;
+                    showQrTwoFactorForm();
                 } else {
-                    localStorage.setItem('access_token', obj.body.access);
-                    localStorage.setItem('refresh_token', obj.body.refresh);
-                    localStorage.setItem('language', obj.body.language);
-                    localStorage.setItem('userID', obj.body.id);
-                    localStorage.setItem('avatarURL', obj.body.avatar_url);
-                    // localStorage.setItem('username', username);
-                    console.log("avatar setItem = ", obj.body.avatar_url)
-                    console.log("mon userID est: ", localStorage.getItem('userID'));
-                    // console.log("refresssshhhh: ", localStorage.getItem('refresh_token'))
-
-                    setupTokenRefresh();
-
-                    loadTranslations(obj.body.language);
-                    window.updateUserUI();
-                    // showWelcome();
-                    navigateWithTokenCheck('game');
-                    openWebSocketConnection();
-                    document.getElementById('hiddenNav').classList.remove('hidden');
+                    showTwoFactorForm();
                 }
             } else {
-                // alert(obj.body.error);
-                showAlert("login");
+                // Connexion réussie sans authentification à deux facteurs
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+                localStorage.setItem('language', data.language);
+                localStorage.setItem('userID', data.id);
+                localStorage.setItem('avatarURL', data.avatar_url);
+
+                setupTokenRefresh();
+                loadTranslations(data.language);
+                window.updateUserUI();
+                navigateWithTokenCheck('game');
+                openWebSocketConnection();
+                document.getElementById('hiddenNav').classList.remove('hidden');
             }
-        })
-        .catch(error => {
-            alert('Une erreur est survenue lors de la tentative de connexion.');
-        });
+        } else {
+            console.log('login paaaaas ok')
+            // Affichage d'un message d'erreur de connexion
+            // errorMessageElement.textContent = data.message; // Utiliser le message renvoyé par le serveur
+            // errorMessageElement.style.display = 'block'; // Assurez-vous que cet élément est correctement stylé pour afficher l'erreur
+            displayErrorMessageLogin(data.message)
+        }
+    })
+    .catch(error => {
+        console.error('Une erreur est survenue lors de la tentative de connexion:', error);
+        errorMessageElement.textContent = 'Une erreur technique est survenue. Veuillez réessayer plus tard.';
+        errorMessageElement.style.display = 'block';
+    });
 });
+
 
 async function showAlert(key) {
     var lang = localStorage.getItem('language');
