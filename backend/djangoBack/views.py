@@ -446,7 +446,7 @@ def update_user(request):
 
     if old_password and new_password:
         if not user.check_password(old_password):
-            return JsonResponse({'error': 'L’ancien mot de passe est incorrect'}, status=400)
+            return JsonResponse({'message': 'Erreur dans le formulaire. Veuillez réessayer.'}, status=200)
         user.set_password(new_password)
         user.save()
         update_session_auth_hash(request, user)  # Mise à jour de la session d'authentification

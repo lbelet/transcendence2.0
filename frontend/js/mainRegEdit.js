@@ -124,6 +124,9 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
 
     const formData = new FormData();
 
+    const errorMessageElement = document.getElementById('UserEditErrorMessage');
+    errorMessageElement.style.display = 'none';
+
     // Ajouter les données du formulaire à l'objet FormData
     formData.append('twoFactorMethod', document.getElementById('twoFactorMethod').value);
     formData.append('language', document.getElementById('language').value);
@@ -147,18 +150,16 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
         },
         body: formData // Utilisez l'objet FormData comme corps de la requête
     })
-    .then(response => {
+    .then(response => response.json()) // Convertit la réponse en JSON
+    .then(data => {
+        // Ici, `data` contient l'objet JSON retourné par votre API
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(data.message || 'Network response was not ok'); // Utilisez le message de `data` si disponible
         }
-        return response.json();
-    })
-    .then(() => {
         alert('Preferences updated.');
-        // Gérez la logique post-réponse ici
     })
     .catch(error => {
-        alert('Error updating preferences. Please try again.');
+        displayErrorMessageEditUser("Erreur dans le formulaire")
     });
 });
 
