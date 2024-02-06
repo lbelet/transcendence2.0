@@ -39,6 +39,10 @@ async function navigateWithTokenCheck(sectionId) {
         } else {
             if (sectionId == 'home' || sectionId == 'login' || sectionId == 'register')
                 navigateWithTokenCheck('game');
+                showPendingFriendRequests();
+            // if (sectionId == 'game')
+            //     // navigateWithTokenCheck('game')
+            //     showPendingFriendRequests();
             if (sectionId == 'waitingRoom')
                 playAudio();
             else

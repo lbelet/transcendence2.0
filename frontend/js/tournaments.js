@@ -91,43 +91,6 @@ function createTournament(tournamentName) {
     
 }
 
-function displayErrorMessage(message) {
-    const errorMessageElement = document.getElementById('tournamentCreationErrorMessage');
-    if (errorMessageElement) {
-        errorMessageElement.textContent = message; // Set the text content to the message
-        errorMessageElement.style.display = 'block'; // Make sure it's visible
-    } else {
-        console.error('Error message element not found');
-    }
-}
-
-function displayErrorMessageUser(message) {
-    const errorMessageElement = document.getElementById('UserCreationErrorMessage');
-    if (errorMessageElement) {
-        errorMessageElement.textContent = message; // Set the text content to the message
-        errorMessageElement.style.display = 'block'; // Make sure it's visible
-    } else {
-        console.error('Error message element not found');
-    }
-}
-
-function displayErrorMessageLogin(message) {
-    const errorMessageElement = document.getElementById('UserLoginErrorMessage');
-    if (errorMessageElement) {
-        errorMessageElement.textContent = message; // Set the text content to the message
-        errorMessageElement.style.display = 'block'; // Make sure it's visible
-    } else {
-        console.error('Error message element not found');
-    }
-}
-
-
-// function displayErrorMessage(message) {
-//     const errorMessageElement = document.getElementById('tournamentCreationErrorMessage');
-//     errorMessageElement.textContent = message;
-//     errorMessageElement.style.display = 'block'; // Show the error message element
-// }
-
 function registerUserToTournament(tournamentId) {
     fetch(`/api/register_to_tournament/${tournamentId}/`, {
         method: 'POST',
@@ -539,4 +502,44 @@ function fetchTournamentDetailsWaitingPage(tournamentId) {
         .catch(error => {
             console.error('Erreur lors de la récupération des détails du tournoi :', error);
         });
+}
+
+function displayErrorMessage(message) {
+    const errorMessageElement = document.getElementById('tournamentCreationErrorMessage');
+    if (errorMessageElement) {
+        errorMessageElement.textContent = message; // Set the text content to the message
+        errorMessageElement.style.display = 'block'; // Make sure it's visible
+    } else {
+        console.error('Error message element not found');
+    }
+}
+
+function displayErrorMessageUser(message) {
+    const errorMessageElement = document.getElementById('UserCreationErrorMessage');
+    if (errorMessageElement) {
+        errorMessageElement.textContent = message; // Set the text content to the message
+        errorMessageElement.style.display = 'block'; // Make sure it's visible
+    } else {
+        console.error('Error message element not found');
+    }
+}
+
+function displayErrorMessageLogin(message) {
+    const errorMessageElement = document.getElementById('UserLoginErrorMessage');
+    if (errorMessageElement) {
+        errorMessageElement.textContent = message; // Set the text content to the message
+        errorMessageElement.style.display = 'block'; // Make sure it's visible
+    } else {
+        console.error('Error message element not found');
+    }
+}
+
+function displayErrorMessageFriendRequest(message) {
+    const errorMessageElement = document.getElementById('friendRequestErrorMessage');
+    if (errorMessageElement) {
+        errorMessageElement.textContent = message; // Set the text content to the message
+        errorMessageElement.style.display = 'block'; // Make sure it's visible
+    } else {
+        console.error('Error message element not found');
+    }
 }

@@ -84,23 +84,70 @@ function searchUser() {
                 }
 
                 var addFriendButton = document.createElement('button');
-                addFriendButton.textContent = 'Ajouter en ami';
                 addFriendButton.className = 'btn btn-outline-secondary';
-                addFriendButton.onclick = function () {
-                    addFriend(user.username);
-                };
+                
+                // Ajuster le texte et l'état du bouton en fonction du friendStatus
+                switch(user.friendStatus) {
+                    case "envoyée":
+                        addFriendButton.textContent = 'Demande envoyée';
+                        addFriendButton.disabled = true;
+                        break;
+                    case "reçue":
+                        addFriendButton.textContent = 'Répondre à la demande';
+                        // Optionnel: implémenter une logique pour répondre à la demande d'ami
+                        break;
+                    case "ami":
+                        addFriendButton.textContent = 'Ami';
+                        addFriendButton.disabled = true;
+                        break;
+                    default:
+                        addFriendButton.textContent = 'Ajouter en ami';
+                        addFriendButton.onclick = function () {
+                            // Changez le texte et désactivez le bouton ici
+                            addFriendButton.textContent = 'Demande envoyée';
+                            addFriendButton.disabled = true;
+                
+                            // Appelez la fonction pour envoyer la demande d'ami
+                            addFriend(user.username);
+                        };
+                }
+
                 userContainer.appendChild(addFriendButton);
                 resultsContainer.appendChild(userContainer);
             });
             
-            initializePopovers();
+            initializePopovers();  // Assurez-vous que cette fonction est correctement implémentée
         }
-        openSearchResultsModal();
+        openSearchResultsModal();  // Assurez-vous que cette fonction est correctement implémentée
     })
     .catch(error => {
         console.error('Erreur lors de la recherche de l\'utilisateur:', error);
         alert('Erreur lors de la recherche de l\'utilisateur');
     });
+}
+
+
+function addFriendButtonState(button, friendStatus) {
+    switch(friendStatus) {
+        case "envoyée":
+            button.textContent = 'Demande envoyée';
+            button.disabled = true;
+            break;
+        case "reçue":
+            button.textContent = 'Répondre à la demande';
+            button.disabled = false;  // Vous pouvez choisir de gérer cela différemment
+            break;
+        case "ami":
+            button.textContent = 'Ami';
+            button.disabled = true;
+            break;
+        default:
+            button.textContent = 'Ajouter en ami';
+            button.disabled = false;
+            button.onclick = function () {
+                addFriend(user.username);
+            };
+    }
 }
 
 function showPendingFriendRequests() {

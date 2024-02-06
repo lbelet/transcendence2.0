@@ -393,16 +393,30 @@ def verify_two_factor_code(request):
 def search_users(request):
     query = request.GET.get('username', '')
     User = get_user_model()
-    users = User.objects.filter(username__icontains=query)
+    users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)  # Exclure l'utilisateur courant
 
     users_data = []
     for user in users:
+        # Vérifier l'état de la demande d'ami
+        friend_request_sent = FriendRequest.objects.filter(sender=request.user, receiver=user, is_accepted=False).exists()
+        friend_request_received = FriendRequest.objects.filter(sender=user, receiver=request.user, is_accepted=False).exists()
+        is_friend = request.user.friends.filter(id=user.id).exists()
+
+        friend_status = "none"
+        if friend_request_sent:
+            friend_status = "envoyée"
+        elif friend_request_received:
+            friend_status = "reçue"
+        elif is_friend:
+            friend_status = "ami"
+
         user_data = {
             'id': user.id,
             'username': user.username,
             'avatarUrl': ('https://' + request.get_host() + user.avatar.url) if user.avatar else None,
             'nbreGames': user.nbre_games,
-            'victories': user.won_game
+            'victories': user.won_game,
+            'friendStatus': friend_status,  # Ajouter l'état de la demande d'ami ici
         }
         users_data.append(user_data)
 
@@ -421,19 +435,18 @@ def send_friend_request(request):
             Q(sender=request.user, receiver=receiver) |
             Q(sender=receiver, receiver=request.user)
         ).exists():
-            return JsonResponse({'error': 'Une demande d\'ami existe déjà'}, status=400)
+            return JsonResponse({'success': False, 'message': 'Une demande d\'ami existe déjà pour: '})
 
-        # Créer la demande d'ami
         friend_request = FriendRequest.objects.create(
             sender=request.user, receiver=receiver)
 
-        # Envoyer la notification WebSocket
+        # Assurez-vous que cette fonction est implémentée correctement
         send_friend_request_notification(
             receiver.id, friend_request.id, request.user.username)
 
-        return JsonResponse({'message': 'Demande d\'ami envoyée avec succès'}, status=200)
+        return JsonResponse({'success': True, 'message': 'Demande d\'ami envoyée avec succès'})
     except User.DoesNotExist:
-        return JsonResponse({'error': 'Utilisateur non trouvé'}, status=404)
+        return JsonResponse({'success': False, 'message': 'Utilisateur non trouvé'})
 
 
 @api_view(['GET'])

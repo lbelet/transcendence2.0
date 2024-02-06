@@ -1,5 +1,7 @@
 
 function addFriend(receiverUsername) {
+    const errorMessageElement = document.getElementById('friendRequestErrorMessage');
+	errorMessageElement.style.display = 'none';
     fetch('/api/send_friend_request/', {
         method: 'POST',
         headers: {
@@ -10,19 +12,19 @@ function addFriend(receiverUsername) {
             receiver_username: receiverUsername
         })
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data.message);
-        })
-        .catch(error => {
-            alert('Erreur lors du traitement de la demande');
-        });
+    .then(response => response.json())  // Toujours parser le JSON
+    .then(data => {
+        if (!data.success) {
+            let errorMessage = `${data.message} ${receiverUsername}`;
+            displayErrorMessageFriendRequest(errorMessage);  // Utiliser le message d'erreur du serveur
+        }
+        // console.log(data.message);  // Afficher le message de succès
+    })
+    .catch(error => {
+        alert(`Erreur lors du traitement de la demande: ${error.message}`);
+    });
 }
+
 
 function acceptFriendRequest(requestId) {
     fetch(`/api/accept_friend_request/${requestId}/`, {
