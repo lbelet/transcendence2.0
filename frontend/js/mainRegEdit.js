@@ -23,43 +23,78 @@ document.getElementById('avatar1').addEventListener('change', function (event) {
 document.getElementById('registerForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    let formData = new FormData();
-    formData.append('username', document.getElementById('username').value);
-    formData.append('first_name', document.getElementById('firstname').value);
-    formData.append('last_name', document.getElementById('lastname').value);
-    formData.append('email', document.getElementById('email').value);
-    formData.append('password', document.getElementById('password').value);
+    const errorMessageElement = document.getElementById('UserCreationErrorMessage');
+	errorMessageElement.style.display = 'none';
 
-    let avatarFile = document.getElementById('avatar1').files[0];
-    if (avatarFile) {
-        formData.append('avatar', avatarFile);
-    }
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
 
-    if (document.getElementById('password').value === document.getElementById('retypePassword').value) {
-        fetch('/api/register/', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => {
-                    throw err; // Renvoie l'erreur pour être traitée dans le catch suivant
-                });
-            }
-            return response.json();
-        })
+    // Première vérification : existence de l'utilisateur
+    fetch(`/api/check_user_exists/?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`)
+        .then(response => response.json())
         .then(data => {
-            console.log('Registered successfully:', data);
-            navigateTo('login'); // Assurez-vous que cette fonction navigue correctement
+            if (data.exists) {
+                let message;
+                // Ajuster le message d'erreur en fonction du type retourné
+                switch (data.type) {
+                    case 'username':
+                        message = 'Un utilisateur avec ce nom d’utilisateur existe déjà.';
+                        break;
+                    case 'email':
+                        message = 'Un utilisateur avec cette adresse e-mail existe déjà.';
+                        break;
+                    default:
+                        message = 'Un utilisateur avec ces informations existe déjà.';
+                }
+                displayErrorMessageUser(message);
+            } else {
+                // Utilisateur n'existe pas, procéder à l'enregistrement
+                let formData = new FormData();
+                formData.append('username', username);
+                formData.append('first_name', document.getElementById('firstname').value);
+                formData.append('last_name', document.getElementById('lastname').value);
+                formData.append('email', email);
+                formData.append('password', document.getElementById('password').value);
+
+                let avatarFile = document.getElementById('avatar1').files[0];
+                if (avatarFile) {
+                    formData.append('avatar', avatarFile);
+                }
+
+                if (document.getElementById('password').value === document.getElementById('retypePassword').value) {
+                    fetch('/api/register/', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw err; // Renvoie l'erreur pour être traitée dans le catch suivant
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Registered successfully:', data);
+                        navigateTo('login'); // Assurez-vous que cette fonction navigue correctement
+                    })
+                    .catch(error => {
+                        // Gérer l'erreur spécifique de l'enregistrement
+                        alert(error.error || 'Erreur inattendue lors de l’enregistrement. Veuillez réessayer.');
+                    });
+                } else {
+                    alert('Les mots de passe ne correspondent pas !');
+                }
+            }
         })
         .catch(error => {
-            // Vérifie si l'erreur contient un message personnalisé et l'affiche, sinon affiche un message d'erreur générique
-            alert(error.error || 'Erreur inattendue lors de l’enregistrement. Veuillez réessayer.');
+            // Gérer les erreurs de la vérification de l'existence de l'utilisateur
+            console.error('Error during user existence check:', error);
+            alert('Erreur lors de la vérification de l’existence de l’utilisateur.');
         });
-    } else {
-        alert('Passwords do not match!');
-    }
 });
+
+
 
 
 document.getElementById('editUserModal').addEventListener('submit', function (event) {

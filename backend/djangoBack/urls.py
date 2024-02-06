@@ -64,6 +64,7 @@ urlpatterns = [
     path('health/', views.health_check, name='health-check'),
 
     path('check_tournament_exists/<str:tournament_name>/', views.check_tournament_exists, name='check-tournament-exists'),
+    path('check_user_exists/', views.check_user_exists, name='check_user_exists'),
 
 ]
 

@@ -252,6 +252,20 @@ def check_tournament_exists(request, tournament_name):
     exists = Tournament.objects.filter(name=tournament_name).exists()
     return JsonResponse({'exists': exists})
 
+@api_view(['GET'])
+@csrf_exempt
+def check_user_exists(request):
+    username = request.GET.get('username', None)
+    email = request.GET.get('email', None)
+
+    if username and User.objects.filter(username=username).exists():
+        return JsonResponse({'exists': True, 'type': 'username'})
+
+    if email and User.objects.filter(email=email).exists():
+        return JsonResponse({'exists': True, 'type': 'email'})
+
+    return JsonResponse({'exists': False})
+
 
 @csrf_exempt
 def api_login(request):
