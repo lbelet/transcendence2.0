@@ -11,6 +11,11 @@
   pointer-events: none;
 }
 
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+    transition: background-color 0s 600000s, color 0s 600000s !important;
+}
+
 /* label {
   color: #ff00ea8a;
 } */
@@ -25,6 +30,10 @@ body, html {
   /* min-width: 320px;
   min-height: 100vh; */
   z-index: 1;
+}
+
+div {
+  color: #c7cfd5;
 }
 
 .hidden {
@@ -62,6 +71,7 @@ body, html {
 .modal-content {
   margin: 15% auto;
   width: 80%;
+  border: none;
 }
 
 #pending-requests-container {
@@ -70,7 +80,8 @@ body, html {
 
 .request-item {
   background-color: #f8f8f8;
-  border: 1px solid #ddd;
+  border: 1px solid #6c757d;
+  border-radius: 8px;
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 5px;
@@ -80,28 +91,70 @@ body, html {
 }
 
 .request-item p {
-  margin: 10;
+  margin: 10px;
   font-size: 1rem;
 }
 
 .friend-item {
-  border: 1px solid #ddd;
-  padding: 10px;
+  border: 1px solid #6c757d;
+  padding: 5px 25px 5px 25px;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
+  border-radius: 8px;
+}
+
+.friend-item > * {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .friend-item img {
   margin-right: 10px;
+  margin-left: 10px;
+}
+
+.friend-item p:last-of-type {
+  margin-left: auto;
 }
 
 .modal-title {
   color: green;
 }
 
+.search-modal {
+  border: none;
+}
+
+#editUserModal label {
+  text-align: left;
+}
+
 #home-section {
   height: 0px;
+}
+
+form input:not(#search-username) {
+  background-color: transparent !important;
+  border: 1px solid #6c757d !important; 
+  color: #c7cfd5 !important; 
+  border-radius: 8px !important; 
+  padding: 8px !important;
+  margin-bottom: 5px !important;
+}
+
+form label {
+  margin-top: 10px;
+  color: #6c757d;
+}
+
+form input:focus {
+  background-color: transparent;
+  border-color: #c7cfd5;
+}
+
+::placeholder {
+  opacity: 0.5 !important;
 }
 
 /* #loginForm label,
@@ -110,55 +163,13 @@ body, html {
   font-size: 16px;
 } */
 
-#login-username,
-#login-password {
-  background-color: transparent; 
-  border: 1px solid #6c757d; 
-  color: #6c757d; 
-  border-radius: 10px; 
-  padding: 8px;
-  margin-bottom: 15px;
-}
-
-#login-username:focus,
-#login-password:focus {
-  border-color: #ffffff;
-}
-
-#username,
-#firstname,
-#lastname,
-#email,
-#password,
-#avatar1,
-#submit,
-#retypePassword {
-  background-color: transparent; 
-  border: 1px solid #6c757d; 
-  color: #6c757d; 
-  border-radius: 10px; 
-  padding: 8px;
-  margin-bottom: 15px;
-}
-
-#username:focus,
-#firstname:focus,
-#lastname:focus,
-#email:focus,
-#password:focus,
-#avatar1:focus,
-#submit:focus,
-#retypePassword:focus {
-  border-color: #ffffff;
-}
-
 #registerForm label {
   color: #6c757d; /* White color for the text */
   /* Add any other styling you need for your labels here */
 }
 
 #registerForm .form-text {
-  color: #ffffff; /* White color for the text */
+  color: #c7cfd5; /* White color for the text */
   position: relative;
   top: -5px; /* Moves the element up by 10px */
 }
@@ -167,38 +178,61 @@ body, html {
   color: #6c757d !important;
 }
 
+.tournoiExtra {
+  color: #6c757d;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
 #tournament-section.hidden {
   display: none;
 }
 
 .tournament-title {
-  background-color: #333; /* Couleur de fond du titre du tournoi */
-  color: white;
+  color: green;
   padding: 10px;
   margin-bottom: 20px;
 }
 
+h2 {
+  color: #c7cfd5;
+}
+
+h5 {
+  color: #c7cfd5;
+}
+
 .tournament-row h3 {
-  color: white;
+  color: #c7cfd5;
   padding: 5px;
-  border: 1px solid #ccc; /* Bordure autour des titres de chaque colonne */
+  border: 1px solid #6c757d; /* Bordure autour des titres de chaque colonne */
 }
 
 .semi-finals h3 {
-  background-color: #6c7ae0; /* Couleur de fond pour les demi-finales */
+  text-align: center;
+  background-color: transparent; /* Couleur de fond pour les demi-finales */
+  border-radius: 8px;
+  border: 1px solid #6c757d;
 }
 
 .final h3 {
-  background-color: #9b59b6; /* Couleur de fond pour la finale */
+  border-radius: 8px;
+  background-color: transparent; /* Couleur de fond pour la finale */
+  text-align: center;
+  border: 1px solid #6c757d;
 }
 
 .winner h3 {
-  background-color: #f1c40f; /* Couleur de fond pour le vainqueur */
+  border-radius: 8px;
+  background-color: transparent; /* Couleur de fond pour le vainqueur */
+  text-align: center;
+  border: 1px solid green;
 }
 
 .matches-container {
-  background-color: #ecf0f1; /* Couleur de fond pour chaque match */
-  border: 2px solid #ccc; /* Bordure autour de la zone des matchs */
+  border-radius: 8px;
+  background-color: transparent; /* Couleur de fond pour chaque match */
+  border: 1px solid #6c757d; /* Bordure autour de la zone des matchs */
   padding: 10px;
   margin-bottom: 15px;
 }
@@ -209,16 +243,18 @@ body, html {
 }
 
 .match {
-  background-color: #ecf0f1; /* Couleur de fond pour chaque match */
-  border: 1px solid #7f8c8d; /* Bordure pour chaque match */
+  text-align: center;
+  background-color: transparent; /* Couleur de fond pour chaque match */
+  border: 1px solid #4c5256; /* Bordure pour chaque match */
   margin-bottom: 15px;
   padding: 10px;
   border-radius: 5px;
 }
 
 .match .player {
+  text-align: center;
   padding: 5px; /* Espacement autour du texte du joueur */
-  border-bottom: 1px solid #bdc3c7; /* Bordure entre les joueurs */
+  color: #c7cfd5;
 }
 
 .match .player:last-child {
@@ -226,8 +262,22 @@ body, html {
 }
 
 .match .vs {
+  color: green;
   text-align: center;
+  border-bottom: 1px solid #4c5256; /* Bordure entre les joueurs */
+  border-top: 1px solid #4c5256; /* Bordure entre les joueurs */
+
   margin: 10px 0;
+}
+
+.tournament-filters .btn-outline-secondary {
+  border-color: green;
+}
+
+.winner {
+  text-align: center;
+  padding: 5px; /* Espacement autour du texte du joueur */
+  color: #c7cfd5;
 }
 
 #available-tournaments {
