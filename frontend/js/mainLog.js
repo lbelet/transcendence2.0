@@ -28,7 +28,7 @@
 //                 showTwoFactorForm();
 //             }
 //         }
-        
+
 //         if (data.login_successful) {
 //             console.log('login ok')
 //             localStorage.setItem('username', username);
@@ -119,14 +119,15 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     console.log('refresh token: ', localStorage.getItem('refresh_token'))
                     // Après une connexion réussie
                     setupTokenRefresh();
-                    window.updateUserUI();
-                    navigateWithTokenCheck('game');
-                    openWebSocketConnection();
                     document.getElementById('hiddenNav').classList.remove('hidden');
+                  loadTranslations(data.language)
+                    .then( ret => {
+                      navigateWithTokenCheck('game');
+                      window.updateUserUI();
 
-                    loadTranslations(data.language); // Charger les traductions pour la langue récupérée
-                    // showWelcome();
-                    openWebSocketConnection();
+                      // showWelcome();
+                      openWebSocketConnection();
+                    });
                 }
                 else{
                     displayErrorMessageLogin(data.message)

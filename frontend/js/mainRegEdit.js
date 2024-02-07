@@ -159,7 +159,7 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
         }
         // Si la réponse est OK, traitez-la normalement
         return response.json();
-    }) 
+    })
     .then(data => {
         console.log('data dans edit user: ', data)
         if (data.message)
@@ -182,6 +182,7 @@ function applyTranslations(translations) {
             elem.textContent = translations[key];
         }
     });
+  return true;
 }
 
 // Define the loadTranslations function
@@ -248,4 +249,3 @@ function updateUserLanguage(language) {
 //         console.error('Erreur lors de la mise à jour de l\'email:', error);
 //     });
 // }
-

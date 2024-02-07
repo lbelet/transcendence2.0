@@ -47,7 +47,8 @@ window.updateUserUI = function() {
     const userName = localStorage.getItem('username');
     const avatarUrl = localStorage.getItem('avatarURL');
 
-    if (userName) {
+  if (userName) {
+    console.log(document.getElementById('user-name-game'));
         document.getElementById('user-name-game').textContent = userName;
     }
 

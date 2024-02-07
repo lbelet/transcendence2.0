@@ -103,7 +103,7 @@
 
                 <div id="register-section" class="text-center hidden">
                     <div id="UserCreationErrorMessage" class="alert alert-danger" style="display: none;"></div>
-                    <h2>Créer un compte</h2>
+                    <h2 data-key="create_account">Créer un compte</h2>
                     <form id="registerForm" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="username">Nom d'utilisateur</label>
@@ -153,7 +153,10 @@
 
                 <div id="game-section" class="text-center hidden">
                     <h2>Bienvenue sur la page de jeu</h2>
-                    <p style="color: green;">Bienvenue, <span id="user-name-game"></span>!</p>
+                    <p style="color: green;"><span data-key="welcome_user">Bienvenue à toi</span>,<span id="user-name-game"></span>!</p>
+                    <p data-key="defy_enjoy">Défie tes adversaires en 1v1 et participe à des tournois. Amuse-toi et que
+                        le meilleur gagne !
+                    </p>
                     <img id="user-avatar" src="" alt="Avatar" style="width: 50px; height:auto;">
                     <button class="btn btn-outline-secondary" onclick="loadUserGamesHistory()">historique des parties</button>
                     <!-- <button class="btn btn-outline-secondary" onclick="playPong()">practice playing Pong</button> -->
@@ -179,18 +182,18 @@
                     </audio>
                     <div id="tournamentBracketWaiting">
                         <h2 id="tournamentNameWaitingPage" class="text-center tournament-title">Nom du Tournoi</h2>
-    
+
                         <div class="row my-4 tournament-row">
                             <div class="col d-flex flex-column semi-finals">
                                 <h3>Demi-finales</h3>
                                 <div id="semi-finalsWaitingPage" class="matches-container"></div>
                             </div>
-    
+
                             <div class="col d-flex flex-column justify-content-center final">
                                 <h3>Finale</h3>
                                 <div id="finalWaitingPage" class="matches-container"></div>
                             </div>
-    
+
                             <div class="col d-flex flex-column justify-content-center winner">
                                 <h3>Vainqueur</h3>
                                 <div id="winnerWaitingPage" class="matches-container"></div>
@@ -230,13 +233,13 @@
 
                         <div class="tournament-filters my-3">
                             <button class="btn btn-outline-secondary" onclick="sortTournaments('name', this)">
-                                Trier par nom <span class="sort-indicator">&#9650;</span>
+                                <span data-key="sort_by_name">Trier par nom</span> <span class="sort-indicator">&#9650;</span>
                             </button>
                             <button class="btn btn-outline-secondary" onclick="sortTournaments('date', this)">
-                                Trier par date <span class="sort-indicator">&#9650;</span>
+                                <span data-key="sort_by_date">Trier par date</span> <span class="sort-indicator">&#9650;</span>
                             </button>
                             <button class="btn btn-outline-secondary" onclick="sortTournaments('participants', this)">
-                                Trier par nombre de participants <span class="sort-indicator">&#9650;</span>
+                                <span data-key="sort_by_nb_user">Trier par nombre de participants</span> <span class="sort-indicator">&#9650;</span>
                             </button>
 
                         </div>
@@ -251,7 +254,7 @@
                     <div>
                         <h2 class="text-center mb-0">Tournoi</h2>
                         <h2 id="tournamentName" class="text-center tournament-title">Nom du Tournoi</h2>
-                    </div>  
+                    </div>
 
                     <div class="row my-4 tournament-row">
                         <div class="col d-flex flex-column semi-finals">
