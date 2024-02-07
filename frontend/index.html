@@ -15,7 +15,7 @@
 <body>
     <nav class="navbar navbar-expand-lg border-bottom border-body" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#" data-key="welcome">Transcendence</a>
+            <a class="navbar-brand" href="#">Transcendence</a>
             <!-- Bouton pour les appareils mobiles -->
             <div class="hidden" id="hiddenNav">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
@@ -74,108 +74,96 @@
                     <!-- <canvas id="canvas1"></canvas> -->
                     <div class="position-absolute top-75 start-50 translate-middle">
                         <button class="btn btn-outline-secondary" onclick="showLoginForm()">Login</button>
-                        <button class="btn btn-outline-secondary spaced-buttons" onclick="showRegisterForm()"
-                            data-key="create_account">Créer
+                        <button class="btn btn-outline-secondary spaced-buttons" onclick="showRegisterForm()">Créer
                             un compte</button>
                     </div>
                 </div>
 
                 <div id="notFound-section" class="hidden">
-                    <h1 data-key="404_page">404 Page non trouvée</h1>
-                    <p data-key="page_not_found">La page que vous cherchez n'existe pas.</p>
-                    <button class="btn btn-outline-secondary" onclick="navigateWithTokenCheck('game')"
-                        data-key="return">Retour</button>
+                    <h1>404 Not Found</h1>
+                    <p>La page que vous cherchez n'existe pas.</p>
+                    <button class="btn btn-outline-secondary" onclick="navigateWithTokenCheck('game')">retour</button>
                 </div>
 
                 <div id="accordion-section" class="accordion hidden" style="width: 40%; margin: auto;"></div>
 
                 <div id="login-section" class="text-center hidden">
                     <div id="UserLoginErrorMessage" class="alert alert-danger" style="display: none;"></div>
-                    <h2 data-key="login">Login</h2>
+                    <h2>Login</h2>
                     <form id="loginForm">
                         <div class="form-group">
-                            <label for="login-username" class="form-label" style="color: #6c757d;" data-key="username">Nom d'utilisateur</label>
+                            <label for="login-username" class="form-label" style="color: #6c757d;">Nom d'utilisateur</label>
                             <input type="text" class="form-control" id="login-username" required>
-                            <label for="login-password" class="form-label" style="color: #6c757d;" data-key="password">Mot de passe</label>
+                            <label for="login-password" class="form-label" style="color: #6c757d;">Mot de passe</label>
                             <input type="password" class="form-control" id="login-password" required>
-                            <button class="btn btn-outline-secondary" style="color: #6c757d;" data-key="connect">Se connecter</button>
+                            <button class="btn btn-outline-secondary" style="color: #6c757d;">Se connecter</button>
                         </div>
                     </form>
                 </div>
 
                 <div id="register-section" class="text-center hidden">
-                    <div id="UserCreationErrorMessage" class="alert alert-danger" style="display: none;" data-key="create_account"></div>
+                    <div id="UserCreationErrorMessage" class="alert alert-danger" style="display: none;"></div>
                     <h2>Créer un compte</h2>
                     <form id="registerForm" enctype="multipart/form-data">
                         <div class="form-group">
-                            <label for="username" data-key="username">Nom d'utilisateur</label>
+                            <label for="username">Nom d'utilisateur</label>
                             <input type="text" class="form-control" id="username" required>
-                            <label for="firstname" class="form-label" data-key="first_name">Prénom</label>
+                            <label for="firstname" class="form-label">Prénom</label>
                             <input type="text" class="form-control" id="firstname" required>
-                            <label for="lastname" data-key="last_name">Nom</label>
+                            <label for="lastname">Nom</label>
                             <input type="text" class="form-control" id="lastname" required>
-                            <label for="email" data-key="email">Email</label>
+                            <label for="email">Email</label>
                             <input type="email" class="form-control" id="email" required>
-                            <label for="password" data-key="password">Mot de passe</label>
+                            <label for="password">Mot de passe</label>
                             <input type="password" class="form-control" id="password" required>
-                            <label for="retypePassword" data-key="retype_password">Retaper le mot de passe</label>
+                            <label for="retypePassword">Retaper le mot de passe</label>
                             <input type="password" class="form-control" id="retypePassword" required>
-                            <label for="avatar1" class="custom-file-upload" data-key="avatar">Avatar</label>
+                            <label for="avatar1" class="custom-file-upload">Avatar</label>
                             <input type="file" class="form-control" id="avatar1" accept="image/jpeg, image/png">
-                            <small class="form-text text-muted" data-key="efault_avatar_note">Laissez ce champ vide pour
-                                utiliser l'avatar par
+                            <small class="form-text text-muted">Laissez ce champ vide pour utiliser l'avatar par
                                 défaut.</small>
                         </div>
-                        <button type="submit" class="btn btn-outline-secondary" data-key="create">Créer</button>
+                        <button type="submit" class="btn btn-outline-secondary">Créer</button>
                     </form>
                 </div>
 
                 <div id="emailTwoFactor-section" class="hidden">
-                    <h2 data-key="mail_2fa_auth">Authentification à deux facteurs par email</h2>
+                    <h2>Two-Factor Authentication</h2>
                     <form id="EmailTwoFactorForm">
                         <div class="form-group">
-                            <label for="twoFactorCode" data-key="2fa_code">2FA Code</label>
+                            <label for="twoFactorCode">2FA Code</label>
                             <input type="text" class="form-control" id="twoFactorCode" required>
                         </div>
-                        <button type="submit" class="btn btn-outline-secondary" data-key="verify">Vérifier</button>
+                        <button type="submit" class="btn btn-outline-secondary">Verify</button>
                     </form>
                 </div>
 
                 <div id="qrTwoFactor-section" class="hidden">
-                    <h2 data-key="qr_2fa_auth">Authentification à deux facteurs par QR code</h2>
-                    <p data-key="scan_qr_code">Scannez le code QR avec votre application d'authentification et saisissez
-                        le code
-                        ci-dessous. Par exemple, vous pouvez utiliser Google Authenticator.</p>
+                    <h2>QR Two-Factor Authentication</h2>
+                    <p>Scan the QR Code with your 2FA app and enter the code below.</p>
                     <img id="qr-code-img" src="" alt="QR Code" class="mb-3">
                     <form id="qrTwoFactorForm">
                         <div class="form-group">
-                            <label for="qrTwoFactorCode" data-key="2fa_code">2FA Code</label>
+                            <label for="qrTwoFactorCode">2FA Code</label>
                             <input type="text" class="form-control" id="qrTwoFactorCode" required>
                         </div>
-                        <button type="submit" class="btn btn-outline-secondary" data-key="verify">Vérifier</button>
+                        <button type="submit" class="btn btn-outline-secondary">Verify</button>
                     </form>
                 </div>
 
                 <div id="game-section" class="text-center hidden">
                     <h2>Bienvenue sur la page de jeu</h2>
-                    <p style="color: green;" data-key="welcome_user">Bienvenue à toi,<span id="user-name-game"></span>!</p>
-                    <p data-key="defy_enjoy">Défie tes adversaires en 1v1 et participe à des tournois. Amuse-toi et que
-                        le meilleur gagne !
-                    </p>
+                    <p style="color: green;">Bienvenue, <span id="user-name-game"></span>!</p>
                     <img id="user-avatar" src="" alt="Avatar" style="width: 50px; height:auto;">
                     <button class="btn btn-outline-secondary" onclick="loadUserGamesHistory()">historique des parties</button>
                     <!-- <button class="btn btn-outline-secondary" onclick="playPong()">practice playing Pong</button> -->
-                    <button class="btn btn-outline-secondary" onclick="joinGameQueue()" data-key="1v1_pong">Rejoindre la partie 1v1</button>
-                    <button class="btn btn-outline-secondary" onclick="goTournament()" data-key="join_tournament">Rejoindre la page des
-                        tournois</button>
+                    <button class="btn btn-outline-secondary" onclick="joinGameQueue()">Rejoindre la partie</button>
+                    <button class="btn btn-outline-secondary" onclick="goTournament()">Tournois</button>
                     <div id="pending-requests-container"></div>
                 </div>
 
                 <div id="waitingRoom-section" class="text-center hidden">
-                    <div class="d-flex flex-column align-items-center">
-                        <h2 role="status" data-key="waiting_for_next_game">En attente de la suite...</h2>
-                        <div class="spinner-border" aria-hidden="true"></div>
-                    </div>
+                    <h2>En attendant la suite...</h2>
                     <audio id="myAudio" muted>
                         <source src="./locales/audio/glass-of-wine-143532.mp3" type="audio/mpeg">
                         Votre navigateur ne supporte pas l'élément audio.
@@ -224,9 +212,8 @@
                 </div>
 
                 <div id="tournament-section" class="text-center hidden">
-                    <h2 data-key="pong_tournament">Tournois Pong</h2>
-                    <button class="btn btn-outline-secondary" onclick="openTournamentModal()"
-                        data-key="create_tournament">Créer un tournoi</button>
+                    <h2>Tournois Pong</h2>
+                    <button class="btn btn-outline-secondary" onclick="openTournamentModal()">Créer tournoi</button>
                     <!-- <div>
                         <h1>Tournois dispos</h1>
                     </div>
@@ -234,21 +221,21 @@
                         dispos</button>
                     <div id="available-tournaments"></div> -->
                     <div class="container mt-10">
-                        <h1 data-key="available_tournament">Tournois disponibles</h1>
+                        <h2>Tournois disponibles</h2>
 
                         <div class="my-3">
-                            <button class="btn btn-outline-secondary" onclick="loadAvailableTournaments()" data-key="download_tournament">Charger les tournois
+                            <button class="btn btn-outline-secondary" onclick="loadAvailableTournaments()">Charger les tournois
                                 disponibles</button>
                         </div>
 
                         <div class="tournament-filters my-3">
-                            <button class="btn btn-outline-secondary" onclick="sortTournaments('name', this)" data-key="sort_by_name">
+                            <button class="btn btn-outline-secondary" onclick="sortTournaments('name', this)">
                                 Trier par nom <span class="sort-indicator">&#9650;</span>
                             </button>
-                            <button class="btn btn-outline-secondary" onclick="sortTournaments('date', this)" data-key="sort_by_date">
+                            <button class="btn btn-outline-secondary" onclick="sortTournaments('date', this)">
                                 Trier par date <span class="sort-indicator">&#9650;</span>
                             </button>
-                            <button class="btn btn-outline-secondary" onclick="sortTournaments('participants', this)" data-key="sort_by_nb_user">
+                            <button class="btn btn-outline-secondary" onclick="sortTournaments('participants', this)">
                                 Trier par nombre de participants <span class="sort-indicator">&#9650;</span>
                             </button>
 
@@ -262,23 +249,23 @@
 
                 <div id="tournamentBracket-section" class="container hidden">
                     <div>
-                        <h2 class="text-center mb-0" data-key="tournament_name">Nom du tournoi</h2>
+                        <h2 class="text-center mb-0">Tournoi</h2>
                         <h2 id="tournamentName" class="text-center tournament-title">Nom du Tournoi</h2>
                     </div>  
 
                     <div class="row my-4 tournament-row">
                         <div class="col d-flex flex-column semi-finals">
-                            <h3 data-key="semi_finals">Demi-finales</h3>
+                            <h3>Demi-finales</h3>
                             <div id="semi-finals" class="matches-container"></div>
                         </div>
 
                         <div class="col d-flex flex-column justify-content-center final">
-                            <h3 id="finals" data-key="final">Finale</h3>
+                            <h3>Finale</h3>
                             <div id="final" class="matches-container"></div>
                         </div>
 
                         <div class="col d-flex flex-column justify-content-center winner">
-                            <h3 data-key="winner">Vainqueur</h3>
+                            <h3>Vainqueur</h3>
                             <div id="winner" class="matches-container"></div>
                         </div>
                     </div>
@@ -292,8 +279,7 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content search-modal">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="searchResultsLabel" data-key="search_result">Résultats de la
-                                    recherche</h5>
+                                <h5 class="modal-title" id="searchResultsLabel">Résultats de la Recherche</h5>
                                 <button type="button" class="btn-close" onclick="closeSearchResultsModal()"
                                     aria-label="Close"></button>
                             </div>
@@ -313,8 +299,7 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="editUserLabel" data-key="edit_profile">Modifier le profil
-                                </h5>
+                                <h5 class="modal-title" id="editUserLabel">Modifier le profil</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -324,46 +309,43 @@
                                     <div class="form-group">
                                         <!-- <label for="currentUsername">Username actuel:</label> -->
                                         <!-- <span id="currentUsername">Username</span> -->
-                                        <label for="newUsername" data-key="new_username">Nouveau nom
-                                            d'utilisateur:</label>
+                                        <label for="newUsername">Nouveau username:</label>
                                         <input type="username" class="form-control" id="newUsername"
                                             placeholder="Entrez le nouveau username">
                                         <!-- <label for="currentFirstName">firstname actuel:</label> -->
                                         <!-- <span id="currentFirstName">firstname</span> -->
-                                        <label for="newFirstname" data-key="new_firstname">Nouveau prénom:</label>
+                                        <label for="newFirstname">Nouveau firstname:</label>
                                         <input type="firstname" class="form-control" id="newFirstname"
                                             placeholder="Entrez le nouveau firstname">
                                         <!-- <label for="currentEmail">Email Actuel:</label> -->
                                         <!-- <span id="currentEmail">email@example.com</span> -->
-                                        <label for="newEmail" data-key="new_mail">Nouvel email:</label>
+                                        <label for="newEmail">Nouvel Email:</label>
                                         <input type="email" class="form-control" id="newEmail"
                                             placeholder="Entrez le nouvel email">
                                         <!-- <label for="currentPassword">Mot de passe actuel:</label> -->
                                         <input type="password" class="form-control" id="currentPassword"
                                             placeholder="Entrez le mot de passe actuel">
-                                        <label for="newPassword" data-key="new_password">Nouveau mot de passe:</label>
+                                        <label for="newPassword">Nouveau mot de passe:</label>
                                         <input type="password" class="form-control" id="newPassword"
                                             placeholder="Entrez le nouveau mot de passe">
-                                        <label for="avatar2" data-key="avatar">Avatar:</label>
+                                        <label for="avatar2">Avatar:</label>
                                         <input type="file" class="form-control" id="avatar2"
                                             accept="image/jpeg, image/png" name="avatar2">
-                                        <label for="twoFactorMethod" data-key="choose_2fa_method">Choisissez une méthode
-                                            de double
-                                            authentification:</label>
+                                        <label for="twoFactorMethod">Choose 2FA Method:</label>
                                         <select class="form-control" id="twoFactorMethod">
-                                            <option value="none" data-key="none">Aucune</option>
-                                            <option value="email" data-key="email">Email</option>
-                                            <option value="qr" data-key="qr_code">QR Code</option>
+                                            <option value="none">Aucune</option>
+                                            <option value="email">Email</option>
+                                            <option value="qr">QR Code</option>
                                         </select>
-                                        <label for="language" data-key="language">Language:</label>
+                                        <label for="language">Language:</label>
                                         <select class="form-control" id="language">
-                                            <option value="fr" data-key="french">Français</option>
-                                            <option value="blr" data-key="belarusian">Biélorusse</option>
-                                            <option value="en" data-key="english">Anglais</option>
-                                            <option value="de" data-key="german">Allemand</option>
+                                            <option value="fr">Français</option>
+                                            <option value="blr">Bielorusse</option>
+                                            <option value="en">English</option>
+                                            <option value="de">Deutsch</option>
                                         </select>
                                     </div>
-                                    <button type="submit" class="btn btn-outline-secondary mt-3" data-key="save_changes">Enregistrer les
+                                    <button type="submit" class="btn btn-outline-secondary mt-3">Enregistrer les
                                         modifications</button>
                                 </form>
                             </div>
@@ -377,7 +359,7 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title" id="createTournamentLabel" data-key="create_tournament">Créer un tournoi</h4>
+                                <h4 class="modal-title" id="createTournamentLabel">Créer un Nouveau Tournoi</h4>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -385,16 +367,14 @@
                                 <div id="tournamentCreationErrorMessage" class="alert alert-danger" style="display: none;"></div>
                                 <form id="createTournamentForm">
                                     <div class="form-group">
-                                        <label for="tournamentNameBis" data-key="tournament_name">Nom du tournoi</label>
+                                        <label for="tournamentNameBis">Nom du tournoi:</label>
                                         <input type="text" class="form-control" id="tournamentNameBis"
                                             placeholder="Entrez le nom du tournoi" required>
                                     </div>
-                                    <p class="tournoiExtra" data-key="gamers_number">Nombre de joueurs: 4</p>
-                                    <p class="tournoiExtra" data-key="tournament_starts_when_full">Le tournoi commence dès que l'effectif
-                                        est au complet</p>
+                                    <p class="tournoiExtra">Nombre de joueurs: 4</p>
+                                    <p class="tournoiExtra">Demarre une fois complet</p>
                                     <div class="form-group">
-                                        <button type="submit" class="btn btn-outline-secondary"
-                                            data-key="create">Créer</button>
+                                        <button type="submit" class="btn btn-outline-secondary">Créer</button>
                                     </div>
                                 </form>
                             </div>
@@ -408,8 +388,7 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="friendsModalLabel" data-key="friend_list">Liste des amis
-                                </h5>
+                                <h5 class="modal-title" id="friendsModalLabel">Liste des Amis</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
