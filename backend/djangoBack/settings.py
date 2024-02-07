@@ -59,6 +59,7 @@ MIDDLEWARE = [
 
 # URL configuration
 ROOT_URLCONF = 'djangoBack.urls'
+#APPEND_SLASH = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

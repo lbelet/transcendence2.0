@@ -358,6 +358,7 @@ function createMatchElement(matchId, player1, player2) {
     player1Div.textContent = player1 ? player1.username : "En attente";
 
     const vsDiv = document.createElement('div');
+    vsDiv.className = 'vs';
     vsDiv.textContent = 'vs';
 
     const player2Div = document.createElement('div');
@@ -381,6 +382,7 @@ function createFinalElement(matchId, finalPlayers) {
     player1Div.textContent = finalPlayers[0] && finalPlayers[0].username ? finalPlayers[0].username : "En attente";
 
     const vsDiv = document.createElement('div');
+    vsDiv.className = 'vs';
     vsDiv.textContent = 'vs';
 
     const player2Div = document.createElement('div');

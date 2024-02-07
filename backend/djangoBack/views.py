@@ -38,7 +38,6 @@ import logging
 
 # At the top of your file
 logger = logging.getLogger(__name__)
-
 # from django.db.models import F
 
 @api_view(['GET'])
@@ -824,6 +823,12 @@ def update_language(request):
     else:
         return JsonResponse({'error': 'No language provided'}, status=400)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_tournament_exists(request, tournament_name):
+    logger.info(tournament_name)
+    exists = Tournament.objects.filter(name=tournament_name).exists()
+    return JsonResponse({'exists': exists})
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -850,37 +855,12 @@ def create_tournament(request):
                 number_of_players=number_of_players,
                 start_date=start_date
             )
-
-            # Créer les matches initiaux pour le tournoi selon le nombre de joueurs
-            if number_of_players == 4:
-                # Créer les demi-finales et la finale
-                for i in range(1, 3):
-                    Match.objects.create(
-                        tournament=tournament, round="Semifinal")
-                Match.objects.create(tournament=tournament, round="Final")
-            # elif number_of_players == 8:
-            #     # Créer les quarts de finale, les demi-finales et la finale
-            #     for i in range(1, 5):
-            #         Match.objects.create(
-            #             tournament=tournament, round="Quart de finale")
-            #     for i in range(1, 3):
-            #         Match.objects.create(
-            #             tournament=tournament, round="Demi-finale")
-            #     Match.objects.create(tournament=tournament, round="Finale")
-            # elif number_of_players == 16:
-            #     # Créer les huitièmes de finale, les quarts de finale, les demi-finales et la finale
-            #     for i in range(1, 9):
-            #         Match.objects.create(
-            #             tournament=tournament, round="Huitième de finale")
-            #     for i in range(1, 5):
-            #         Match.objects.create(
-            #             tournament=tournament, round="Quart de finale")
-            #     for i in range(1, 3):
-            #         Match.objects.create(
-            #             tournament=tournament, round="Demi-finale")
-            #     Match.objects.create(tournament=tournament, round="Finale")
-
             return JsonResponse({'success': 'Tournament created successfully', 'tournament_id': tournament.id}, status=201)
+    except IntegrityError as e:
+            if 'tournament_name_key' in str(e):
+                return JsonResponse({'error': 'A tournament with this name already exists'}, status=400)
+            else:
+                return JsonResponse({'error': 'An error occurred while creating the tournament'}, status=500)
 
     except IntegrityError as e:
             if 'tournament_name_key' in str(e):
@@ -892,6 +872,42 @@ def create_tournament(request):
         # Log the error for further investigation
         logger.error('Error creating tournament', exc_info=True)
         return JsonResponse({'error': str(e)}, status=500)
+
+    #         # Créer les matches initiaux pour le tournoi selon le nombre de joueurs
+    #         if number_of_players == 4:
+    #             # Créer les demi-finales et la finale
+    #             for i in range(1, 3):
+    #                 Match.objects.create(
+    #                     tournament=tournament, round="Semifinal")
+    #             Match.objects.create(tournament=tournament, round="Final")
+    #         # elif number_of_players == 8:
+    #         #     # Créer les quarts de finale, les demi-finales et la finale
+    #         #     for i in range(1, 5):
+    #         #         Match.objects.create(
+    #         #             tournament=tournament, round="Quart de finale")
+    #         #     for i in range(1, 3):
+    #         #         Match.objects.create(
+    #         #             tournament=tournament, round="Demi-finale")
+    #         #     Match.objects.create(tournament=tournament, round="Finale")
+    #         # elif number_of_players == 16:
+    #         #     # Créer les huitièmes de finale, les quarts de finale, les demi-finales et la finale
+    #         #     for i in range(1, 9):
+    #         #         Match.objects.create(
+    #         #             tournament=tournament, round="Huitième de finale")
+    #         #     for i in range(1, 5):
+    #         #         Match.objects.create(
+    #         #             tournament=tournament, round="Quart de finale")
+    #         #     for i in range(1, 3):
+    #         #         Match.objects.create(
+    #         #             tournament=tournament, round="Demi-finale")
+    #         #     Match.objects.create(tournament=tournament, round="Finale")
+
+    #         return JsonResponse({'success': 'Tournament created successfully', 'tournament_id': tournament.id}, status=201)
+
+    # except Exception as e:
+    #     logger.error('Error creating tournament', exc_info=True)
+    #     return JsonResponse({'error': str(e)}, status=500)
+    #     # return JsonResponse({'error': str(e)}, status=500)
 
 
 @api_view(['POST'])

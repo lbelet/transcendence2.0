@@ -43,6 +43,7 @@ urlpatterns = [
     # path('update_email/', views.update_email, name='update-email'),
 
     path('create_tournament/', views.create_tournament, name='create-tournament'),
+    path('check_tournament_exists/<str:tournament_name>/', views.check_tournament_exists, name='check_tournament_exists'),
     path('register_to_tournament/<int:tournament_id>/', views.register_to_tournament, name='register-to-tournament'),
     path('unregister_from_tournament/<int:tournament_id>/', views.unregister_from_tournament, name='unregister-from-tournament'),
     path('available_tournaments/', views.available_tournaments, name='available-tournaments'),

@@ -137,6 +137,9 @@ function loadFriendsList() {
 
             const friendStatus = document.createElement('p');
             friendStatus.textContent = friend.status;
+            if (friend.status === "en ligne") {
+                friendStatus.style.color = "green";
+            }
             friendElement.appendChild(friendStatus);
 
             // Ajouter le conteneur de l'ami au conteneur principal

@@ -84,7 +84,7 @@ function searchUser() {
                 }
 
                 var addFriendButton = document.createElement('button');
-                addFriendButton.className = 'btn btn-outline-secondary';
+                addFriendButton.className = 'btn btn-outline-secondary mx-2';
                 
                 // Ajuster le texte et l'état du bouton en fonction du friendStatus
                 switch(user.friendStatus) {
@@ -171,13 +171,13 @@ function showPendingFriendRequests() {
                 requestElement.id = `friend-request-${request.id}`;
                 requestElement.textContent = `Demande de ${request.sender}`;
                 const acceptButton = document.createElement('button');
-                acceptButton.className = 'btn btn-outline-secondary';
+                acceptButton.className = 'btn btn-outline-secondary mx-2';
                 acceptButton.textContent = 'Accepter';
                 acceptButton.onclick = function () {
                     acceptFriendRequest(request.id);
                 };
                 const declineButton = document.createElement('button');
-                declineButton.className = 'btn btn-outline-secondary';
+                declineButton.className = 'btn btn-outline-secondary mx-2';
                 declineButton.textContent = 'Refuser';
                 declineButton.onclick = function () {
                     declineFriendRequest(request.id);

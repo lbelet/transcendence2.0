@@ -15,7 +15,7 @@
 <body>
     <nav class="navbar navbar-expand-lg border-bottom border-body" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Mon Site SPA</a>
+            <a class="navbar-brand" href="#">Transcendence</a>
             <!-- Bouton pour les appareils mobiles -->
             <div class="hidden" id="hiddenNav">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
@@ -25,7 +25,7 @@
                 <div class="collapse navbar-collapse" id="navbarContent">
                     <form class="d-flex" role="search" onsubmit="searchUser(); openSearchResultsModal(); return false;">
                         <div class="input-group">
-                            <input class="form-control ps-5" type="search" id="search-username"
+                            <input class="form-control" type="search" id="search-username"
                                 placeholder="Rechercher Utilisateur" aria-label="Search">
                             <button class="btn btn-outline-success" type="submit">
                                 <i class="bi bi-search"></i>
@@ -89,21 +89,21 @@
 
                 <div id="login-section" class="text-center hidden">
                     <div id="UserLoginErrorMessage" class="alert alert-danger" style="display: none;"></div>
-                    <h2 style="color: #ffffff;">Login</h2>
+                    <h2>Login</h2>
                     <form id="loginForm">
                         <div class="form-group">
-                            <label for="login-username" class="form-label">Nom d'utilisateur</label>
+                            <label for="login-username" class="form-label" style="color: #6c757d;">Nom d'utilisateur</label>
                             <input type="text" class="form-control" id="login-username" required>
-                            <label for="login-password" class="form-label">Mot de passe</label>
+                            <label for="login-password" class="form-label" style="color: #6c757d;">Mot de passe</label>
                             <input type="password" class="form-control" id="login-password" required>
-                            <button class="btn btn-outline-secondary">Se connecter</button>
+                            <button class="btn btn-outline-secondary" style="color: #6c757d;">Se connecter</button>
                         </div>
                     </form>
                 </div>
 
                 <div id="register-section" class="text-center hidden">
                     <div id="UserCreationErrorMessage" class="alert alert-danger" style="display: none;"></div>
-                    <h2 style="color: #ffffff;">Créer un compte</h2>
+                    <h2>Créer un compte</h2>
                     <form id="registerForm" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="username">Nom d'utilisateur</label>
@@ -118,7 +118,7 @@
                             <input type="password" class="form-control" id="password" required>
                             <label for="retypePassword">Retaper le mot de passe</label>
                             <input type="password" class="form-control" id="retypePassword" required>
-                            <label for="avatar1">Avatar</label>
+                            <label for="avatar1" class="custom-file-upload">Avatar</label>
                             <input type="file" class="form-control" id="avatar1" accept="image/jpeg, image/png">
                             <small class="form-text text-muted">Laissez ce champ vide pour utiliser l'avatar par
                                 défaut.</small>
@@ -153,12 +153,12 @@
 
                 <div id="game-section" class="text-center hidden">
                     <h2>Bienvenue sur la page de jeu</h2>
-                    <p>Bienvenue, <span id="user-name-game"></span>!</p>
+                    <p style="color: green;">Bienvenue, <span id="user-name-game"></span>!</p>
                     <img id="user-avatar" src="" alt="Avatar" style="width: 50px; height:auto;">
                     <button class="btn btn-outline-secondary" onclick="loadUserGamesHistory()">historique des parties</button>
                     <!-- <button class="btn btn-outline-secondary" onclick="playPong()">practice playing Pong</button> -->
                     <button class="btn btn-outline-secondary" onclick="joinGameQueue()">Rejoindre la partie</button>
-                    <button class="btn btn-outline-secondary" onclick="goTournament()">tournois</button>
+                    <button class="btn btn-outline-secondary" onclick="goTournament()">Tournois</button>
                     <div id="pending-requests-container"></div>
                 </div>
 
@@ -178,7 +178,7 @@
                         Votre navigateur ne supporte pas l'élément audio.
                     </audio>
                     <div id="tournamentBracketWaiting">
-                        <h2 id="tournamentNameWaitingPage" class="text-center tournamentWaitingPage-title">Nom du Tournoi</h2>
+                        <h2 id="tournamentNameWaitingPage" class="text-center tournament-title">Nom du Tournoi</h2>
     
                         <div class="row my-4 tournament-row">
                             <div class="col d-flex flex-column semi-finals">
@@ -220,22 +220,22 @@
                     <button class="btn btn-outline-secondary" onclick="loadAvailableTournaments()">charger les tournois
                         dispos</button>
                     <div id="available-tournaments"></div> -->
-                    <div class="container">
-                        <h1>Tournois disponibles</h1>
+                    <div class="container mt-10">
+                        <h2>Tournois disponibles</h2>
 
                         <div class="my-3">
-                            <button class="btn btn-primary" onclick="loadAvailableTournaments()">Charger les tournois
+                            <button class="btn btn-outline-secondary" onclick="loadAvailableTournaments()">Charger les tournois
                                 disponibles</button>
                         </div>
 
-                        <div class="my-3">
-                            <button class="btn btn-info" onclick="sortTournaments('name', this)">
+                        <div class="tournament-filters my-3">
+                            <button class="btn btn-outline-secondary" onclick="sortTournaments('name', this)">
                                 Trier par nom <span class="sort-indicator">&#9650;</span>
                             </button>
-                            <button class="btn btn-info" onclick="sortTournaments('date', this)">
+                            <button class="btn btn-outline-secondary" onclick="sortTournaments('date', this)">
                                 Trier par date <span class="sort-indicator">&#9650;</span>
                             </button>
-                            <button class="btn btn-info" onclick="sortTournaments('participants', this)">
+                            <button class="btn btn-outline-secondary" onclick="sortTournaments('participants', this)">
                                 Trier par nombre de participants <span class="sort-indicator">&#9650;</span>
                             </button>
 
@@ -248,7 +248,10 @@
                 <!-- <div id="tournamentBracket-section" class="hidden"></div> -->
 
                 <div id="tournamentBracket-section" class="container hidden">
-                    <h2 id="tournamentName" class="text-center tournament-title">Nom du Tournoi</h2>
+                    <div>
+                        <h2 class="text-center mb-0">Tournoi</h2>
+                        <h2 id="tournamentName" class="text-center tournament-title">Nom du Tournoi</h2>
+                    </div>  
 
                     <div class="row my-4 tournament-row">
                         <div class="col d-flex flex-column semi-finals">
@@ -274,7 +277,7 @@
                 <div class="modal fade text-center" id="searchResultsModal" tabindex="-1"
                     aria-labelledby="searchResultsLabel" aria-hidden="true" data-bs-theme="dark">
                     <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
+                        <div class="modal-content search-modal">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="searchResultsLabel">Résultats de la Recherche</h5>
                                 <button type="button" class="btn-close" onclick="closeSearchResultsModal()"
@@ -291,7 +294,7 @@
                 </div>
 
                 <!-- Modal de Modification de Profil -->
-                <div class="modal fade text-center" id="editUserModal" tabindex="-1" aria-labelledby="editUserLabel"
+                <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserLabel"
                     aria-hidden="true" data-bs-theme="dark">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
@@ -342,7 +345,7 @@
                                             <option value="de">Deutsch</option>
                                         </select>
                                     </div>
-                                    <button type="submit" class="btn btn-outline-secondary">Enregistrer les
+                                    <button type="submit" class="btn btn-outline-secondary mt-3">Enregistrer les
                                         modifications</button>
                                 </form>
                             </div>
@@ -356,7 +359,7 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="createTournamentLabel">Créer un Nouveau Tournoi</h5>
+                                <h4 class="modal-title" id="createTournamentLabel">Créer un Nouveau Tournoi</h4>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -368,8 +371,8 @@
                                         <input type="text" class="form-control" id="tournamentNameBis"
                                             placeholder="Entrez le nom du tournoi" required>
                                     </div>
-                                    <h2>Nombre de joueurs: 4</h2>
-                                    <h2>Demarre une fois complet</h2>
+                                    <p class="tournoiExtra">Nombre de joueurs: 4</p>
+                                    <p class="tournoiExtra">Demarre une fois complet</p>
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-outline-secondary">Créer</button>
                                     </div>
