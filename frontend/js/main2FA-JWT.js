@@ -27,6 +27,8 @@ document.getElementById('EmailTwoFactorForm').addEventListener('submit', functio
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
             localStorage.setItem('language', data.language);
+            localStorage.setItem('avatarURL', data.avatar_url);
+            localStorage.setItem('userID', data.id);
 
             setupTokenRefresh();
 
@@ -130,6 +132,7 @@ document.getElementById('qrTwoFactorForm').addEventListener('submit', function (
             localStorage.setItem('avatarURL', data.avatar_url);
             localStorage.setItem('userID', data.id);
             // Après une connexion réussie
+            setupTokenRefresh();
             window.updateUserUI();
             navigateWithTokenCheck('game');
             openWebSocketConnection();

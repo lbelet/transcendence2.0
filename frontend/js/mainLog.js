@@ -116,7 +116,9 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     localStorage.setItem('avatarURL', data.avatar_url);
                     localStorage.setItem('userID', data.id);
 
+                    console.log('refresh token: ', localStorage.getItem('refresh_token'))
                     // Après une connexion réussie
+                    setupTokenRefresh();
                     window.updateUserUI();
                     navigateWithTokenCheck('game');
                     openWebSocketConnection();
