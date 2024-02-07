@@ -50,6 +50,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     players_connected = {}  # Dictionnaire pour suivre les joueurs connectés
     players_connected_tournament = {}  # Dictionnaire pour suivre les joueurs connectés d'un tournoi
     game_states = {}  # Dictionnaire pour stocker l'état de chaque partie
+    received_responses_per_tournament = {}  # Dictionnaire pour stocker les ensembles received_responses pour chaque tournoi
 
     async def connect(self):
         await self.accept()
@@ -154,6 +155,9 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             )
             await asyncio.sleep(1)  # 1 seconde de pause, ajustez selon le besoin
+
+            await self.send_ping_to_group()
+
             
             if self.four_players_joined(self.game_id):
                 print("le tournoi est complet")
@@ -200,7 +204,39 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'paddles_state': self.get_paddles_state()
                 }
             )
-        
+
+        if data.get('type') == 'pong':
+            self.received_responses_per_tournament[self.game_id] = set()
+            print("Pong reçu du client")
+            # Ajouter la logique de vérification des réponses ici
+            player_channel_name = self.channel_name  # Ajoutez le bon nom de canal ici
+
+            self.expected_responses = set(self.players_connected_tournament[self.game_id])
+            self.received_responses_per_tournament[self.game_id].add(self.channel_name)
+
+            # Attendre les réponses pendant un certain temps
+            # await asyncio.sleep(5)
+            self.received_responses_per_tournament[self.game_id].add(self.channel_name)
+
+                    # Vérifier si toutes les réponses attendues pour ce tournoi ont été reçues
+            if len(self.received_responses_per_tournament[self.game_id]) == len(self.expected_responses):
+                print("Tous les joueurs ont répondu pour ce tournoi")
+                # await asyncio.sleep()
+                await self.send_ping_to_group()
+            else:
+                missing_players = self.expected_responses - self.received_responses_per_tournament[self.game_id]
+                print(f"Joueurs manquants pour ce tournoi : {missing_players}")
+                # self.game_active = False
+                # print('is active ? ', self.game_active)
+                # await self.channel_layer.group_send(
+                #     f'tournament_{self.game_id}',
+                #     {
+                #         'type': 'send_game_over_tournament',
+                #         'winner': 'none',
+                #     }
+                # )
+                
+                    
         if data.get('type') == 'paddle_move_tournament':
             move_amount = 2  # Ajustez selon les besoins
             game_state = self.game_states[self.game_id]
@@ -220,6 +256,33 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'paddles_state': self.get_paddles_state()
                 }
             )
+
+
+    async def send_ping_to_group(self):
+        # Envoyer un message ping au groupe
+        print('Envoi de ping...')
+        await self.channel_layer.group_send(
+            f'pong_tournament_{self.game_id}',
+            {
+                "type": "send_ping",
+            }
+        )
+
+
+
+        # Initialiser le suivi des réponses
+        # self.expected_responses = set(self.players_connected_tournament[self.game_id])
+        # self.received_responses = set()
+
+        # # Attendre les réponses pendant un certain temps
+        # await asyncio.sleep(5)  # Modifier selon le besoin
+
+        # # Vérifier les réponses
+        # if self.received_responses == self.expected_responses:
+        #     print("Tous les joueurs ont répondu")
+        # else:
+        #     missing_players = self.expected_responses - self.received_responses
+        #     print(f"Joueurs manquants: {missing_players}")
 
     def mark_player_joined(self, game_id, channel_name):
         self.initialize_game_state(game_id)
@@ -288,6 +351,11 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'paddles_update',  
             'paddles_state': event['paddles_state']
+        }))
+
+    async def send_ping(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'ping',
         }))
 
     async def send_paddles_update_tournament(self, event):

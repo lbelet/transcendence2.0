@@ -256,7 +256,7 @@ function displayTournamentDetails(tournamentData) {
     const isRegistered = tournamentData.participants.some(participant => participant.username === username);
 
     if (isRegistered) {
-        registerButton.hidden()
+        registerButton.hidden = true;
     } else {
         registerButton.textContent = "S'inscrire";
         registerButton.onclick = async function () {

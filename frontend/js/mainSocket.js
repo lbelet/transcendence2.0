@@ -272,6 +272,20 @@ function openGameWebSocketConnection() {
                 console.log("data gamesocket: ", data);
                 // console.log("data type: ", data);
 
+                if (data.type === 'ping') {
+                    console.log("Ping reçu du serveur");
+            
+                    // Préparer la réponse pong
+                    const response = JSON.stringify({
+                        type: 'pong',
+                    });
+            
+                    // Envoyer la réponse pong au serveur
+                    gameWebsocket.send(response);
+                    console.log("Pong envoyé au serveur");
+                }
+
+
                 if (data.game_socket_id) {
                     // console.log('Game Socket ID reçu:', data.game_socket_id);
                     resolve(data.game_socket_id);  // Résoudre avec game_socket_id

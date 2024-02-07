@@ -855,6 +855,12 @@ def create_tournament(request):
                 number_of_players=number_of_players,
                 start_date=start_date
             )
+            if number_of_players == 4:
+                # Créer les demi-finales et la finale
+                for i in range(1, 3):
+                    Match.objects.create(
+                        tournament=tournament, round="Semifinal")
+                Match.objects.create(tournament=tournament, round="Final")
             return JsonResponse({'success': 'Tournament created successfully', 'tournament_id': tournament.id}, status=201)
     except IntegrityError as e:
             if 'tournament_name_key' in str(e):
@@ -862,11 +868,11 @@ def create_tournament(request):
             else:
                 return JsonResponse({'error': 'An error occurred while creating the tournament'}, status=500)
 
-    except IntegrityError as e:
-            if 'tournament_name_key' in str(e):
-                return JsonResponse({'error': 'A tournament with this name already exists'}, status=400)
-            else:
-                return JsonResponse({'error': 'An error occurred while creating the tournament'}, status=500)
+    # except IntegrityError as e:
+    #         if 'tournament_name_key' in str(e):
+    #             return JsonResponse({'error': 'A tournament with this name already exists'}, status=400)
+    #         else:
+    #             return JsonResponse({'error': 'An error occurred while creating the tournament'}, status=500)
 
     except Exception as e:
         # Log the error for further investigation

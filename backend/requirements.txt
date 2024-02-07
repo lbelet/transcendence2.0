@@ -9,3 +9,4 @@ Pillow
 uvicorn[standard]
 channels_redis
 python-dotenv
+django-background-tasks
