@@ -179,7 +179,10 @@ async function joinGameQueue() {
         if (!response.ok) {
             throw new Error(data.error || 'Erreur pour rejoindre la file');
         }
+        if (data.error)
+            displayErrorMessageJoinGame(data.error)
         if (data.game_id) {
+            localStorage.setItem('in1v1', "yes")
             localStorage.setItem('currentGameId', data.game_id);
             sendGameIdToWebSocket(data.game_id);
             localStorage.setItem('playerRole', data.player_role);  // Stocker le rôle du joueur

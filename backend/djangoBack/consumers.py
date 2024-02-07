@@ -156,7 +156,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
             await asyncio.sleep(1)  # 1 seconde de pause, ajustez selon le besoin
 
-            await self.send_ping_to_group()
+            # await self.send_ping_to_group()
 
             
             if self.four_players_joined(self.game_id):
@@ -205,36 +205,36 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-        if data.get('type') == 'pong':
-            self.received_responses_per_tournament[self.game_id] = set()
-            print("Pong reçu du client")
-            # Ajouter la logique de vérification des réponses ici
-            player_channel_name = self.channel_name  # Ajoutez le bon nom de canal ici
+        # if data.get('type') == 'pong':
+        #     self.received_responses_per_tournament[self.game_id] = set()
+        #     print("Pong reçu du client")
+        #     # Ajouter la logique de vérification des réponses ici
+        #     player_channel_name = self.channel_name  # Ajoutez le bon nom de canal ici
 
-            self.expected_responses = set(self.players_connected_tournament[self.game_id])
-            self.received_responses_per_tournament[self.game_id].add(self.channel_name)
+        #     self.expected_responses = set(self.players_connected_tournament[self.game_id])
+        #     self.received_responses_per_tournament[self.game_id].add(self.channel_name)
 
-            # Attendre les réponses pendant un certain temps
-            # await asyncio.sleep(5)
-            self.received_responses_per_tournament[self.game_id].add(self.channel_name)
+        #     # Attendre les réponses pendant un certain temps
+        #     # await asyncio.sleep(5)
+        #     self.received_responses_per_tournament[self.game_id].add(self.channel_name)
 
-                    # Vérifier si toutes les réponses attendues pour ce tournoi ont été reçues
-            if len(self.received_responses_per_tournament[self.game_id]) == len(self.expected_responses):
-                print("Tous les joueurs ont répondu pour ce tournoi")
-                # await asyncio.sleep()
-                await self.send_ping_to_group()
-            else:
-                missing_players = self.expected_responses - self.received_responses_per_tournament[self.game_id]
-                print(f"Joueurs manquants pour ce tournoi : {missing_players}")
-                # self.game_active = False
-                # print('is active ? ', self.game_active)
-                # await self.channel_layer.group_send(
-                #     f'tournament_{self.game_id}',
-                #     {
-                #         'type': 'send_game_over_tournament',
-                #         'winner': 'none',
-                #     }
-                # )
+        #             # Vérifier si toutes les réponses attendues pour ce tournoi ont été reçues
+        #     if len(self.received_responses_per_tournament[self.game_id]) == len(self.expected_responses):
+        #         print("Tous les joueurs ont répondu pour ce tournoi")
+        #         # await asyncio.sleep()
+        #         await self.send_ping_to_group()
+        #     else:
+        #         missing_players = self.expected_responses - self.received_responses_per_tournament[self.game_id]
+        #         print(f"Joueurs manquants pour ce tournoi : {missing_players}")
+        #         # self.game_active = False
+        #         # print('is active ? ', self.game_active)
+        #         # await self.channel_layer.group_send(
+        #         #     f'tournament_{self.game_id}',
+        #         #     {
+        #         #         'type': 'send_game_over_tournament',
+        #         #         'winner': 'none',
+        #         #     }
+        #         # )
                 
                     
         if data.get('type') == 'paddle_move_tournament':
@@ -258,15 +258,15 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
 
 
-    async def send_ping_to_group(self):
-        # Envoyer un message ping au groupe
-        print('Envoi de ping...')
-        await self.channel_layer.group_send(
-            f'pong_tournament_{self.game_id}',
-            {
-                "type": "send_ping",
-            }
-        )
+    # async def send_ping_to_group(self):
+    #     # Envoyer un message ping au groupe
+    #     print('Envoi de ping...')
+    #     await self.channel_layer.group_send(
+    #         f'pong_tournament_{self.game_id}',
+    #         {
+    #             "type": "send_ping",
+    #         }
+    #     )
 
 
 

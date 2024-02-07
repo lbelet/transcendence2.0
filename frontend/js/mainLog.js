@@ -185,6 +185,7 @@ function logout() {
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             localStorage.removeItem('username');
+            localStorage.setItem('in1v1', "no");
 
             stopTokenRefreshInterval();
             // localStorage.removeItem('language');

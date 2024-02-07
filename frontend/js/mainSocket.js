@@ -272,18 +272,18 @@ function openGameWebSocketConnection() {
                 console.log("data gamesocket: ", data);
                 // console.log("data type: ", data);
 
-                if (data.type === 'ping') {
-                    console.log("Ping reçu du serveur");
+                // if (data.type === 'ping') {
+                //     console.log("Ping reçu du serveur");
             
-                    // Préparer la réponse pong
-                    const response = JSON.stringify({
-                        type: 'pong',
-                    });
+                //     // Préparer la réponse pong
+                //     const response = JSON.stringify({
+                //         type: 'pong',
+                //     });
             
-                    // Envoyer la réponse pong au serveur
-                    gameWebsocket.send(response);
-                    console.log("Pong envoyé au serveur");
-                }
+                //     // Envoyer la réponse pong au serveur
+                //     gameWebsocket.send(response);
+                //     console.log("Pong envoyé au serveur");
+                // }
 
 
                 if (data.game_socket_id) {
@@ -544,6 +544,7 @@ function openGameWebSocketConnection() {
 
                 else if (data.type === 'game_over') {
                     gameWebsocket.close();
+                    localStorage.setItem('in1v1', "no");
                     localStorage.removeItem('player_one')
                     localStorage.removeItem('player_two')
                     localStorage.removeItem('playerRole')

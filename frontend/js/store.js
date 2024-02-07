@@ -15,6 +15,7 @@ const initialState = {
     inGame: false,
     inTournament: false,
     inPongGame: false,
+    in1v1: "no",
 };
 
 // Initialiser le store si vide

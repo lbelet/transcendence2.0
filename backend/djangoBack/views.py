@@ -47,6 +47,13 @@ def health_check(request):
     return JsonResponse({"status": "healthy"})
 
 @api_view(['GET'])
+def get_csrf_token(request):
+    # Récupérer le jeton CSRF depuis la requête
+    csrf_token = request.META.get('CSRF_COOKIE', None)
+    # Retourner le jeton CSRF sous forme de réponse JSON
+    return JsonResponse({'csrfToken': csrf_token})   
+
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def user_games_history(request):
     users_data = []
@@ -99,15 +106,25 @@ def verify_token(request):
 def join_game_queue(request):
     # Récupérer l'utilisateur actuel
     current_user = request.user
+    game_waiting = PongGame.objects.filter(status='waiting').first()
+    if game_waiting:
+        if game_waiting.player_one == current_user:
+        # Envoyer une réponse d'erreur si l'utilisateur essaie de jouer contre lui-même
+            return JsonResponse({'error': 'Vous ne pouvez pas jouer contre vous-même'}, status=200)
+
+    # current_user = request.user
     current_user.status = User.IN_GAME
     current_user.save()
 
     game_socket_id = request.data.get('game_socket_id')
 
     # Chercher une partie en attente
-    game_waiting = PongGame.objects.filter(status='waiting').first()
+    # game_waiting = PongGame.objects.filter(status='waiting').first()
 
     if game_waiting:
+        # if game_waiting.player_one == current_user:
+        # # Envoyer une réponse d'erreur si l'utilisateur essaie de jouer contre lui-même
+        #     return JsonResponse({'error': 'Vous ne pouvez pas jouer contre vous-même'}, status=200)
         # S'il y a déjà une partie en attente, ajouter l'utilisateur actuel comme joueur deux
         game_waiting.player_two = current_user
         game_waiting.player_two_socket_id = game_socket_id

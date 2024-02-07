@@ -552,3 +552,13 @@ function displayErrorMessageEditUser(message) {
         console.error('Error message element not found');
     }
 }
+
+function displayErrorMessageJoinGame(message) {
+    const errorMessageElement = document.getElementById('JoinGameErrorMessage');
+    if (errorMessageElement) {
+        errorMessageElement.textContent = message; // Set the text content to the message
+        errorMessageElement.style.display = 'block'; // Make sure it's visible
+    } else {
+        console.error('Error message element not found');
+    }
+}

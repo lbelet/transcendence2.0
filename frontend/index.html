@@ -157,6 +157,7 @@
                 </div>
 
                 <div id="game-section" class="text-center hidden">
+                    <div id="JoinGameErrorMessage" class="alert alert-danger" style="display: none;"></div>
                     <h2>Bienvenue sur la page de jeu</h2>
                     <p style="color: green;"><span data-key="welcome_user">Bienvenue à toi</span>,<span id="user-name-game"></span>!</p>
                     <p data-key="defy_enjoy">Défie tes adversaires en 1v1 et participe à des tournois. Amuse-toi et que
@@ -165,7 +166,7 @@
                     <img id="user-avatar" src="" alt="Avatar" style="width: 50px; height:auto;">
                     <button class="btn btn-outline-secondary" onclick="loadUserGamesHistory()">historique des parties</button>
                     <!-- <button class="btn btn-outline-secondary" onclick="playPong()">practice playing Pong</button> -->
-                    <button class="btn btn-outline-secondary" onclick="joinGameQueue()" data-key="1v1_pong">Rejoindre la partie 1v1</button>
+                    <button id="rejoindreGame" class="btn btn-outline-secondary" onclick="joinGameQueue()" data-key="1v1_pong">Rejoindre la partie 1v1</button>
                     <button class="btn btn-outline-secondary" onclick="goTournament()" data-key="join_tournament">Rejoindre la page des
                         tournois</button>
                     <div id="pending-requests-container"></div>

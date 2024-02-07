@@ -1,5 +1,7 @@
 window.onload = async function () {
     console.log("onload....");
+    if (localStorage.getItem('in1v1') == null)
+        localStorage.setItem('in1v1', "no")
     localStorage.setItem('inGame', false)
     if (localStorage.getItem('access_token')) {
         try {
@@ -40,7 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const avatar_url = localStorage.getItem('avatarURL')
     console.log('avatarURL: ', avatar_url)
     if (avatar_url) {
-        document.getElementById('user-avatar').src = avatar_url;    }
+        document.getElementById('user-avatar').src = avatar_url;    
+    }
 });
 
 window.updateUserUI = function() {
@@ -67,3 +70,49 @@ window.addEventListener('beforeunload', function (e) {
         e.returnValue = '';
     }
 });
+
+// document.addEventListener('DOMContentLoaded', function() {
+//     const joinGameButton = document.getElementById("rejoindreGame");
+//     const yesOrNo = localStorage.getItem('in1v1');
+//     console.log('yesOrNo = ', yesOrNo)
+
+//     if (yesOrNo == "yes") {
+//         joinGameButton.disabled = true;
+//     } else {
+//         joinGameButton.disabled = false;
+//     }
+// });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const joinGameButton = document.getElementById("rejoindreGame");
+    updateButtonState(); // Appel initial pour configurer l'état du bouton
+
+    document.addEventListener('in1v1Changed', updateButtonState); // Écoute de l'événement personnalisé
+
+    function updateButtonState() {
+        const in1v1 = localStorage.getItem('in1v1');
+        joinGameButton.disabled = in1v1 === '2';
+    }
+});
+
+
+async function getCSRFToken() {
+    try {
+        const response = await fetch('/api/get_csrf_token/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        return data.csrfToken;
+    } catch (error) {
+        console.error('Error fetching CSRF token:', error);
+        return null;
+    }
+}
+
+document.dispatchEvent(new CustomEvent('in1v1Changed'));
