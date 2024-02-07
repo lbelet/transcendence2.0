@@ -190,13 +190,25 @@ class GameConsumer(AsyncWebsocketConsumer):
             game_state = self.game_states[self.game_id]
 
             if data['action'] == 'move_right_paddle1':
-                game_state['paddles']['paddle1']['x'] += move_amount
+                if game_state['paddles']['paddle1']['x'] == 10:
+                    game_state['paddles']['paddle1']['x'] = game_state['paddles']['paddle1']['x']
+                else:
+                    game_state['paddles']['paddle1']['x'] += move_amount
             elif data['action'] == 'move_left_paddle1':
-                game_state['paddles']['paddle1']['x'] -= move_amount
+                if game_state['paddles']['paddle1']['x'] == -10:
+                    game_state['paddles']['paddle1']['x'] = game_state['paddles']['paddle1']['x']
+                else:
+                    game_state['paddles']['paddle1']['x'] -= move_amount
             elif data['action'] == 'move_right_paddle2':
-                game_state['paddles']['paddle2']['x'] += move_amount
+                if game_state['paddles']['paddle2']['x'] == 10:
+                    game_state['paddles']['paddle2']['x'] = game_state['paddles']['paddle2']['x']
+                else:
+                    game_state['paddles']['paddle2']['x'] += move_amount            
             elif data['action'] == 'move_left_paddle2':
-                game_state['paddles']['paddle2']['x'] -= move_amount
+                if game_state['paddles']['paddle2']['x'] == -10:
+                    game_state['paddles']['paddle2']['x'] = game_state['paddles']['paddle2']['x']
+                else:
+                    game_state['paddles']['paddle2']['x'] -= move_amount
             await self.channel_layer.group_send(
                 f'pong_game_{self.game_id}',
                 {
@@ -242,13 +254,25 @@ class GameConsumer(AsyncWebsocketConsumer):
             game_state = self.game_states[self.game_id]
 
             if data['action'] == 'move_right_paddle12':
-                game_state['paddles']['paddle1']['x'] += move_amount
+                if game_state['paddles']['paddle1']['x'] == 10 or game_state['paddles']['paddle1']['x'] == -10:
+                    game_state['paddles']['paddle1']['x'] = game_state['paddles']['paddle1']['x']
+                else:
+                    game_state['paddles']['paddle1']['x'] += move_amount
             elif data['action'] == 'move_left_paddle12':
-                game_state['paddles']['paddle1']['x'] -= move_amount
+                if game_state['paddles']['paddle1']['x'] == 10 or game_state['paddles']['paddle1']['x'] == -10:
+                    game_state['paddles']['paddle1']['x'] = game_state['paddles']['paddle1']['x']
+                else:
+                    game_state['paddles']['paddle1']['x'] -= move_amount
             elif data['action'] == 'move_right_paddle22':
-                game_state['paddles']['paddle2']['x'] += move_amount
+                if game_state['paddles']['paddle2']['x'] == 10 or game_state['paddles']['paddle2']['x'] == -10:
+                    game_state['paddles']['paddle2']['x'] = game_state['paddles']['paddle2']['x']
+                else:
+                    game_state['paddles']['paddle1']['x'] += move_amount            
             elif data['action'] == 'move_left_paddle22':
-                game_state['paddles']['paddle2']['x'] -= move_amount
+                if game_state['paddles']['paddle2']['x'] == 10 or game_state['paddles']['paddle2']['x'] == -10:
+                    game_state['paddles']['paddle2']['x'] = game_state['paddles']['paddle2']['x']
+                else:
+                    game_state['paddles']['paddle1']['x'] -= move_amount
             await self.channel_layer.group_send(
                 f'tournament_{self.game_id}',
                 {
