@@ -434,16 +434,26 @@ def update_user(request):
     new_password = request.data.get('newPassword')
     avatar = request.FILES.get('avatar')
 
+    print("le vieux mot de passe est: ", old_password)
+
     user = request.user
     user.two_factor_method = two_factor_method
     user.language = language  # Update the user's language preference
     if email:
+        if email and User.objects.filter(email=email).exclude(id=user.id).exists():
+            return JsonResponse({'message': 'Cet email est déjà utilisé par un autre utilisateur.'}, status=200)
         user.email = email
     if username:
+        if username and User.objects.filter(username=username).exclude(id=user.id).exists():
+            return JsonResponse({'message': 'Ce username est déjà utilisé par un autre utilisateur.'}, status=200)
         user.username = username
     if firstname:
         user.first_name = firstname
 
+    if new_password and not old_password:
+        return JsonResponse({'message': 'Veuillez entrer votre ancien mot de passe svp'}, status=200)
+    if old_password and not new_password:
+        return JsonResponse({'message': 'Vous n avez entre que votre mot de passe actuel...'}, status=200)
     if old_password and new_password:
         if not user.check_password(old_password):
             return JsonResponse({'message': 'Erreur dans le formulaire. Veuillez réessayer.'}, status=200)

@@ -150,16 +150,26 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
         },
         body: formData // Utilisez l'objet FormData comme corps de la requête
     })
-    .then(response => response.json()) // Convertit la réponse en JSON
-    .then(data => {
-        // Ici, `data` contient l'objet JSON retourné par votre API
+    .then(response => {
         if (!response.ok) {
-            throw new Error(data.message || 'Network response was not ok'); // Utilisez le message de `data` si disponible
+            console.log("reponse edit user not ok")
+            return response.json().then(data => {
+                throw new Error(data.message || 'Erreur réseau');
+            });
         }
-        alert('Preferences updated.');
+        // Si la réponse est OK, traitez-la normalement
+        return response.json();
+    }) 
+    .then(data => {
+        console.log('data dans edit user: ', data)
+        if (data.message)
+            displayErrorMessageEditUser(data.message)
+        else
+            alert('Préférences mises à jour.');
+        // Vous pouvez traiter les données de réponse en cas de succès ici
     })
     .catch(error => {
-        displayErrorMessageEditUser("Erreur dans le formulaire")
+        displayErrorMessageEditUser(data.message)
     });
 });
 
