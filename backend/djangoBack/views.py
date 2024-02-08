@@ -99,8 +99,8 @@ def get_game_players_tournament(request, game_id):
     try:
         match = Match.objects.get(id=game_id)
         data = {
-            'player_one': match.player_one.user.username if match.player_one else "En attente",
-            'player_two': match.player_two.user.username if match.player_two else "En attente"
+            'player_one': match.player_one.nick_name if match.player_one else "En attente",
+            'player_two': match.player_two.nick_name if match.player_two else "En attente"
         }
         return JsonResponse(data)
     except PongGame.DoesNotExist:
@@ -1117,17 +1117,17 @@ def tournament_details(request, tournament_id):
             'participants': [
                 {
                     'id': player.id,
-                    'username': player.user.username,
+                    'username': player.nick_name,
                     # Ajoutez d'autres détails du joueur si nécessaire
                 }
                 for player in tournament.participants.all()
             ],
             'final_players': [
-                {'id': final_match.player_one.id, 'username': final_match.player_one.user.username} if final_match and final_match.player_one else {},
-                {'id': final_match.player_two.id, 'username': final_match.player_two.user.username} if final_match and final_match.player_two else {},
+                {'id': final_match.player_one.id, 'username': final_match.player_one.nick_name} if final_match and final_match.player_one else {},
+                {'id': final_match.player_two.id, 'username': final_match.player_two.nick_name} if final_match and final_match.player_two else {},
             ],
 
-            'final_winner': final_match.winner.user.username if final_match and final_match.winner else None,
+            'final_winner': final_match.winner.nick_name if final_match and final_match.winner else None,
             # ...
         }
 
