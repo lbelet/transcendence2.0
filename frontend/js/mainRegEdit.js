@@ -84,15 +84,19 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
                 }
 
                 if (document.getElementById('password').value === document.getElementById('retypePassword').value) {
+                    const csrfToken = getCSRFToken();
+
                     fetch('/api/register/', {
                         method: 'POST',
-                        body: formData
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                            'Content-Type': 'application/json'
+                        }
                     })
                     .then(response => {
                         if (!response.ok) {
-                            return response.json().then(err => {
-                                throw err; // Renvoie l'erreur pour être traitée dans le catch suivant
-                            });
+                            throw new Error('Network response was not ok');
                         }
                         return response.json();
                     })
@@ -141,21 +145,21 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
     if (avatarFile) {
         formData.append('avatar', avatarFile);
     }
+    const csrfToken = getCSRFToken();
 
     fetch('/api/user/update', {
         method: 'POST',
         headers: {
             // Ne définissez pas Content-Type pour multipart/form-data; le navigateur le fera automatiquement, incluant le boundary.
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken,
+            // 'Content-Type': 'application/json'
         },
         body: formData // Utilisez l'objet FormData comme corps de la requête
     })
     .then(response => {
         if (!response.ok) {
-            console.log("reponse edit user not ok")
-            return response.json().then(data => {
-                throw new Error(data.message || 'Erreur réseau');
-            });
+            throw new Error('Network response was not ok');
         }
         // Si la réponse est OK, traitez-la normalement
         return response.json();
@@ -198,11 +202,14 @@ async function loadTranslations(language) {
 }
 
 function updateUserLanguage(language) {
+    const csrfToken = getCSRFToken();
+
     fetch('/api/update_language/', {  // Assurez-vous que l'URL est correcte
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({
             language: language

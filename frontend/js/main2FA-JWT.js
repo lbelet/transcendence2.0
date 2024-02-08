@@ -3,12 +3,15 @@ document.getElementById('EmailTwoFactorForm').addEventListener('submit', functio
     event.preventDefault();
     const twoFactorCode = document.getElementById('twoFactorCode').value;
     const username = localStorage.getItem('username'); // Assurez-vous que le nom d'utilisateur est stocké lors de la tentative de connexion initiale
+    const csrfToken = getCSRFToken();
 
     fetch('/api/verify_two_factor_code/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
+
         },
         body: JSON.stringify({
             username: username,
@@ -111,12 +114,14 @@ document.getElementById('qrTwoFactorForm').addEventListener('submit', function (
     event.preventDefault();
     const qrTwoFactorCode = document.getElementById('qrTwoFactorCode').value;
     const username = localStorage.getItem('username'); // Assuming username is stored in localStorage
+    const csrfToken = getCSRFToken();
 
     fetch('/api/verify_two_factor_code/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({
             username: username,

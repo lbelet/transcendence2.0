@@ -2,11 +2,14 @@
 function addFriend(receiverUsername) {
     const errorMessageElement = document.getElementById('friendRequestErrorMessage');
 	errorMessageElement.style.display = 'none';
+    const csrfToken = getCSRFToken();
+
     fetch('/api/send_friend_request/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({
             receiver_username: receiverUsername
@@ -27,10 +30,14 @@ function addFriend(receiverUsername) {
 
 
 function acceptFriendRequest(requestId) {
+    const csrfToken = getCSRFToken();
+
     fetch(`/api/accept_friend_request/${requestId}/`, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({}) // Corps vide mais formaté en JSON
     })
@@ -53,10 +60,14 @@ function acceptFriendRequest(requestId) {
 }
 
 function declineFriendRequest(requestId) {
+    const csrfToken = getCSRFToken();
+
     fetch(`/api/decline_friend_request/${requestId}/`, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({}) // Corps vide mais formaté en JSON
     })

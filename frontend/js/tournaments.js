@@ -45,12 +45,14 @@ function createTournament(tournamentName) {
         specific_start_date: specificStartDate
     };
     console.log('data send: ', data)
+    const csrfToken = getCSRFToken();
 
     fetch('/api/create_tournament/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify(data)
     })
@@ -92,11 +94,13 @@ function createTournament(tournamentName) {
 }
 
 function registerUserToTournament(tournamentId) {
+    const csrfToken = getCSRFToken();
     fetch(`/api/register_to_tournament/${tournamentId}/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
         }
     })
         .then(response => response.json())
@@ -407,12 +411,14 @@ async function registerForTournament(tournamentData) {
         console.log('tournament data:', tournamentData);
         console.log(`Tentative d'inscription au tournoi avec l'ID : ${tournamentData}`);
         const tournamentId = tournamentData;
+        const csrfToken = getCSRFToken();
 
         const response = await fetch(`/api/register_to_tournament/${tournamentId}/`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
             },
             body: JSON.stringify({ game_socket_id: gameSocketId })
         });
@@ -448,12 +454,15 @@ async function registerForTournament(tournamentData) {
 function unregisterFromTournament(tournamentData) {
     console.log('tournament data:', tournamentData)
     console.log(`Tentative de desinscription au tournoi avec l'ID : ${tournamentData.id}`);
-    const tournamentId = tournamentData
+    const tournamentId = tournamentData;
+    const csrfToken = getCSRFToken();
+    
     fetch(`/api/unregister_from_tournament/${tournamentId}/`, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
         },
     })
         .then(response => response.json())

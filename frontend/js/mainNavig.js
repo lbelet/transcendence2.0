@@ -98,11 +98,14 @@ function navigateTo(sectionId) {
 }
 
 async function isValidToken() {
+    const csrfToken = getCSRFToken();
     try {
         const response = await fetch('/api/verify_token/', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
             }
         });
 
