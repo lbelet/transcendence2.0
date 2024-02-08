@@ -582,6 +582,10 @@ def verify_two_factor_code(request):
             totp = pyotp.TOTP(user.totp_secret)
             if totp.verify(two_factor_code):
                 tokens = get_tokens_for_user(user)
+                tokens['language'] = user.language
+                tokens['login_successful'] = True
+                tokens['avatar_url'] = 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png',
+                tokens['id'] = user.id
                 return JsonResponse(tokens, status=200)
             else:
                 return JsonResponse({'error': 'Invalid QR code'}, status=400)

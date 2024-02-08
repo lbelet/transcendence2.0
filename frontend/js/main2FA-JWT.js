@@ -40,10 +40,15 @@ document.getElementById('EmailTwoFactorForm').addEventListener('submit', functio
             // searchingBar.classList.remove('hidden');
 
             // console.log("Burger menu should be visible now");
-            window.updateUserUI();
-            navigateWithTokenCheck('game');
-            openWebSocketConnection();
             document.getElementById('hiddenNav').classList.remove('hidden');
+            loadTranslations(data.language)
+            .then( ret => {
+              navigateWithTokenCheck('game');
+              window.updateUserUI();
+
+              // showWelcome();
+              openWebSocketConnection();
+            });
         })
         .catch(error => {
             console.error('2FA Verification error:', error);

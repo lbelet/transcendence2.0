@@ -120,14 +120,14 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     // Après une connexion réussie
                     setupTokenRefresh();
                     document.getElementById('hiddenNav').classList.remove('hidden');
-                  loadTranslations(data.language)
-                    .then( ret => {
-                      navigateWithTokenCheck('game');
-                      window.updateUserUI();
+                    loadTranslations(data.language)
+                        .then( ret => {
+                        navigateWithTokenCheck('game');
+                        window.updateUserUI();
 
-                      // showWelcome();
-                      openWebSocketConnection();
-                    });
+                        // showWelcome();
+                        openWebSocketConnection();
+                        });
                 }
                 else{
                     displayErrorMessageLogin(data.message)
