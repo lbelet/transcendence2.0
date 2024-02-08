@@ -843,8 +843,9 @@ def send_friend_request_notification(receiver_user_id, request_id, sender_userna
 @csrf_protect
 @permission_classes([IsAuthenticated])
 def update_language(request):
+    data = request.data
+    print("data update: ", data)
     user = request.user
-    data = json.loads(request.body)
 
     language = data.get('language')
     if language:
@@ -853,6 +854,7 @@ def update_language(request):
         return JsonResponse({'success': 'Language updated successfully'}, status=200)
     else:
         return JsonResponse({'error': 'No language provided'}, status=400)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
