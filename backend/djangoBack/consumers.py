@@ -498,7 +498,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         game_state['ball']['ball'] = ball
         game_state['paddles']['paddle1'] = paddle1
         game_state['paddles']['paddle2'] = paddle2
-        if game_state['score']['player1'] == 3 or game_state['score']['player2'] == 3:
+        if game_state['score']['player1'] >= 3 or game_state['score']['player2'] >= 3:
             await self.end_game_tournament({'game_id': self.game_id})
 
     def get_paddles_state(self):
@@ -641,13 +641,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def end_game(self, event):
         print('end game ok')
 
-        score_player_one = self.game_states[self.game_id]['score']['player1']
-        score_player_two = self.game_states[self.game_id]['score']['player2']
-        print('scores:', score_player_one, score_player_two)
-        game_state = self.game_states[self.game_id]
-        winner_channel_name = game_state['player1_channel'] if score_player_one > score_player_two else game_state['player2_channel']
-
-        await self.update_game_in_database(self.game_id, score_player_one, score_player_two, winner_channel_name)
+        await self.update_game_in_database()
         if self.game_id in self.game_states:
             #self.game_states[self.game_id]['score']['player1'] = 0
             #self.game_states[self.game_id]['score']['player2'] = 0
@@ -679,7 +673,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         game_state = self.game_states[self.game_id]
         winner_channel_name = game_state['player1_channel'] if score_player_one > score_player_two else game_state['player2_channel']
 
-        await self.update_game_in_database_tournament(self.game_id, score_player_one, score_player_two, winner_channel_name)
+        await self.update_game_in_database_tournament()
         if self.game_id in self.game_states:
             await self.channel_layer.group_send(
                 f'tournament_{self.game_id}',
@@ -779,24 +773,30 @@ class GameConsumer(AsyncWebsocketConsumer):
             print(f"Erreur lors de la gestion de la finale : {e}")
 
 
-    async def update_game_in_database(self, game_id, score_player_one, score_player_two, winner_channel_name):
-        await sync_to_async(self._update_game_in_database)(game_id, score_player_one, score_player_two, winner_channel_name)
+    async def update_game_in_database(self):
+        await sync_to_async(self._update_game_in_database)()
 
 
-    def _update_game_in_database(self, game_id, score_player_one, score_player_two, winner_channel_name):
+    def _update_game_in_database(self):
         try:
-            game = PongGame.objects.get(id=game_id)
-            game.score_player_one = score_player_one
-
-            game.score_player_two = score_player_two
+            game = PongGame.objects.get(id=self.game_id)
+            game_state = self.game_states[self.game_id]
+            
+            game.score_player_one = game_state['score']['player1']
+            game.score_player_two = game_state['score']['player2']
+            print('scores:', game.score_player_one, game.score_player_two)
+            
+            user_p1 = User.objects.get(game_socket_id=game_state['player1_channel'])
+            user_p2 = User.objects.get(game_socket_id=game_state['player2_channel'])
+            user_p1.status = User.ONLINE
+            user_p2.status = User.ONLINE
             #Vérifier si le gagnant a déjà été déterminé pour ce jeu
-            if winner_channel_name and not game.winner:
-                winner_user = User.objects.get(game_socket_id=winner_channel_name)
+            if not game.winner:
+                winner_user = user_p1 if game.score_player_one > game.score_player_two else user_p2
                 game.winner = winner_user
-                # Mise à jour du nombre de victoires seulement si le gagnant vient d'être déterminé
-                if winner_user:
-                   winner_user.won_game += 1
-                   winner_user.save()
+                winner_user.won_game += 1
+            user_p1.save()
+            user_p2.save()
 
             game.status = 'complete'
             game.save()
@@ -808,39 +808,41 @@ class GameConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             print(f"Erreur lors de l'enregistrement : {e}")
 
-    async def update_game_in_database_tournament(self, game_id, score_player_one, score_player_two, winner_channel_name):
-        await sync_to_async(self._update_game_in_database_tournament)(game_id, score_player_one, score_player_two, winner_channel_name)
+    async def update_game_in_database_tournament(self):
+        await sync_to_async(self._update_game_in_database_tournament)()
 
 
-    def _update_game_in_database_tournament(self, game_id, score_player_one, score_player_two, winner_channel_name):
+    def _update_game_in_database_tournament(self):
         try:
-            match = Match.objects.get(id=game_id)
-            match.score_player_one = score_player_one
-            match.score_player_two = score_player_two
+            game = Match.objects.get(id=self.game_id)
+            game_state = self.game_states[self.game_id]
 
-            print("le winner est: ", winner_channel_name)
+            game.score_player_one = game_state['score']['player1']
+            game.score_player_two = game_state['score']['player2']
+            print('scores:', game.score_player_one, game.score_player_two)
 
+            player_1 = Player.objects.get(id=game_state['player1_channel'])
+            player_2 = Player.objects.get(id=game_state['player2_channel'])
+            player_1.user.status = User.ONLINE
+            player_2.user.status = User.ONLINE
             # Vérifier si le gagnant a déjà été déterminé pour ce jeu
-            if winner_channel_name and not match.winner:
-                print("dans le if")
-                winner_user = User.objects.get(id=winner_channel_name)
-                winner_player = Player.objects.get(user=winner_user)
-                match.winner = winner_player
+            if not game.winner:
+                winner_player = player_1 if game.score_player_one > game.score_player_two else player_2
+                winner_player.user.won_game += 1
+                game.winner = winner_player
 
-                # Mise à jour du nombre de victoires seulement si le gagnant vient d'être déterminé
-                winner_user.won_game += 1
-                winner_user.save()
-
-                if match.round == 'Semifinal':
-                    final_match = Match.objects.filter(tournament=match.tournament, round='Final').first()
+                if game.round == 'Semifinal':
+                    final_match = Match.objects.filter(tournament=game.tournament, round='Final').first()
                     if final_match:
                         if not final_match.player_one:
                             final_match.player_one = winner_player
                         elif not final_match.player_two:
                             final_match.player_two = winner_player
                         final_match.save()
+            player_1.user.save()
+            player_2.user.save()
 
-            match.save()
+            game.save()
         except User.DoesNotExist:
             print(f"User with game_socket_id {winner_channel_name} not found")
         except Player.DoesNotExist:
