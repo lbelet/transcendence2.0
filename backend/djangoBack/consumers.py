@@ -681,8 +681,6 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         await self.update_game_in_database_tournament(self.game_id, score_player_one, score_player_two, winner_channel_name)
         if self.game_id in self.game_states:
-            self.game_states[self.game_id]['score']['player1'] = 0
-            self.game_states[self.game_id]['score']['player2'] = 0
             await self.channel_layer.group_send(
                 f'tournament_{self.game_id}',
                 {
@@ -782,31 +780,27 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 
     async def update_game_in_database(self, game_id, score_player_one, score_player_two, winner_channel_name):
-        print("Score_player_one: ", score_player_one)
         await sync_to_async(self._update_game_in_database)(game_id, score_player_one, score_player_two, winner_channel_name)
 
 
     def _update_game_in_database(self, game_id, score_player_one, score_player_two, winner_channel_name):
-        print("_update Score_player_one: ", score_player_one)
         try:
             game = PongGame.objects.get(id=game_id)
             game.score_player_one = score_player_one
-            print("_updated game.score_player_one: ", game.score_player_one)
 
             game.score_player_two = score_player_two
-            # Vérifier si le gagnant a déjà été déterminé pour ce jeu
-            # if winner_channel_name and not game.winner:
-            #     winner_user = User.objects.get(game_socket_id=winner_channel_name)
-            #     game.winner = winner_user
-
-            #     # Mise à jour du nombre de victoires seulement si le gagnant vient d'être déterminé
-            #     winner_user.won_game += 1
-            #     winner_user.save()
+            #Vérifier si le gagnant a déjà été déterminé pour ce jeu
+            if winner_channel_name and not game.winner:
+                winner_user = User.objects.get(game_socket_id=winner_channel_name)
+                game.winner = winner_user
+                # Mise à jour du nombre de victoires seulement si le gagnant vient d'être déterminé
+                if winner_user:
+                   winner_user.won_game += 1
+                   winner_user.save()
 
             game.status = 'complete'
             game.save()
             game.refresh_from_db()
-            print("Refreshed score_player_one: ", game.score_player_one)
         except User.DoesNotExist:
             print(f"User with game_socket_id {winner_channel_name} not found")
         except PongGame.DoesNotExist:

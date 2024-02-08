@@ -74,6 +74,7 @@ def game_info(request, game_id):
     print('game_info', game)
     data = {
             "players": [game.player_one.username, game.player_two.username],
+            "winner": game.winner.username,
             "score": [game.score_player_one, game.score_player_two]
         }
     return JsonResponse(data, safe=False)
@@ -103,7 +104,6 @@ def get_game_players_tournament(request, game_id):
         return JsonResponse(data)
     except PongGame.DoesNotExist:
         return JsonResponse({'error': 'Jeu non trouvé'}, status=404)
-
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

@@ -232,6 +232,7 @@ async function loadGameResults(gameId) {
         .then(results => {
             console.log(results)
             document.getElementById('results-players').textContent = `${results.players[0]} : ${results.players[1]}`
+			document.getElementById('results-winner').textContent = results.winner
             document.getElementById('results-scores').textContent = `${results.score[0]} : ${results.score[1]}`
         })
         .catch(error => (
