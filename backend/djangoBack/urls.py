@@ -69,6 +69,7 @@ urlpatterns = [
 
     path('delete_tournament/<int:tournament_id>/', views.delete_tournament, name='delete-tournament'),
     path('user_games_history/', views.user_games_history, name='user-games-history'),
+    path('game_info/<int:game_id>/', views.game_info, name='game-info'),
 
     path('get_csrf_token/', views.get_csrf_token, name='get-csrf-token'),
 

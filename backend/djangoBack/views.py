@@ -69,6 +69,17 @@ def user_games_history(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def game_info(request, game_id):
+    game = PongGame.objects.get(id=game_id)
+    print('game_info', game)
+    data = {
+            "players": [game.player_one.username, game.player_two.username],
+            "score": [game.score_player_one, game.score_player_two]
+        }
+    return JsonResponse(data, safe=False)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_game_players(request, game_id):
     try:
         game = PongGame.objects.get(id=game_id)
@@ -79,7 +90,7 @@ def get_game_players(request, game_id):
         return JsonResponse(data)
     except PongGame.DoesNotExist:
         return JsonResponse({'error': 'Jeu non trouvé'}, status=404)
-    
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_game_players_tournament(request, game_id):
@@ -336,7 +347,7 @@ def check_user_exists(request):
 #                 totp_secret = pyotp.random_base32()
 #                 user.totp_secret = totp_secret
 #                 user.save()
-                
+
 #                 qr_code_img = generate_qr_code(user)
 #                 tokens.update({
 #                     'language': user.language,
@@ -1062,7 +1073,7 @@ def tournament_details(request, tournament_id):
         print("tournament: ", tournament)
         if not tournament:
             return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
-        
+
         final_match = Match.objects.filter(tournament=tournament, round='Final').first()
         print("final match: ", final_match)
         data = {
@@ -1091,7 +1102,7 @@ def tournament_details(request, tournament_id):
         return JsonResponse(data, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-    
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def set_player_ready(request, tournament_id):
@@ -1107,7 +1118,7 @@ def set_player_ready(request, tournament_id):
 
         # Vérifier si tous les joueurs du tournoi sont prêts
         all_ready = all(participant.is_ready for participant in TournamentParticipation.objects.filter(tournament=tournament))
-        
+
         if all_ready:
             print("all Ready")
             # Tous les joueurs sont prêts, remplir les matches et démarrer le tournoi
@@ -1162,7 +1173,7 @@ def send_delete_tournament(tournament_id):
 
 #     # Récupérer les participations des joueurs qui sont prêts
 #     ready_participations = TournamentParticipation.objects.filter(
-#         tournament=tournament, 
+#         tournament=tournament,
 #         is_ready=True
 #     ).order_by('id')
 
@@ -1189,7 +1200,7 @@ def send_delete_tournament(tournament_id):
 #             group_name = f"tournament_{match.id}"
 #             print("groupNAME in views: ", group_name)
 #             channel_layer = get_channel_layer()
-            
+
 #             # Ajouter les ID de socket des joueurs à ce groupe
 #             if match.player_one.user.game_socket_id:
 #                 async_to_sync(channel_layer.group_add)(group_name, match.player_one.user.game_socket_id)
@@ -1197,7 +1208,7 @@ def send_delete_tournament(tournament_id):
 #             if match.player_two.user.game_socket_id:
 #                 async_to_sync(channel_layer.group_add)(group_name, match.player_two.user.game_socket_id)
 #                 print("player2, match: ",match.player_two.user.get_username(), match.id)
-            
+
 #             if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
 #                     # Envoyer les rôles des joueurs
 #                 async_to_sync(channel_layer.group_send)(
@@ -1231,7 +1242,7 @@ def fill_tournament_matches(tournament):
 
     # Récupérer les participations des joueurs qui sont prêts
     ready_participations = TournamentParticipation.objects.filter(
-        tournament=tournament, 
+        tournament=tournament,
         is_ready=True
     ).order_by('id')
 
@@ -1262,7 +1273,7 @@ def fill_tournament_matches(tournament):
                 group_name = f"tournament_{match.id}"
                 print("groupNAME in views: ", group_name)
                 channel_layer = get_channel_layer()
-                
+
                 # Ajouter les ID de socket des joueurs à ce groupe
                 if match.player_one.user.game_socket_id:
                     async_to_sync(channel_layer.group_add)(group_name, match.player_one.user.game_socket_id)
@@ -1270,7 +1281,7 @@ def fill_tournament_matches(tournament):
                 if match.player_two.user.game_socket_id:
                     async_to_sync(channel_layer.group_add)(group_name, match.player_two.user.game_socket_id)
                     print("player2, match: ",match.player_two.user.get_username(), match.id)
-                
+
                 if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
                         # Envoyer les rôles des joueurs
                     async_to_sync(channel_layer.group_send)(
@@ -1292,7 +1303,7 @@ def fill_tournament_matches(tournament):
                         "game_id": match.id
                     }
                 )
-                    
+
             except StopIteration:
                 break
 
@@ -1304,7 +1315,7 @@ def fill_tournament_matches(tournament):
     # tournament.is_active = True
     # tournament.save()
 
-    
+
 # @api_view(['GET'])
 # @permission_classes([IsAuthenticated])
 # def startTournament(request, tournament_id):

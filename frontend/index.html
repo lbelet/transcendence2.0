@@ -35,7 +35,7 @@
                     <button class="btn" onclick="openFriendsModal()">
                         <i class="bi bi-people"></i>
                     </button>
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav mb-2 mb-lg-0">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">
@@ -86,8 +86,9 @@
                     <button class="btn btn-outline-secondary" onclick="navigateWithTokenCheck('game')"
                         data-key="return">Retour</button>
                 </div>
-
-                <div id="accordion-section" class="accordion hidden" style="width: 40%; margin: auto;"></div>
+                <div class="accordion-item-wrapper">
+                 <div id="accordion-section" class="accordion hidden"></div>
+                </div>
 
                 <div id="login-section" class="text-center hidden">
                     <div id="UserLoginErrorMessage" class="alert alert-danger" style="display: none;"></div>
@@ -216,6 +217,16 @@
                     <h2>Pong 3D</h2>
                     <!-- <button class="btn btn-outline-secondary" onclick="quitPong3D()">Quitter</button> -->
                     <canvas id="pong-canvas"></canvas>
+                </div>
+
+                <div id="gameResults-section" class="text-center hidden">
+                    <div  class="col d-flex flex-column gameResults">
+                        <h3>Resultat</h3>
+                        <div id="resultPage" class="result-container">
+                            <div>Players: <span id="results-players"></span></div>
+                            <div>Scores: <span id="results-scores"></span></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="pongTournament-section" class="text-center hidden">

@@ -123,6 +123,15 @@ renderer.setSize(width, height);
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
+var directionalLight = new THREE.DirectionalLight(0xffffff, 10);
+directionalLight.position.set(20, 20, 20); // position the light
+scene.add(directionalLight);
+
+// var lightHelper = new THREE.DirectionalLightHelper(directionalLight, 5); // The second argument is the size of the helper
+// scene.add(lightHelper);
+// lightHelper.update(); // Call this after changing the light's properties
+
+
 // // Composer pour le post-traitement
 // const composer = new EffectComposer(renderer);
 // composer.addPass(new RenderPass(scene, camera));
@@ -262,7 +271,7 @@ window.updateScores = function(player1Score, player2Score, player1Name, player2N
 
     // Mettre à jour la référence globale
     window.scoreText1 = newScoreText;
-    
+
     if(playerRole == 1)
         newScoreText.rotation.y = Math.PI;
         newScoreText.position.set(15, 15, 0);

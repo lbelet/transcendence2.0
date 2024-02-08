@@ -40,11 +40,26 @@ div {
   display: none;
 }
 
+#hiddenNav {
+  text-align: right;
+}
+.navbar-collapse > * {
+  margin-left: auto;
+  display: block;
+  padding-top: 10px;
+}
+
+.navbar-nav {
+  width: fit-content;
+  margin-left: auto;
+}
+
 .navbar-nav .dropdown-menu {
-  width: auto;
+  width: fit-content;
   right: 0;
   left: auto;
   min-width: 0;
+  text-align: right;
 }
 
 .navbar {
@@ -136,9 +151,9 @@ div {
 
 form input:not(#search-username) {
   background-color: transparent !important;
-  border: 1px solid #6c757d !important; 
-  color: #c7cfd5 !important; 
-  border-radius: 8px !important; 
+  border: 1px solid #6c757d !important;
+  color: #c7cfd5 !important;
+  border-radius: 8px !important;
   padding: 8px !important;
   margin-bottom: 5px !important;
 }
@@ -157,9 +172,68 @@ form input:focus {
   opacity: 0.5 !important;
 }
 
+.accordion-item {
+  background-color: transparent;
+  border: 1px solid #6c757d;
+  color: #c7cfd5;
+  border-radius: 8px;
+  padding: 3px;
+  margin-bottom: 5px;
+  width: 420px;
+  overflow: hidden;
+  box-shadow: none !important;
+
+}
+
+.accordion-body {
+  margin-bottom: 0;
+  padding-top: 5px !important;
+  padding-bottom: 0px !important;
+
+}
+
+.accordion-item-wrapper {
+  margin-bottom: 3px;
+}
+
+.accordion-button {
+  background-color: transparent !important;
+  border: 1px solid #40464a;
+  color: #c7cfd5 !important;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 5px;
+  width: 100%;
+  box-shadow: none !important;
+}
+
+.accordion-button.collapsed::before {
+  color: #c7cfd5 !important;
+}
+
+.accordion-button.collapsed::after {
+  color: #c7cfd5 !important;
+}
+
+.accordion-button:focus,
+.accordion-button:active {
+  border: 1px solid #6c757d;
+}
+
+/* .accordion-button.collapsed {
+  background-color: transparent !important;
+  border: 1px solid #6c757d !important;
+  color: #c7cfd5 !important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+  margin-bottom: 5px !important;
+  height: 50px;
+  width: 100%;
+} */
+
 /* #loginForm label,
 #registerForm label {
-  color: #cacaca; 
+  color: #cacaca;
   font-size: 16px;
 } */
 
@@ -203,6 +277,14 @@ h5 {
 }
 
 .tournament-row h3 {
+  color: #c7cfd5;
+  padding: 5px;
+  border: 1px solid #6c757d; /* Bordure autour des titres de chaque colonne */
+}
+
+.tournamentResultat {
+  text-align: center;
+  border-radius: 8px;
   color: #c7cfd5;
   padding: 5px;
   border: 1px solid #6c757d; /* Bordure autour des titres de chaque colonne */
@@ -290,7 +372,7 @@ h5 {
 
 .sort-indicator {
   margin-left: 5px;
-  user-select: none; 
+  user-select: none;
 }
 
 
@@ -302,8 +384,8 @@ h5 {
   overflow: hidden;
   text-overflow: ellipsis;
   color: white; /* Définir la couleur du texte en blanc
-  background-color: #001d3c; 
-  border-color: #007bff; 
+  background-color: #001d3c;
+  border-color: #007bff;
 } */
 
 

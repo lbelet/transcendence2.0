@@ -43,7 +43,7 @@ function openWebSocketConnection() {
             //     //     })
             //     //     .catch(error => {
             //     //         console.error("Erreur lors de l'établissement de la connexion WebSocket de jeu:", error);
-            //     //     }); 
+            //     //     });
 
             //     // Afficher un toast Bootstrap pour la notification
             //     const toastElement = document.createElement('div');
@@ -67,7 +67,7 @@ function openWebSocketConnection() {
 
             //     const toast = new bootstrap.Toast(toastElement, {
             //         autohide: false // Empêche le toast de se cacher automatiquement
-            //     });                
+            //     });
             //     toast.show();
 
             //     const countdownDisplay = document.getElementById('countdown');
@@ -82,9 +82,9 @@ function openWebSocketConnection() {
             //     document.getElementById('readyButton').addEventListener('click', function() {
             //         clearInterval(countdownInterval);
             //         console.log("Le joueur est prêt.");
-                    
+
             //         const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
-                
+
             //         // Envoyer une requête au serveur pour confirmer la présence du joueur
             //         fetch(`/api/set_player_ready/${tournamentId}/`, {
             //             method: 'POST',
@@ -108,17 +108,17 @@ function openWebSocketConnection() {
             //                 //     })
             //                 //     .catch(error => {
             //                 //         console.error("Erreur lors de l'établissement de la connexion WebSocket de jeu:", error);
-            //                 //     }); 
+            //                 //     });
             //             }
             //         })
             //         .catch(error => {
             //             console.error('Erreur lors de la confirmation de la présence du joueur:', error);
             //         });
-                
+
             //         toast.dispose();
             //     });
-                
-                
+
+
 
             //     document.getElementById('noButton').addEventListener('click', function () {
             //         clearInterval(countdownInterval);
@@ -308,8 +308,8 @@ function openGameWebSocketConnection() {
                     //     })
                     //     .catch(error => {
                     //         console.error("Erreur lors de l'établissement de la connexion WebSocket de jeu:", error);
-                    //     }); 
-    
+                    //     });
+
                     // Afficher un toast Bootstrap pour la notification
                     toastElement = document.createElement('div');
                     toastElement.classList.add('toast');
@@ -327,20 +327,20 @@ function openGameWebSocketConnection() {
                             <button id="noButton" class="btn btn-danger">No</button>
                         </div>
                     `;
-    
+
                     document.body.appendChild(toastElement);
-    
+
                     toast = new bootstrap.Toast(toastElement, {
                         autohide: false // Empêche le toast de se cacher automatiquement
-                    });                
+                    });
                     toast.show();
-    
+
                     const countdownDisplay = document.getElementById('countdown');
                     let countdownInterval = startCountdown(15, countdownDisplay, function () {
                         console.log("Le compte à rebours est terminé. Le tournoi est annulé.");
 
                         const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
-                    
+
                         // Envoyer une requête au serveur pour supprimer le tournoi
                         fetch(`/api/delete_tournament/${tournamentId}/`, {
                             method: 'DELETE',
@@ -361,7 +361,7 @@ function openGameWebSocketConnection() {
                         .catch(error => {
                             console.error('Erreur lors de la suppression du tournoi:', error);
                         });
-                    
+
                         // toast.dispose();
                         // toast = null;
                         // navigateWithTokenCheck('game')
@@ -370,13 +370,13 @@ function openGameWebSocketConnection() {
                         // toast.dispose();
                         // toast = null; // Assurez-vous que 'toast' est correctement initialisé et accessible
                     });
-    
+
                     document.getElementById('readyButton').addEventListener('click', function() {
                         clearInterval(countdownInterval);
                         console.log("Le joueur est prêt.");
-                        
+
                         const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
-                    
+
                         // Envoyer une requête au serveur pour confirmer la présence du joueur
                         fetch(`/api/set_player_ready/${tournamentId}/`, {
                             method: 'POST',
@@ -400,23 +400,23 @@ function openGameWebSocketConnection() {
                                 //     })
                                 //     .catch(error => {
                                 //         console.error("Erreur lors de l'établissement de la connexion WebSocket de jeu:", error);
-                                //     }); 
+                                //     });
                             }
                         })
                         .catch(error => {
                             console.error('Erreur lors de la confirmation de la présence du joueur:', error);
                         });
-                    
+
                         toast.dispose();
                         toast = null;
                     });
-                    
+
                     document.getElementById('noButton').addEventListener('click', function () {
                         clearInterval(countdownInterval);
                         console.log("Le joueur a refusé.");
-                    
+
                         const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
-                    
+
                         // Envoyer une requête au serveur pour supprimer le tournoi
                         fetch(`/api/delete_tournament/${tournamentId}/`, {
                             method: 'DELETE',
@@ -437,7 +437,7 @@ function openGameWebSocketConnection() {
                         .catch(error => {
                             console.error('Erreur lors de la suppression du tournoi:', error);
                         });
-                    
+
                         toast.dispose();
                         toast = null;
                         navigateWithTokenCheck('game')
@@ -457,7 +457,7 @@ function openGameWebSocketConnection() {
                         // Si un toast est actuellement affiché, fermez-le
                         toast.hide(); // Supprimez le toast du DOM
                         // toast = null; // Réinitialisez la référence
-                    
+
                         // Ajoutez ce code pour vérifier si le toastElement est supprimé
                         // if (toastElement) {
                         //     toastElement.remove(); // Supprimez le toastElement du DOM
@@ -465,9 +465,9 @@ function openGameWebSocketConnection() {
                         // }
                     }
                     navigateWithTokenCheck('game')
-                    
+
                 }
-                
+
                 if (data.type === 'tournament_update') {
                     console.log("bien recu! et le data tournamentID est:", data.tournamentId)
                     fetchTournamentDetailsWaitingPage(data.tournamentId);
@@ -484,9 +484,9 @@ function openGameWebSocketConnection() {
                     getGamePlayers(data.game_id).then(data => {
                         const player1Name = data.player_one;
                         const player2Name = data.player_two;
-                
+
                         console.log("player1Name: ", player1Name, "player2Name: ", player2Name);
-                
+
                         startPongGame(data.game_id, player1Name, player2Name);
                         playPong();
                     });
@@ -496,15 +496,15 @@ function openGameWebSocketConnection() {
                     getGamePlayers_tournament(data.game_id).then(() => {
                         const player1Name = localStorage.getItem('player_one');
                         const player2Name = localStorage.getItem('player_two');
-                
+
                         console.log("player1Name: ", player1Name, "player2Name: ", player2Name);
-                
+
                         console.log('!!!!Le tournoi de Pong commence grâce aux sockets');
                         startPongTournament(data.game_id, player1Name, player2Name);
                         playPong_tournament();
                     });
                 }
-                
+
 
                 else if (data.type === 'paddles_update') {
                     console.log("paddles_update ok")
@@ -543,12 +543,15 @@ function openGameWebSocketConnection() {
                 }
 
                 else if (data.type === 'game_over') {
-                    gameWebsocket.close();
-                    localStorage.setItem('in1v1', "no");
-                    localStorage.removeItem('player_one')
-                    localStorage.removeItem('player_two')
-                    localStorage.removeItem('playerRole')
-                    navigateWithTokenCheck('game')
+                    setTimeout(() => {
+                        gameWebsocket.close();
+                    	localStorage.setItem('in1v1', "no");
+                        localStorage.removeItem('player_one')
+                        localStorage.removeItem('player_two')
+                        localStorage.removeItem('playerRole')
+                        navigateWithTokenCheck('gameResults')
+                    }, 2000);
+
                 }
 
                 else if (data.type === 'game_over_tournament') {
@@ -575,9 +578,9 @@ function openGameWebSocketConnection() {
                     getGamePlayers_tournament(data.game_id).then(() => {
                         const player1Name = localStorage.getItem('player_one');
                         const player2Name = localStorage.getItem('player_two');
-                
+
                         console.log("player1Name: ", player1Name, "player2Name: ", player2Name);
-                
+
                         console.log('!!!!Le tournoi de Pong commence grâce aux sockets');
                         startPongTournament(data.game_id, player1Name, player2Name);
                         playPong_tournament();

@@ -101,7 +101,7 @@ function setupAnimation() {
 class Particle {
 	constructor() {
 		this.resetPosition();
-		
+
 		this.speed = 0;
 		this.velocity = Math.random() * 0.2;
 		this.size = Math.random() * 2 + 0.5;
@@ -113,7 +113,7 @@ class Particle {
 		// this.y = Math.random() * canvas.height;
 		this.y = canvas.height;
 	}
-	
+
 	update() {
 		let yIndex = Math.floor(this.y / detail);
 		let xIndex = Math.floor(this.x / detail);

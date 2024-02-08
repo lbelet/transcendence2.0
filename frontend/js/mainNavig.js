@@ -40,6 +40,9 @@ async function navigateWithTokenCheck(sectionId) {
             if (sectionId == 'home' || sectionId == 'login' || sectionId == 'register')
                 navigateWithTokenCheck('game');
                 showPendingFriendRequests();
+            if (sectionId === 'gameResults') {
+                loadGameResults(localStorage.getItem('currentGameId'));
+            }
             // if (sectionId == 'game')
             //     // navigateWithTokenCheck('game')
             //     showPendingFriendRequests();
@@ -61,6 +64,7 @@ function hideAllSections() {
     document.getElementById('register-section').classList.add('hidden');
     // document.getElementById('welcome-section').classList.add('hidden');
     document.getElementById('game-section').classList.add('hidden');
+    document.getElementById('gameResults-section').classList.add('hidden');
     document.getElementById('emailTwoFactor-section').classList.add('hidden');
     document.getElementById('pong-section').classList.add('hidden');
     document.getElementById('qrTwoFactor-section').classList.add('hidden');

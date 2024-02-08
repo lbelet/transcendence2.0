@@ -220,4 +220,22 @@ async function updateGameSocketId(Gamesocket_Id) {
         });
 }
 
+async function loadGameResults(gameId) {
+    fetch(`/api/game_info/${gameId}/`, {
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        }
+    })
+        .then(response => response.json())
+        .then(results => {
+            console.log(results)
+            document.getElementById('results-players').textContent = `${results.players[0]} : ${results.players[1]}`
+            document.getElementById('results-scores').textContent = `${results.score[0]} : ${results.score[1]}`
+        })
+        .catch(error => (
+            alert('Erreur lors du chargement des resultats')
+        ))
+}
 

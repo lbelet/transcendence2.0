@@ -35,7 +35,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     #                 "type": "tournament_update",
     #                 "message": event["message"]
     #             }))
-        
+
     # async def tournament_full(self, event):
     #     print("websocket send tournament full")
     #     await self.send(text_data=json.dumps({
@@ -85,6 +85,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             print("game loop ok")
             print("groupName: ", f'pong_game_{self.game_id}')
             await self.update_ball_position()
+            print('game_active_loop?', self.game_active)
             await self.channel_layer.group_send(
                 f'pong_game_{self.game_id}',
                 {
@@ -93,6 +94,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             )
             await asyncio.sleep(0.10)
+        print('game loop ended!!!!!!!!!!!!!!!!!!!')
 
     async def game_loop_tournament(self):
         while self.game_active:
@@ -156,9 +158,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
             await asyncio.sleep(1)  # 1 seconde de pause, ajustez selon le besoin
 
-            # await self.send_ping_to_group()
-
-            
             if self.four_players_joined(self.game_id):
                 print("le tournoi est complet")
                 # if not GameConsumer.tournament_full_sent:
@@ -168,12 +167,12 @@ class GameConsumer(AsyncWebsocketConsumer):
                     {
                         'type': 'send_tournament_full',
                         'message': 'Veuillez confirmer votre presence'
-                    }        
+                    }
                 )
                     # GameConsumer.tournament_full_sent = True
                 # else:
                 #     print('elseeeeeeee')
-        
+
         # if data.get('type') == 'join_match_channel':
         #     match_id = data['match_id']
         #     self.match_group_name = f"match_{match_id}"
@@ -217,38 +216,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-        # if data.get('type') == 'pong':
-        #     self.received_responses_per_tournament[self.game_id] = set()
-        #     print("Pong reçu du client")
-        #     # Ajouter la logique de vérification des réponses ici
-        #     player_channel_name = self.channel_name  # Ajoutez le bon nom de canal ici
-
-        #     self.expected_responses = set(self.players_connected_tournament[self.game_id])
-        #     self.received_responses_per_tournament[self.game_id].add(self.channel_name)
-
-        #     # Attendre les réponses pendant un certain temps
-        #     # await asyncio.sleep(5)
-        #     self.received_responses_per_tournament[self.game_id].add(self.channel_name)
-
-        #             # Vérifier si toutes les réponses attendues pour ce tournoi ont été reçues
-        #     if len(self.received_responses_per_tournament[self.game_id]) == len(self.expected_responses):
-        #         print("Tous les joueurs ont répondu pour ce tournoi")
-        #         # await asyncio.sleep()
-        #         await self.send_ping_to_group()
-        #     else:
-        #         missing_players = self.expected_responses - self.received_responses_per_tournament[self.game_id]
-        #         print(f"Joueurs manquants pour ce tournoi : {missing_players}")
-        #         # self.game_active = False
-        #         # print('is active ? ', self.game_active)
-        #         # await self.channel_layer.group_send(
-        #         #     f'tournament_{self.game_id}',
-        #         #     {
-        #         #         'type': 'send_game_over_tournament',
-        #         #         'winner': 'none',
-        #         #     }
-        #         # )
-                
-                    
         if data.get('type') == 'paddle_move_tournament':
             move_amount = 2  # Ajustez selon les besoins
             game_state = self.game_states[self.game_id]
@@ -351,7 +318,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     #             {
     #                 'type': 'tournament_full',
     #                 'message': 'Veuillez confirmer votre presence'
-    #             }        
+    #             }
     #         )
     #         GameConsumer.tournament_full_sent = True
     #     else:
@@ -373,7 +340,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def send_paddles_update(self, event):
         await self.send(text_data=json.dumps({
-            'type': 'paddles_update',  
+            'type': 'paddles_update',
             'paddles_state': event['paddles_state']
         }))
 
@@ -384,19 +351,19 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def send_paddles_update_tournament(self, event):
         await self.send(text_data=json.dumps({
-            'type': 'paddles_update_tournament',  
+            'type': 'paddles_update_tournament',
             'paddles_state': event['paddles_state']
         }))
 
     async def send_ball_update(self, event):
         await self.send(text_data=json.dumps({
-            'type': 'ball_update', 
+            'type': 'ball_update',
             'ball_state': event['ball_state']
         }))
 
     async def send_ball_update_tournament(self, event):
         await self.send(text_data=json.dumps({
-            'type': 'ball_update_tournament', 
+            'type': 'ball_update_tournament',
             'ball_state': event['ball_state']
         }))
 
@@ -406,7 +373,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         paddle1 = game_state['paddles']['paddle1']
         paddle2 = game_state['paddles']['paddle2']
 
-        base_horizontal_speed = 0.5  
+        base_horizontal_speed = 0.5
 
         ball['x'] += ball['dx']
         ball['z'] += ball['dz']
@@ -473,7 +440,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         paddle1 = game_state['paddles']['paddle1']
         paddle2 = game_state['paddles']['paddle2']
 
-        base_horizontal_speed = 0.5  
+        base_horizontal_speed = 0.5
 
         ball['x'] += ball['dx']
         ball['z'] += ball['dz']
@@ -491,7 +458,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 print("AVANT scoreState Player 1: ", game_state['score']['player1'])
                 game_state['score']['player1'] += 1
                 print("APRES scoreState Player 1: ", game_state['score']['player1'])
-                
+
             print('score send: ', game_state['score'])
             await self.channel_layer.group_send(
                 f'tournament_{self.game_id}',
@@ -650,8 +617,11 @@ class GameConsumer(AsyncWebsocketConsumer):
         }))
 
     async def send_game_over(self, event):
+        winner_id = event.get('winner', None)  # Obtenez l'ID du gagnant, ou None si non présent
         await self.send(text_data=json.dumps({
             'type': 'game_over',
+            'scores': self.game_states[self.game_id]['score'],
+            'winner_id': winner_id
         }))
 
     async def send_game_over_tournament(self, event):
@@ -673,26 +643,30 @@ class GameConsumer(AsyncWebsocketConsumer):
 
         score_player_one = self.game_states[self.game_id]['score']['player1']
         score_player_two = self.game_states[self.game_id]['score']['player2']
+        print('scores:', score_player_one, score_player_two)
         game_state = self.game_states[self.game_id]
         winner_channel_name = game_state['player1_channel'] if score_player_one > score_player_two else game_state['player2_channel']
 
         await self.update_game_in_database(self.game_id, score_player_one, score_player_two, winner_channel_name)
         if self.game_id in self.game_states:
-            self.game_states[self.game_id]['score']['player1'] = 0
-            self.game_states[self.game_id]['score']['player2'] = 0
+            #self.game_states[self.game_id]['score']['player1'] = 0
+            #self.game_states[self.game_id]['score']['player2'] = 0
             await self.channel_layer.group_send(
                 f'pong_game_{self.game_id}',
                 {
                     'type': 'send_score_update',
                     'score_state': self.game_states[self.game_id]['score']
                 }
-            ) 
+            )
         self.game_active = False
+        print('game_active?', self.game_active)
         await self.channel_layer.group_send(
             f'pong_game_{self.game_id}',
             {
                 'type': 'send_game_over',
+
             }
+
         )
 
     async def end_game_tournament(self, event):
@@ -717,7 +691,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     'player1_state': self.game_states[self.game_id]['player1_channel'],
                     'player2_state': self.game_states[self.game_id]['player2_channel']
                 }
-            ) 
+            )
         self.game_active = False
         print('is active ? ', self.game_active)
         await self.channel_layer.group_send(
@@ -808,25 +782,31 @@ class GameConsumer(AsyncWebsocketConsumer):
 
 
     async def update_game_in_database(self, game_id, score_player_one, score_player_two, winner_channel_name):
+        print("Score_player_one: ", score_player_one)
         await sync_to_async(self._update_game_in_database)(game_id, score_player_one, score_player_two, winner_channel_name)
 
 
     def _update_game_in_database(self, game_id, score_player_one, score_player_two, winner_channel_name):
+        print("_update Score_player_one: ", score_player_one)
         try:
             game = PongGame.objects.get(id=game_id)
             game.score_player_one = score_player_one
+            print("_updated game.score_player_one: ", game.score_player_one)
+
             game.score_player_two = score_player_two
             # Vérifier si le gagnant a déjà été déterminé pour ce jeu
-            if winner_channel_name and not game.winner:
-                winner_user = User.objects.get(game_socket_id=winner_channel_name)
-                game.winner = winner_user
+            # if winner_channel_name and not game.winner:
+            #     winner_user = User.objects.get(game_socket_id=winner_channel_name)
+            #     game.winner = winner_user
 
-                # Mise à jour du nombre de victoires seulement si le gagnant vient d'être déterminé
-                winner_user.won_game += 1
-                winner_user.save()
+            #     # Mise à jour du nombre de victoires seulement si le gagnant vient d'être déterminé
+            #     winner_user.won_game += 1
+            #     winner_user.save()
 
             game.status = 'complete'
             game.save()
+            game.refresh_from_db()
+            print("Refreshed score_player_one: ", game.score_player_one)
         except User.DoesNotExist:
             print(f"User with game_socket_id {winner_channel_name} not found")
         except PongGame.DoesNotExist:
@@ -898,7 +878,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                     "type": "tournament_update",
                     "tournamentId": event["message"]["tournamentId"],
                 }))
-        
+
     async def send_tournament_deleted(self, event):
         # Vous pouvez personnaliser le message ici si nécessaire
         # Envoyez le message personnalisé au client WebSocket
