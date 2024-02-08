@@ -1303,7 +1303,7 @@ def fill_tournament_matches(tournament):
                     async_to_sync(channel_layer.group_send)(
                         group_name,
                     {
-                        "type": "game_start_tournament",
+                        "type": "send_game_start_tournament",
                         "game_id": match.id
                     }
                 )

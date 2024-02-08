@@ -234,12 +234,12 @@ class GameConsumer(AsyncWebsocketConsumer):
                 if game_state['paddles']['paddle2']['x'] == 10 or game_state['paddles']['paddle2']['x'] == -10:
                     game_state['paddles']['paddle2']['x'] = game_state['paddles']['paddle2']['x']
                 else:
-                    game_state['paddles']['paddle1']['x'] += move_amount            
+                    game_state['paddles']['paddle2']['x'] += move_amount            
             elif data['action'] == 'move_left_paddle22':
                 if game_state['paddles']['paddle2']['x'] == 10 or game_state['paddles']['paddle2']['x'] == -10:
                     game_state['paddles']['paddle2']['x'] = game_state['paddles']['paddle2']['x']
                 else:
-                    game_state['paddles']['paddle1']['x'] -= move_amount
+                    game_state['paddles']['paddle2']['x'] -= move_amount
             await self.channel_layer.group_send(
                 f'tournament_{self.game_id}',
                 {
@@ -543,7 +543,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             'game_id': event['game_id']
         }))
 
-    async def game_start_tournament(self, event):
+    async def send_game_start_tournament(self, event):
         game_id = event['game_id']
         self.initialize_game_state(game_id)
 
