@@ -322,7 +322,7 @@ function openGameWebSocketConnection() {
                         </div>
                         <div class="toast-body">
                             ${data.message}
-                            <div id="countdown">59</div>
+                            <div id="countdown">15</div>
                             <button id="readyButton" class="btn btn-success">Ready</button>
                             <button id="noButton" class="btn btn-danger">No</button>
                         </div>
