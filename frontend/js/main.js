@@ -1,5 +1,12 @@
 window.onload = async function () {
     console.log("onload....");
+    getCSRF_Token().then(csrf_Token => {
+        console.log("CSRF Token:", csrf_Token);
+        // Utilisez le jeton CSRF comme nécessaire ici
+    }).catch(error => {
+        console.error('Error fetching CSRF token:', error);
+    });
+
     if (localStorage.getItem('in1v1') == null)
         localStorage.setItem('in1v1', "no")
     localStorage.setItem('inGame', false)
@@ -96,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-async function getCSRFToken() {
+async function getCSRF_Token() {
     try {
         const response = await fetch('/api/get_csrf_token/', {
             method: 'GET',
@@ -108,7 +115,7 @@ async function getCSRFToken() {
             throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        return data.csrfToken;
+        return data.csrf_token;
     } catch (error) {
         console.error('Error fetching CSRF token:', error);
         return null;
@@ -116,3 +123,11 @@ async function getCSRFToken() {
 }
 
 document.dispatchEvent(new CustomEvent('in1v1Changed'));
+
+function getCSRFToken() {
+    const cookieValue = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        .split('=')[1];
+    return cookieValue;
+}

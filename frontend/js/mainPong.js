@@ -33,11 +33,13 @@ function loadUserGamesHistory() {
 
 
 function playPong() {
+    const csrfToken = getCSRFToken();
     fetch('/api/api_inGame/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({})  // Si vous avez des données à envoyer, sinon vous pouvez omettre cette ligne
     })
@@ -61,11 +63,13 @@ function playPong() {
 }
 
 function playPong_tournament() {
+    const csrfToken = getCSRFToken();
     fetch('/api/api_inGame/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({})  // Si vous avez des données à envoyer, sinon vous pouvez omettre cette ligne
     })
@@ -90,12 +94,14 @@ function playPong_tournament() {
 
 function quitPong3D() {
     const gameId = localStorage.getItem('currentGameId');  // Récupérer l'ID de la partie
+    const csrfToken = getCSRFToken();
 
     fetch('/api/api_outGame/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({ game_id: gameId })  // Envoyer l'ID de la partie dans le corps de la requête
     })
@@ -119,12 +125,14 @@ function quitPong3D() {
 
 function quitPong3D_tournament() {
     const gameId = localStorage.getItem('currentGameId');  // Récupérer l'ID de la partie
+    const csrfToken = getCSRFToken();
 
     fetch('/api/api_outGame_tournament/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({ game_id: gameId })  // Envoyer l'ID de la partie dans le corps de la requête
     })
@@ -163,13 +171,15 @@ async function joinGameQueue() {
         // const gameSocketId = localStorage.getItem('gameSocket_ID');
         // console.log("gameSocketID: ", localStorage.getItem('gameSocket_ID'));
         await updateGameSocketId(gameSocketId);
+        const csrfToken = getCSRFToken();
 
         // Envoyer la requête POST pourz rejoindre la file d'attente
         const response = await fetch('/api/join_game_queue/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'X-CSRFToken': csrfToken
             },
             body: JSON.stringify({ game_socket_id: gameSocketId })
         });
@@ -203,11 +213,14 @@ async function joinGameQueue() {
 
 
 async function updateGameSocketId(Gamesocket_Id) {
+    const csrfToken = getCSRFToken();
+    
     fetch('/api/update_GameSocket_id/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({ game_socket_id: Gamesocket_Id })
     })

@@ -80,10 +80,15 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     const errorMessageElement = document.getElementById('UserLoginErrorMessage');
     errorMessageElement.style.display = 'none';
 
+    const csrfToken = getCSRFToken();
+    console.log(csrfToken);
+
+
     fetch('/api/api_login/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({
             username: username,
@@ -165,11 +170,14 @@ function logout() {
         websocket.close();
         console.log("socket close: ", websocket)
     }
+    const csrfToken = getCSRFToken();
 
     fetch('/api/logout/', {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({})
     })

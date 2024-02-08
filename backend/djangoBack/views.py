@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
+from django.views.decorators.csrf import csrf_protect
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -35,6 +36,8 @@ from djangoBack.helpers import (
 )
 
 import logging
+from django.middleware.csrf import get_token
+
 
 # At the top of your file
 logger = logging.getLogger(__name__)
@@ -48,10 +51,8 @@ def health_check(request):
 
 @api_view(['GET'])
 def get_csrf_token(request):
-    # Récupérer le jeton CSRF depuis la requête
-    csrf_token = request.META.get('CSRF_COOKIE', None)
-    # Retourner le jeton CSRF sous forme de réponse JSON
-    return JsonResponse({'csrfToken': csrf_token})   
+    csrf_token = get_token(request)
+    return JsonResponse({'csrf_token': csrf_token})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -95,6 +96,7 @@ def get_game_players_tournament(request, game_id):
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def verify_token(request):
     # Si le code atteint ce point, le token est valide
@@ -102,6 +104,7 @@ def verify_token(request):
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def join_game_queue(request):
     # Récupérer l'utilisateur actuel
@@ -144,6 +147,7 @@ def join_game_queue(request):
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def join_tournament_queue(request):
     # Récupérer l'utilisateur actuel
@@ -176,6 +180,7 @@ def join_tournament_queue(request):
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def update_nbre_games(request):
     user = request.user
@@ -191,7 +196,7 @@ def update_nbre_games(request):
 
 
 @api_view(['POST'])
-@csrf_exempt
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def update_socket_id(request):
     user = request.user
@@ -205,7 +210,7 @@ def update_socket_id(request):
 
 
 @api_view(['POST'])
-@csrf_exempt
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def update_GameSocket_id(request):
     user = request.user
@@ -231,7 +236,7 @@ def get_user_avatar(request):
     return JsonResponse({'avatarUrl': avatar_url})
 
 
-@csrf_exempt
+@csrf_protect
 def register(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST method is accepted'}, status=405)
@@ -354,7 +359,7 @@ def check_user_exists(request):
 #     # Modifier ici pour utiliser un message neutre et retirer le statut 400
 #     return JsonResponse({'login_successful': False, 'message': 'Nom d’utilisateur ou mot de passe incorrect. Veuillez réessayer.'}, status=200)
 
-@csrf_exempt
+@csrf_protect
 def api_login(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST method is accepted'}, status=405)
@@ -438,6 +443,7 @@ def api_login(request):
 
 #     return JsonResponse({'success': 'Profil mis à jour avec succès'}, status=200)
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def update_user(request):
     # data = json.loads(request.body)
@@ -541,7 +547,7 @@ def update_user(request):
 #                 return JsonResponse({'error': 'Invalid QR code'}, status=400)
 
 #     return JsonResponse({'error': '2FA is not enabled for this user'}, status=400)
-@csrf_exempt
+@csrf_protect
 def verify_two_factor_code(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST method is accepted'}, status=405)
@@ -613,6 +619,7 @@ def search_users(request):
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def send_friend_request(request):
     receiver_username = request.data.get('receiver_username')
@@ -653,6 +660,7 @@ def get_pending_friend_requests(request):
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def accept_friend_request(request, request_id):
     try:
@@ -671,6 +679,7 @@ def accept_friend_request(request, request_id):
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def decline_friend_request(request, request_id):
     try:
@@ -724,6 +733,7 @@ def get_friends(request):
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def api_logout(request):
     user = request.user
@@ -746,6 +756,7 @@ def api_logout(request):
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def api_inGame(request):
     user = request.user
@@ -756,6 +767,7 @@ def api_inGame(request):
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def api_outGame(request):
     user = request.user
@@ -779,6 +791,7 @@ def api_outGame(request):
     return JsonResponse({'message': 'quitter le jeu réussie'}, status=200)
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def api_outGame_tournament(request):
     user = request.user
@@ -827,6 +840,7 @@ def send_friend_request_notification(receiver_user_id, request_id, sender_userna
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def update_language(request):
     user = request.user
@@ -848,6 +862,7 @@ def check_tournament_exists(request, tournament_name):
     return JsonResponse({'exists': exists})
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def create_tournament(request):
     # Récupérer les données de la requête
@@ -934,6 +949,7 @@ def create_tournament(request):
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def register_to_tournament(request, tournament_id):
     try:
@@ -992,6 +1008,7 @@ def register_to_tournament(request, tournament_id):
 
 
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def unregister_from_tournament(request, tournament_id):
     try:
@@ -1093,6 +1110,7 @@ def tournament_details(request, tournament_id):
         return JsonResponse({'error': str(e)}, status=500)
     
 @api_view(['POST'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def set_player_ready(request, tournament_id):
     try:
@@ -1127,6 +1145,7 @@ def set_player_ready(request, tournament_id):
         return JsonResponse({'error': 'Participation au tournoi non trouvée'}, status=404)
 
 @api_view(['DELETE'])
+@csrf_protect
 @permission_classes([IsAuthenticated])
 def delete_tournament(request, tournament_id):
     try:

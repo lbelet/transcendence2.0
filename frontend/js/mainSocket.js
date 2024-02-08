@@ -152,11 +152,14 @@ function openWebSocketConnection() {
 
 
     function updateSocketId(socketId) {
-        fetch('/api/update_socket_id/', {
+        const csrfToken = getCSRFToken();
+
+        fetch('/api/update_socket_id/', {            
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'X-CSRFToken': csrfToken
             },
             body: JSON.stringify({ socket_id: socketId })
         })
@@ -340,13 +343,14 @@ function openGameWebSocketConnection() {
                         console.log("Le compte à rebours est terminé. Le tournoi est annulé.");
 
                         const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
-                    
+                        const csrfToken = getCSRFToken();
                         // Envoyer une requête au serveur pour supprimer le tournoi
                         fetch(`/api/delete_tournament/${tournamentId}/`, {
                             method: 'DELETE',
                             headers: {
                                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
                             }
                         })
                         .then(response => response.json())
@@ -376,13 +380,15 @@ function openGameWebSocketConnection() {
                         console.log("Le joueur est prêt.");
                         
                         const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
-                    
+                        const csrfToken = getCSRFToken();
+
                         // Envoyer une requête au serveur pour confirmer la présence du joueur
                         fetch(`/api/set_player_ready/${tournamentId}/`, {
                             method: 'POST',
                             headers: {
                                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
                             }
                         })
                         .then(response => response.json())
@@ -416,13 +422,14 @@ function openGameWebSocketConnection() {
                         console.log("Le joueur a refusé.");
                     
                         const tournamentId = data.tournament_id; // Obtenir l'ID du tournoi
-                    
+                        const csrfToken = getCSRFToken();
                         // Envoyer une requête au serveur pour supprimer le tournoi
                         fetch(`/api/delete_tournament/${tournamentId}/`, {
                             method: 'DELETE',
                             headers: {
                                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
                             }
                         })
                         .then(response => response.json())
@@ -622,11 +629,14 @@ function applyBallState_tournament(newBallState) {
 }
 
 function startPongGame(gameId, player1Name, player2Name) {
+    const csrfToken = getCSRFToken();
+
     fetch('/api/update_nbre_games/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
         },
     })
         .then(response => {
@@ -656,11 +666,14 @@ function startPongGame(gameId, player1Name, player2Name) {
 }
 
 function startPongTournament(gameId, player1Name, player2Name) {
+    const csrfToken = getCSRFToken();
+
     fetch('/api/update_nbre_games/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'X-CSRFToken': csrfToken
         },
     })
         .then(response => {

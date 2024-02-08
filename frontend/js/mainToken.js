@@ -7,11 +7,13 @@ function refreshToken() {
             reject('No refresh token');
             return;
         }
+        const csrfToken = getCSRFToken();
 
         fetch('/api/token/refresh/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
             },
             body: JSON.stringify({ refresh: refreshToken })
         })
