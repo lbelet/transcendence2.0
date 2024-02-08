@@ -1,5 +1,6 @@
 window.onload = async function () {
     console.log("onload....");
+    loadTranslations(localStorage.getItem('language'))
     if (localStorage.getItem('in1v1') == null)
         localStorage.setItem('in1v1', "no")
     localStorage.setItem('inGame', false)
