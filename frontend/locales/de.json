@@ -1,5 +1,6 @@
 {
-    "welcome": "Willkommen auf meiner SPA-Website",
+    "trans": "Transcendence",
+    "welcome": "Willkommen auf der Spielseite",
     "login": "Anmelden",
     "create_account": "Konto erstellen",
     "404_page": "404 Seite nicht gefunden",
@@ -20,12 +21,13 @@
     "verify": "Überprüfen",
     "qr_2fa_auth": "Zwei-Faktor-Authentifizierung per QR-Code",
     "scan_qr_code": "Scannen Sie den QR-Code mit Ihrer Authentifizierungs-App und geben Sie den Code unten ein. Zum Beispiel können Sie Google Authenticator verwenden.",
-    "welcome_user": "Willkommen, ",
+    "welcome_user": "Willkommen",
     "defy_enjoy": "Fordere deine Gegner im 1v1 heraus und nimm an Turnieren teil. Hab Spaß und möge der Beste gewinnen!",
     "1v1_pong": "Am 1v1-Spiel teilnehmen",
     "join_tournament": "Turnierseite beitreten",
     "waiting_for_next_game": "Warten auf das nächste Spiel...",
     "quit": "Verlassen",
+    "game_history": "Spielverlauf",
     "pong_tournament": "Pong-Turniere",
     "create_tournament": "Turnier erstellen",
     "available_tournament": "Verfügbare Turniere",
@@ -33,6 +35,8 @@
     "sort_by_name": "Nach Namen sortieren",
     "sort_by_date": "Nach Datum sortieren",
     "sort_by_nb_user": "Nach Anzahl der Teilnehmer sortieren",
+    "attention_players": "Achtung, Spieler!",
+    "game_instruction": "Wenn Sie die Spielseite verlassen, getrennt werden oder sie während eines laufenden Spiels aktualisieren, wird unser System Sie als inaktiv betrachten.",
     "tournament_name": "Turniername",
     "semi_finals": "Halbfinale",
     "final": "Finale",
@@ -56,5 +60,9 @@
     "tournament_starts_when_full": "Das Turnier beginnt, sobald es voll ist",
     "friend_list": "Freundesliste",
     "page_not_found": "Die gesuchte Seite existiert nicht.",
-    "return": "Zurück"
+    "return": "Zurück",
+    "result": "Ergebnis",
+    "result_winner": "Gewinner :",
+    "result_gamer": "Spieler :",
+    "result_scores": "Punktestände :"
 }

@@ -15,7 +15,7 @@
 <body>
     <nav class="navbar navbar-expand-lg border-bottom border-body" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#" data-key="welcome">Transcendence</a>
+            <a class="navbar-brand" href="#" data-key="trans">Transcendence</a>
             <!-- Bouton pour les appareils mobiles -->
             <div class="hidden" id="hiddenNav">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
@@ -26,7 +26,7 @@
                     <form class="d-flex" role="search" onsubmit="searchUser(); openSearchResultsModal(); return false;">
                         <div class="input-group">
                             <input class="form-control" type="search" id="search-username"
-                                placeholder="Rechercher Utilisateur" aria-label="Search">
+                                placeholder="Rechercher utilisateur" aria-label="Search" data-key="search_user">
                             <button class="btn btn-outline-success" type="submit">
                                 <i class="bi bi-search"></i>
                             </button>
@@ -87,7 +87,7 @@
                         data-key="return">Retour</button>
                 </div>
                 <div class="accordion-item-wrapper">
-                 <div id="accordion-section" class="accordion hidden"></div>
+                    <div id="accordion-section" class="accordion hidden"></div>
                 </div>
 
                 <div id="login-section" class="text-center hidden">
@@ -95,11 +95,14 @@
                     <h2 data-key="login">Login</h2>
                     <form id="loginForm">
                         <div class="form-group">
-                            <label for="login-username" class="form-label" style="color: #6c757d;" data-key="username">Nom d'utilisateur</label>
+                            <label for="login-username" class="form-label" style="color: #6c757d;"
+                                data-key="username">Nom d'utilisateur</label>
                             <input type="text" class="form-control" id="login-username" required>
-                            <label for="login-password" class="form-label" style="color: #6c757d;" data-key="password">Mot de passe</label>
+                            <label for="login-password" class="form-label" style="color: #6c757d;"
+                                data-key="password">Mot de passe</label>
                             <input type="password" class="form-control" id="login-password" required>
-                            <button class="btn btn-outline-secondary" style="color: #6c757d;" data-key="connect">Se connecter</button>
+                            <button class="btn btn-outline-secondary" style="color: #6c757d;" data-key="connect">Se
+                                connecter</button>
                         </div>
                     </form>
                 </div>
@@ -159,16 +162,20 @@
 
                 <div id="game-section" class="text-center hidden">
                     <div id="JoinGameErrorMessage" class="alert alert-danger" style="display: none;"></div>
-                    <h2>Bienvenue sur la page de jeu</h2>
-                    <p style="color: green;"><span data-key="welcome_user">Bienvenue à toi</span>,<span id="user-name-game"></span>!</p>
+                    <h2 data-key="welcome">Bienvenue sur la page de jeu</h2>
+                    <p style="color: green;"><span data-key="welcome_user">Bienvenue à toi</span> <span
+                            id="user-name-game"></span>!</p>
                     <p data-key="defy_enjoy">Défie tes adversaires en 1v1 et participe à des tournois. Amuse-toi et que
                         le meilleur gagne !
                     </p>
                     <img id="user-avatar" src="" alt="Avatar" style="width: 50px; height:auto;">
-                    <button class="btn btn-outline-secondary" onclick="loadUserGamesHistory()">historique des parties</button>
+                    <button class="btn btn-outline-secondary" onclick="loadUserGamesHistory()"
+                        data-key="game_history">Historique des parties</button>
                     <!-- <button class="btn btn-outline-secondary" onclick="playPong()">practice playing Pong</button> -->
-                    <button id="rejoindreGame" class="btn btn-outline-secondary" onclick="joinGameQueue()" data-key="1v1_pong">Rejoindre la partie 1v1</button>
-                    <button class="btn btn-outline-secondary" onclick="goTournament()" data-key="join_tournament">Rejoindre la page des
+                    <button id="rejoindreGame" class="btn btn-outline-secondary" onclick="joinGameQueue()"
+                        data-key="1v1_pong">Rejoindre la partie 1v1</button>
+                    <button class="btn btn-outline-secondary" onclick="goTournament()"
+                        data-key="join_tournament">Rejoindre la page des
                         tournois</button>
                     <div id="pending-requests-container"></div>
                 </div>
@@ -185,28 +192,34 @@
                 </div>
 
                 <div id="waitingRoomTournament-section" class="text-center container hidden">
-                    <h2>ATTENTION: TU PARS ou TU RELOAD, TU PERDS</h2>
-                    <h2>En attendant la suite...</h2>
+                    <div>
+                        <i class="bi bi-exclamation-triangle-fill me-2" style="font-size: 24px; color: red;"></i>
+                        <div style="border-bottom: 1px solid red;">
+                            <h4 data-key="attention_players">Attention, joueurs !</h4>
+                            <p data-key="game_instruction">Si vous quittez la page du jeu, êtes déconnecté ou la rafraîchissez pendant un match en
+                                cours, notre système vous considérera comme inactif.</p>
+                        </div>
+                    </div>
                     <audio id="myAudio" muted>
                         <source src="./locales/audio/glass-of-wine-143532.mp3" type="audio/mpeg">
                         Votre navigateur ne supporte pas l'élément audio.
                     </audio>
                     <div id="tournamentBracketWaiting">
-                        <h2 id="tournamentNameWaitingPage" class="text-center tournament-title">Nom du Tournoi</h2>
+                        <h2 id="tournamentNameWaitingPage" class="text-center tournament-title" data-key="tournament_name">Nom du tournoi</h2>
 
                         <div class="row my-4 tournament-row">
                             <div class="col d-flex flex-column semi-finals">
-                                <h3>Demi-finales</h3>
+                                <h3 data-key="semi_finals">Demi-finales</h3>
                                 <div id="semi-finalsWaitingPage" class="matches-container"></div>
                             </div>
 
                             <div class="col d-flex flex-column justify-content-center final">
-                                <h3>Finale</h3>
+                                <h3 data-key="final">Finale</h3>
                                 <div id="finalWaitingPage" class="matches-container"></div>
                             </div>
 
                             <div class="col d-flex flex-column justify-content-center winner">
-                                <h3>Vainqueur</h3>
+                                <h3 data-key="winner">Vainqueur</h3>
                                 <div id="winnerWaitingPage" class="matches-container"></div>
                             </div>
                         </div>
@@ -220,16 +233,16 @@
                 </div>
 
                 <div id="gameResults-section" class="text-center hidden">
-                    <div  class="col d-flex flex-column gameResults">
-                        <h3>Resultat</h3>
+                    <div class="col d-flex flex-column gameResults">
+                        <h3 data-key="result">Résultat</h3>
                         <div id="resultPage" class="result-container">
-							<h4>Winner: <span id="results-winner"></span></h4>
-                            <div>Players: <span id="results-players"></span></div>
-                            <div>Scores: <span id="results-scores"></span></div>
+                            <h4 data-key="result_winner">Vainqueur : <span id="results-winner"></span></h4>
+                            <div data-key="result_gamer">Joueurs : <span id="results-players"></span></div>
+                            <div data-key="result_scores">Scores : <span id="results-scores"></span></div>
                         </div>
-						<button class="btn btn-outline-secondary" onclick="navigateWithTokenCheck('game')">
-							Home
-						</button>
+                        <button class="btn btn-outline-secondary" onclick="navigateWithTokenCheck('game')" data-key="return">
+                            Retour
+                        </button>
                     </div>
                 </div>
 
@@ -253,19 +266,23 @@
                         <h1 data-key="available_tournament">Tournois disponibles</h1>
 
                         <div class="my-3">
-                            <button class="btn btn-outline-secondary" onclick="loadAvailableTournaments()" data-key="download_tournament">Charger les tournois
+                            <button class="btn btn-outline-secondary" onclick="loadAvailableTournaments()"
+                                data-key="download_tournament">Charger les tournois
                                 disponibles</button>
                         </div>
 
                         <div class="tournament-filters my-3">
                             <button class="btn btn-outline-secondary" onclick="sortTournaments('name', this)">
-                                <span data-key="sort_by_name">Trier par nom</span> <span class="sort-indicator">&#9650;</span>
+                                <span data-key="sort_by_name">Trier par nom</span> <span
+                                    class="sort-indicator">&#9650;</span>
                             </button>
                             <button class="btn btn-outline-secondary" onclick="sortTournaments('date', this)">
-                                <span data-key="sort_by_date">Trier par date</span> <span class="sort-indicator">&#9650;</span>
+                                <span data-key="sort_by_date">Trier par date</span> <span
+                                    class="sort-indicator">&#9650;</span>
                             </button>
                             <button class="btn btn-outline-secondary" onclick="sortTournaments('participants', this)">
-                                <span data-key="sort_by_nb_user">Trier par nombre de participants</span> <span class="sort-indicator">&#9650;</span>
+                                <span data-key="sort_by_nb_user">Trier par nombre de participants</span> <span
+                                    class="sort-indicator">&#9650;</span>
                             </button>
 
                         </div>
@@ -314,7 +331,8 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <div id="friendRequestErrorMessage" class="alert alert-danger" style="display: none;"></div>
+                                <div id="friendRequestErrorMessage" class="alert alert-danger" style="display: none;">
+                                </div>
                                 <div id="search-results"></div>
                             </div>
                             <div class="modal-footer">
@@ -379,7 +397,8 @@
                                             <option value="de" data-key="german">Allemand</option>
                                         </select>
                                     </div>
-                                    <button type="submit" class="btn btn-outline-secondary mt-3" data-key="save_changes">Enregistrer les
+                                    <button type="submit" class="btn btn-outline-secondary mt-3"
+                                        data-key="save_changes">Enregistrer les
                                         modifications</button>
                                 </form>
                             </div>
@@ -393,12 +412,14 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title" id="createTournamentLabel" data-key="create_tournament">Créer un tournoi</h4>
+                                <h4 class="modal-title" id="createTournamentLabel" data-key="create_tournament">Créer un
+                                    tournoi</h4>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <div id="tournamentCreationErrorMessage" class="alert alert-danger" style="display: none;"></div>
+                                <div id="tournamentCreationErrorMessage" class="alert alert-danger"
+                                    style="display: none;"></div>
                                 <form id="createTournamentForm">
                                     <div class="form-group">
                                         <label for="tournamentNameBis" data-key="tournament_name">Nom du tournoi</label>
@@ -410,7 +431,8 @@
                                         <input type="text" class="form-control" id="tournamentNickname" placeholder="Entrez votre pseudo pour le tournoi" maxlength="10">
                                     </div>
                                     <p class="tournoiExtra" data-key="gamers_number">Nombre de joueurs: 4</p>
-                                    <p class="tournoiExtra" data-key="tournament_starts_when_full">Le tournoi commence dès que l'effectif
+                                    <p class="tournoiExtra" data-key="tournament_starts_when_full">Le tournoi commence
+                                        dès que l'effectif
                                         est au complet</p>
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-outline-secondary"
