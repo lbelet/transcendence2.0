@@ -91,7 +91,6 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
                         body: formData,
                         headers: {
                             'X-CSRFToken': csrfToken,
-                            'Content-Type': 'application/json'
                         }
                     })
                     .then(response => {
