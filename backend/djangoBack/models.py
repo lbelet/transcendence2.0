@@ -84,6 +84,7 @@ class FriendRequest(models.Model):
     
 class Player(models.Model):
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+    # nick_name = models.CharField(max_length=100, unique=True, blank=False)
 
     def __str__(self):
         return self.user.username
