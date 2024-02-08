@@ -969,9 +969,18 @@ def create_tournament(request):
 @csrf_protect
 @permission_classes([IsAuthenticated])
 def register_to_tournament(request, tournament_id):
+    
+    nickname = request.data.get('nickname', '').strip()
+    if not nickname:
+        nickname = request.user.username  # Utiliser le username si le nickname est vide
+
     try:
         tournament = Tournament.objects.get(id=tournament_id)
-        player, created = Player.objects.get_or_create(user=request.user)
+        tournament = Tournament.objects.get(id=tournament_id)
+        player, created = Player.objects.get_or_create(user=request.user, defaults={'nick_name': nickname})
+        if not created and nickname:  # Si le joueur existait déjà mais un nickname est fourni
+            player.nick_name = nickname
+            player.save()
 
         current_user = request.user
         current_user.status = User.IN_GAME

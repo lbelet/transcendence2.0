@@ -4,6 +4,7 @@ document.getElementById('createTournamentForm').addEventListener('submit', funct
 	const errorMessageElement = document.getElementById('tournamentCreationErrorMessage');
 	errorMessageElement.style.display = 'none';
 
+    const nickName = document.getElementById('tournamentNickname').value;
 	const tournamentName = document.getElementById('tournamentNameBis').value;
 	console.log('tournament name: ', tournamentName)
 	fetch(`/api/check_tournament_exists/${encodeURIComponent(tournamentName)}/`, {
@@ -20,7 +21,7 @@ document.getElementById('createTournamentForm').addEventListener('submit', funct
 
 		} else {
 			// Proceed with tournament creation
-			createTournament(tournamentName);
+			createTournament(tournamentName, nickName);
 		}
 	})
 	.catch((error) => {
@@ -29,7 +30,7 @@ document.getElementById('createTournamentForm').addEventListener('submit', funct
 	});
 });
     
-function createTournament(tournamentName) {
+function createTournament(tournamentName, nickName) {
     // const numberOfPlayers = document.querySelector('input[name="numberOfPlayers"]:checked').value;
 
     const startDateOption = "whenFull";
@@ -72,7 +73,7 @@ function createTournament(tournamentName) {
         // Here, handle the successful case
         console.log('Success for tournament:', data);
         if (data.success) {
-            registerForTournament(data.tournament_id);
+            registerForTournament(data.tournament_id, nickName);
             // Get the modal element
             const modalElement = document.getElementById('createTournamentModal');
             // Get the modal instance
@@ -209,66 +210,67 @@ function displayTournaments(tournaments) {
 }
 
 function displayTournamentDetails(tournamentData) {
-    console.log("les details du tournoi sont: ", tournamentData)
-    // Mettre à jour le nom du tournoi
+    console.log("les details du tournoi sont: ", tournamentData);
     document.getElementById('tournamentName').textContent = tournamentData.name;
 
-    // Afficher la section du tournoi
     const tournamentSection = document.getElementById('tournamentBracket-section');
     tournamentSection.classList.remove('hidden');
     navigateWithTokenCheck('tournamentBracket');
 
-
-    // Créer et ajouter les demi-finales
     const semiFinals = createRound('semi-final', tournamentData.participants.slice(0, 4));
-    document.getElementById('semi-finals').innerHTML = ''; // Nettoyer les demi-finales existantes
+    document.getElementById('semi-finals').innerHTML = '';
     document.getElementById('semi-finals').appendChild(semiFinals);
 
     const final = createRound('final', tournamentData.participants.slice(0, 2), tournamentData.final_players);
     document.getElementById('final').innerHTML = '';
     document.getElementById('final').appendChild(final);
 
-    const winnerDiv = document.createElement('div');
-    winnerDiv.id = 'winner';
-    winnerDiv.className = 'winner my-3';
-    
-    // Définir le contenu de la div du gagnant
-    if (tournamentData.final_winner) {
-        document.getElementById('winner').innerHTML = '';
-        winnerDiv.textContent = `${tournamentData.final_winner}`;
-    } else {
-        document.getElementById('winner').innerHTML = '';
-        winnerDiv.textContent = "En attente";
+    let winnerDiv = document.getElementById('winner');
+    if (!winnerDiv) {
+        winnerDiv = document.createElement('div');
+        winnerDiv.id = 'winner';
+        winnerDiv.className = 'winner my-3';
+        document.getElementById('final').appendChild(winnerDiv); // Assurez-vous d'ajouter à l'endroit correct si nécessaire
     }
-    
-    // Ajouter la div du gagnant à la section finale
-    document.getElementById('winner').appendChild(winnerDiv);
+    winnerDiv.textContent = tournamentData.final_winner ? `${tournamentData.final_winner}` : "En attente";
 
-    // document.getElementById('winner').innerHTML = '';
-    // document.getElementById('winner').
+    // Créer ou récupérer le champ d'entrée pour le nickname
+    let nicknameInput = document.getElementById('tournament-nickname-input');
+    if (!nicknameInput) {
+        nicknameInput = document.createElement('input');
+        nicknameInput.id = 'tournament-nickname-input';
+        nicknameInput.className = 'form-control mb-2';
+        nicknameInput.placeholder = 'Entrez un surnom pour le tournoi (facultatif)';
+    }
 
-    // Ajouter le bouton d'inscription
+    // Créer ou récupérer le bouton d'inscription
     let registerButton = document.getElementById('tournament-register-button');
     if (!registerButton) {
         registerButton = document.createElement('button');
         registerButton.id = 'tournament-register-button';
         registerButton.className = 'btn btn-outline-secondary';
-        //    tournamentSection.appendChild(registerButton);
     }
 
+    // Configuration du bouton d'inscription
     const username = localStorage.getItem('username');
     const isRegistered = tournamentData.participants.some(participant => participant.username === username);
 
-    if (isRegistered) {
-        registerButton.hidden = true;
-    } else {
+    registerButton.hidden = isRegistered;
+    nicknameInput.hidden = isRegistered;
+
+    if (!isRegistered) {
         registerButton.textContent = "S'inscrire";
         registerButton.onclick = async function () {
-            await registerForTournament(tournamentData.id);
+            const nickname = nicknameInput.value;
+            await registerForTournament(tournamentData.id, nickname);
         };
     }
+
+    // Ajouter les éléments au DOM dans l'ordre correct
+    tournamentSection.appendChild(nicknameInput);
     tournamentSection.appendChild(registerButton);
 }
+
 
 function displayTournamentDetailsWaitingPage(tournamentData) {
     console.log("les details du tournoi sont: ", tournamentData)
@@ -402,7 +404,7 @@ function createFinalElement(matchId, finalPlayers) {
 
 // Assurez-vous d'appeler displayTournamentDetails avec les données appropriées
 
-async function registerForTournament(tournamentData) {
+async function registerForTournament(tournamentData, nickname) {
     try {
         const gameSocketId = await openGameWebSocketConnection();
         localStorage.setItem('gameSocket_ID', gameSocketId)
@@ -420,7 +422,10 @@ async function registerForTournament(tournamentData) {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrfToken
             },
-            body: JSON.stringify({ game_socket_id: gameSocketId })
+            body: JSON.stringify({ 
+                game_socket_id: gameSocketId,
+                nickname: nickname,
+            })
         });
 
         const data = await response.json();
