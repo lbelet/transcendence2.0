@@ -283,9 +283,11 @@ function displayTournamentDetails(tournamentData) {
     // Configuration du bouton d'inscription
     const username = localStorage.getItem('username');
     const isRegistered = tournamentData.participants.some(participant => participant.username === username);
+    
+    const isFull = tournamentData.current_participants = 4; // Supposons que 4 est le nombre maximum de participants
 
-    registerButton.hidden = isRegistered;
-    nicknameInput.hidden = isRegistered;
+    registerButton.hidden = isRegistered || isFull;
+    nicknameInput.hidden = isRegistered || isFull;
 
     if (!isRegistered) {
         registerButton.textContent = "S'inscrire";
