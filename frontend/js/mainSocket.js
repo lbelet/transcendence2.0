@@ -452,6 +452,7 @@ function openGameWebSocketConnection() {
                 }
 
                 if (data.type === 'tournament_deleted') {
+					GameWebsocket.close()
                     console.log('tournoi annule!!!!!!!!!')
                     // if (toastElement) {
                     //     console.log("il y a bien un toastElement")
@@ -571,11 +572,12 @@ function openGameWebSocketConnection() {
                     console.log("donc le winner_id est:....", data.winner_id)
                     const currentUserId = localStorage.getItem('userID');
                     console.log("mon currentUserID est:....", currentUserId)
-                    if (data.winner_id && data.winner_id == currentUserId) {
-                        console.log('Vous avez gagné le tournoi !');
+                    if (data.winner_id && data.winner_id == currentUserId && data.round == 'Semifinal') {
+                        console.log('Vous avez gagné le match !');
                         navigateWithTokenCheck('waitingRoom');
                     } else {
                         console.log('Le tournoi est terminé. Vous n\'êtes pas le gagnant.');
+						gameWebsocket.close();
                         navigateWithTokenCheck('game');
                     }
                     // localStorage.removeItem('playerRole')

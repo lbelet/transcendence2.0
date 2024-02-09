@@ -435,10 +435,6 @@ function createFinalElement(matchId, finalPlayers) {
 
 async function registerForTournament(tournamentData, nickname) {
     try {
-        const gameSocketId = await openGameWebSocketConnection();
-        localStorage.setItem('gameSocket_ID', gameSocketId)
-        await updateGameSocketId(gameSocketId);
-
         console.log('tournament data:', tournamentData);
         console.log(`Tentative d'inscription au tournoi avec l'ID : ${tournamentData}`);
         const tournamentId = tournamentData;
@@ -452,7 +448,6 @@ async function registerForTournament(tournamentData, nickname) {
                 'X-CSRFToken': csrfToken
             },
             body: JSON.stringify({ 
-                game_socket_id: gameSocketId,
                 nickname: nickname,
             })
         });
@@ -461,6 +456,11 @@ async function registerForTournament(tournamentData, nickname) {
         if (!response.ok) {
             throw new Error(data.error || 'Erreur lors de l\'inscription');
         }
+        
+		const gameSocketId = await openGameWebSocketConnection();
+        localStorage.setItem('gameSocket_ID', gameSocketId)
+        await updateGameSocketId(gameSocketId);
+
         if (data.tournament_id) {
             localStorage.setItem('inGame', true)
             localStorage.setItem('inTournament', true)
