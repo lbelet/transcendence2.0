@@ -503,7 +503,7 @@ async function displayErrorMessageLogin() {
     }
 
     const messageKey = errorMessageElement.getAttribute('data-key');
-    var lang = localStorage.getItem('language');
+    var lang = localStorage.getItem('language') || 'fr';
 
     try {
         const response = await fetch('./locales/alerts.json');

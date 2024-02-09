@@ -1,6 +1,6 @@
 window.onload = async function () {
     console.log("onload....");
-    loadTranslations(localStorage.getItem('language'))
+    loadTranslations(localStorage.getItem('language') || 'fr')
     getCSRF_Token().then(csrf_Token => {
         console.log("CSRF Token:", csrf_Token);
     }).catch(error => {
