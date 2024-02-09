@@ -93,7 +93,6 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
                         return response.json();
                     })
                     .then(data => {
-                        console.log('Registered successfully:', data);
                         navigateTo('login');
                     })
                     .catch(error => {
@@ -147,7 +146,6 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
         return response.json();
     })
     .then(data => {
-        console.log('data dans edit user: ', data)
         if (data.message)
             displayErrorMessageEditUser(data.message)
         else{
@@ -173,7 +171,6 @@ function applyTranslations(translations) {
 
 async function loadTranslations(language) {
     try {
-        console.log("la langue est : ", language)
         const response = await fetch(`locales/${language}.json`);
         const translations = await response.json();
         return applyTranslations(translations);
@@ -203,7 +200,6 @@ function updateUserLanguage(language) {
             return response.json();
         })
         .then(() => {
-            console.log(`Language updated to: ${language}`);
             loadTranslations(language);
             localStorage.setItem('language', language)
         })

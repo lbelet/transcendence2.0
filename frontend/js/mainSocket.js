@@ -12,7 +12,6 @@ function openWebSocketConnection() {
     websocket.onmessage = function (event) {
         try {
             const data = JSON.parse(event.data);
-            console.log("data websocket: ", data)
 
             if (data.socket_id) {
                 updateSocketId(data.socket_id);
@@ -73,7 +72,6 @@ function openWebSocketConnection() {
     }
 
     websocket.onerror = function (error) {
-        console.log('Erreur WebSocket :', error);
     };
 }
 
@@ -88,7 +86,6 @@ function getGamePlayers(gameId) {
         })
         .then(response => response.json())
         .then(data => {
-            console.log("Joueurs: ", data);
             localStorage.setItem('player_one', data.player_one);
             localStorage.setItem('player_two', data.player_two);
             resolve(data); 
@@ -111,7 +108,6 @@ function getGamePlayers_tournament(gameId) {
         })
         .then(response => response.json())
         .then(data => {
-            console.log("Joueurs: ", data);
             localStorage.setItem('player_one', data.player_one);
             localStorage.setItem('player_two', data.player_two);
             resolve();
@@ -139,21 +135,15 @@ function openGameWebSocketConnection() {
         };
 
         gameWebsocket.onmessage = function (event) {
-            console.log('Message reçu du jeu :', event.data);
             try {
                 const data = JSON.parse(event.data);
-                console.log("data gamesocket: ", data);
 
 
                 if (data.game_socket_id) {
                     resolve(data.game_socket_id); 
                 }
-                if (data.status === 'added_to_game') {
-                    console.log('!!!!!!!dans le channel gameSocket');
-                }
 
                 if (data.type === 'tournament_full') {
-                    console.log("tournament full: ", data.message);
 
                     toastElement = document.createElement('div');
                     toastElement.classList.add('toast');
@@ -181,7 +171,6 @@ function openGameWebSocketConnection() {
 
                     const countdownDisplay = document.getElementById('countdown');
                     let countdownInterval = startCountdown(15, countdownDisplay, function () {
-                        console.log("Le compte à rebours est terminé. Le tournoi est annulé.");
 
                         const tournamentId = data.tournament_id; 
                         const csrfToken = getCSRFToken();
@@ -194,14 +183,6 @@ function openGameWebSocketConnection() {
                             }
                         })
                         .then(response => response.json())
-                        .then(data => {
-                            console.log('Réponse du serveur:', data);
-                            if (data.message === 'Tournament deleted') {
-                                console.log("Le tournoi a été supprimé avec succès.");
-                            } else {
-                                console.log("le tournoi est deja supprime");
-                            }
-                        })
                         .catch(error => {
                             console.error('Erreur lors de la suppression du tournoi:', error);
                         });
@@ -209,7 +190,6 @@ function openGameWebSocketConnection() {
 
                     document.getElementById('readyButton').addEventListener('click', function() {
                         clearInterval(countdownInterval);
-                        console.log("Le joueur est prêt.");
 
                         const tournamentId = data.tournament_id; 
                         const csrfToken = getCSRFToken();
@@ -223,13 +203,6 @@ function openGameWebSocketConnection() {
                             }
                         })
                         .then(response => response.json())
-                        .then(data => {
-                            console.log('Réponse du serveur:', data);
-                            if (data.error) {
-                            } else {
-                                console.log("Présence du joueur confirmée");
-                            }
-                        })
                         .catch(error => {
                             console.error('Erreur lors de la confirmation de la présence du joueur:', error);
                         });
@@ -240,7 +213,6 @@ function openGameWebSocketConnection() {
 
                     document.getElementById('noButton').addEventListener('click', function () {
                         clearInterval(countdownInterval);
-                        console.log("Le joueur a refusé.");
 
                         const tournamentId = data.tournament_id;
                         const csrfToken = getCSRFToken();
@@ -253,14 +225,6 @@ function openGameWebSocketConnection() {
                             }
                         })
                         .then(response => response.json())
-                        .then(data => {
-                            console.log('Réponse du serveur:', data);
-                            if (data.message === 'Tournament deleted') {
-                                console.log("Le tournoi a été supprimé avec succès.");
-                            } else {
-                                console.error("Erreur lors de la suppression du tournoi.");
-                            }
-                        })
                         .catch(error => {
                             console.error('Erreur lors de la suppression du tournoi:', error);
                         });
@@ -273,10 +237,8 @@ function openGameWebSocketConnection() {
 
                 if (data.type === 'tournament_deleted') {
 					gameWebsocket.close()
-                    console.log('tournoi annule!!!!!!!!!')
 
                     if (toast != null) {
-                        console.log("Il y a bien un toast");
                         toast.hide(); 
                     }
                     navigateWithTokenCheck('game')
@@ -284,23 +246,19 @@ function openGameWebSocketConnection() {
                 }
 
                 if (data.type === 'tournament_update') {
-                    console.log("bien recu! et le data tournamentID est:", data.tournamentId)
                     fetchTournamentDetailsWaitingPage(data.tournamentId);
                 }
 
                 if (data.type === 'player_roles') {
                     var playerRole = (data.player_one_username === localStorage.getItem("username")) ? 1 : 2;
                     localStorage.setItem('playerRole', playerRole);
-                    console.log("Mon rôle dans le match:", playerRole);
                 }
 
                 if (data.type === 'game_start') {
-                    console.log("data start: ", data);
                     getGamePlayers(data.game_id).then(data => {
                         const player1Name = data.player_one;
                         const player2Name = data.player_two;
 
-                        console.log("player1Name: ", player1Name, "player2Name: ", player2Name);
 
                         startPongGame(data.game_id, player1Name, player2Name);
                         playPong();
@@ -312,9 +270,6 @@ function openGameWebSocketConnection() {
                         const player1Name = localStorage.getItem('player_one');
                         const player2Name = localStorage.getItem('player_two');
 
-                        console.log("player1Name: ", player1Name, "player2Name: ", player2Name);
-
-                        console.log('!!!!Le tournoi de Pong commence grâce aux sockets');
                         startPongTournament(data.game_id, player1Name, player2Name);
                         playPong_tournament();
                     });
@@ -322,7 +277,6 @@ function openGameWebSocketConnection() {
 
 
                 else if (data.type === 'paddles_update') {
-                    console.log("paddles_update ok")
                     applyGameState(data.paddles_state);
                 }
 
@@ -341,15 +295,12 @@ function openGameWebSocketConnection() {
                 else if (data.type === 'score_update') {
                     const player1Name = localStorage.getItem('player_one')
                     const player2Name = localStorage.getItem('player_two')
-
-                    console.log("score1: ", data.score_state.player1, "score2: ", data.score_state.player2)
                     window.updateScores(data.score_state.player1, data.score_state.player2, player1Name, player2Name);
                 }
 
                 else if (data.type === 'score_update_tournament') {
                     const player1Name = localStorage.getItem('player_one')
                     const player2Name = localStorage.getItem('player_two')
-                    console.log("score1: ", data.score_state.player1, "score2: ", data.score_state.player2)
                     window.updateScores_tournament(data.score_state.player1, data.score_state.player2, player1Name, player2Name);
                 }
 
@@ -369,15 +320,10 @@ function openGameWebSocketConnection() {
                     localStorage.removeItem('player_one')
                     localStorage.removeItem('player_two')
                     localStorage.removeItem('playerRole')
-                    console.log("les donnees sont:.....", data)
-                    console.log("donc le winner_id est:....", data.winner_id)
                     const currentUserId = localStorage.getItem('userID');
-                    console.log("mon currentUserID est:....", currentUserId)
                     if (data.winner_id && data.winner_id == currentUserId && data.round == 'Semifinal') {
-                        console.log('Vous avez gagné le match !');
                         navigateWithTokenCheck('waitingRoom');
                     } else {
-                        console.log('Le tournoi est terminé. Vous n\'êtes pas le gagnant.');
 						gameWebsocket.close();
                         navigateWithTokenCheck('game');
                     }
@@ -388,9 +334,6 @@ function openGameWebSocketConnection() {
                         const player1Name = localStorage.getItem('player_one');
                         const player2Name = localStorage.getItem('player_two');
 
-                        console.log("player1Name: ", player1Name, "player2Name: ", player2Name);
-
-                        console.log('!!!!Le tournoi de Pong commence grâce aux sockets');
                         startPongTournament(data.game_id, player1Name, player2Name);
                         playPong_tournament();
                     });
@@ -403,7 +346,6 @@ function openGameWebSocketConnection() {
         };
 
         gameWebsocket.onerror = function (error) {
-            console.log('Erreur WebSocket de jeu:', error);
             reject(error);
         };
     });
@@ -458,7 +400,6 @@ function startPongGame(gameId, player1Name, player2Name) {
         .catch(error => {
         });
 
-    console.log('!!!!Démarrage de la partie de Pong STARTPONGGAME');
     navigateWithTokenCheck('pong');
 
     window.setPlayerRole(player1Name, player2Name);
@@ -488,10 +429,8 @@ function startPongTournament(gameId, player1Name, player2Name) {
         })
         .catch(error => {
             console.error('Erreur lors du traitement de la demande:', error);
-            alert('Erreur lors du traitement de la demande');
         });
 
-    console.log('!!!!Démarrage du tournoi pongTournament');
     navigateWithTokenCheck('pongTournament');
     localStorage.setItem('currentGameId', gameId)
     window.setPlayerRole_tournament(player1Name, player2Name);
@@ -501,7 +440,6 @@ function startPongTournament(gameId, player1Name, player2Name) {
 function sendGameIdToWebSocket(gameId) {
     if (gameWebsocket && gameWebsocket.readyState === WebSocket.OPEN) {
         gameWebsocket.send(JSON.stringify({ game_id: gameId }));
-        console.log("connexion OK..........")
     } else {
         console.error("La connexion WebSocket n'est pas ouverte.");
     }
@@ -510,7 +448,6 @@ function sendGameIdToWebSocket(gameId) {
 function sendGameIdToWebSocket_tournament(tournamentId) {
     if (gameWebsocket && gameWebsocket.readyState === WebSocket.OPEN) {
         gameWebsocket.send(JSON.stringify({ tournament_id: tournamentId }));
-        console.log("connexion OK..........")
     } else {
         console.error("La connexion WebSocket n'est pas ouverte.");
     }

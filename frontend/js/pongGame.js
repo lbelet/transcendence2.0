@@ -111,10 +111,8 @@ directionalLight.position.set(20, 20, 20);
 scene.add(directionalLight);
 
 document.addEventListener('keydown', (event) => {
-    console.log("event match ok")
     if (typeof gameWebsocket !== 'undefined' && gameWebsocket.readyState === WebSocket.OPEN && window.location.pathname === '/pong') {
         let action;
-        console.log("touches match ok")
         if (event.key === "ArrowRight") {
             action = paddleUser == paddle1 ? 'move_left_paddle1' : 'move_right_paddle2';
         } else if (event.key === "ArrowLeft") {
@@ -129,7 +127,6 @@ document.addEventListener('keydown', (event) => {
 // }
 
 window.updateGameFromState = function (newGameState) {
-    console.log("Mise à jour de l'état des raquettes reçue:", newGameState);
     if (newGameState.paddle1) {
         paddle1.position.x = newGameState.paddle1.x;
     }
@@ -170,7 +167,6 @@ window.setPlayerRole = function (player1Name, player2Name) {
 
     if (playerRole == 1) {
         paddleUser = paddle1;
-        console.log("playerRole: ", playerRole)
         camera.position.set(0, 5, -28); 
         camera.rotation.y = Math.PI;
         newScoreText.rotation.y = Math.PI; 
@@ -178,7 +174,6 @@ window.setPlayerRole = function (player1Name, player2Name) {
 
     } else if (playerRole == 2) {
         paddleUser = paddle2;
-        console.log("playerRole: ", playerRole)
         camera.position.set(0, 5, 28); 
         camera.rotation.y = 0;
     }
@@ -192,7 +187,6 @@ window.updateScores = function(player1Score, player2Score, player1Name, player2N
         window.scoreText1.geometry.dispose();
     }
 
-    console.log("playerOne: ", player1Name)
 
     const newText = `${player1Name}: ${player1Score} | ${player2Name}: ${player2Score}`;
     const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });

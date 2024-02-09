@@ -39,12 +39,6 @@ function resizeCanvas() {
     canvas.width = newWidth;
     canvas.height = newHeight;
 
-	console.log(canvas.width);
-	console.log(canvas.height);
-	console.log(canvas.width / canvas.height);
-	console.log(16 / 9);
-
-
     canvas.style.position = 'absolute';
     canvas.style.left = '50%';
     canvas.style.top = '50%';

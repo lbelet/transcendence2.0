@@ -28,7 +28,6 @@ document.getElementById('EmailTwoFactorForm').addEventListener('submit', functio
             if (data.error)
                 displayErrorMessage2FA(data.error)
                 else {
-                console.log('2FA Verification successful:', data);
                 localStorage.setItem('access_token', data.access);
                 localStorage.setItem('refresh_token', data.refresh);
                 localStorage.setItem('language', data.language);
@@ -81,7 +80,6 @@ document.getElementById('qrTwoFactorForm').addEventListener('submit', function (
             if (data.error)
                 displayErrorMessage2FAQR(data.error)
             else {
-                console.log('QR 2FA Verification successful:', data);
                 localStorage.setItem('access_token', data.access);
                 localStorage.setItem('refresh_token', data.refresh);
                 localStorage.setItem('language', data.language);

@@ -49,9 +49,6 @@ function playPong() {
             }
             return response.json();
         })
-        .then(data => {
-            console.log('Success:', data);
-        })
         .catch(error => {
         });
 }
@@ -72,9 +69,6 @@ function playPong_tournament() {
                 throw new Error('Network response was not ok');
             }
             return response.json();
-        })
-        .then(data => {
-            console.log('Success:', data);
         })
         .catch(error => {
         });
@@ -168,9 +162,6 @@ async function joinGameQueue() {
             localStorage.setItem('currentGameId', data.game_id);
             sendGameIdToWebSocket(data.game_id);
             localStorage.setItem('playerRole', data.player_role);
-            if (data.message.includes('Partie en cours')) {
-                console.log("!!!!!partie en cours ok")
-            }
             if (data.message.includes('waitingRoomAccess')) {
                 localStorage.setItem('inGame', true)
                 navigateWithTokenCheck('waitingRoom')
@@ -211,7 +202,6 @@ async function loadGameResults(gameId) {
     })
         .then(response => response.json())
         .then(results => {
-            console.log(results)
             document.getElementById('results-players').textContent = `${results.players[0]} : ${results.players[1]}`
 			document.getElementById('results-winner').textContent = results.winner
             document.getElementById('results-scores').textContent = `${results.score[0]} : ${results.score[1]}`

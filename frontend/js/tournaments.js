@@ -11,8 +11,6 @@ document.getElementById('createTournamentForm').addEventListener('submit', funct
         nickName = localStorage.getItem('username'); 
     }
     
-    console.log('Tournament name: ', tournamentName);
-
     fetch(`/api/check_tournament_exists/${encodeURIComponent(tournamentName)}/`, {
         headers: {
             'accept': 'application/json',
@@ -69,7 +67,6 @@ function createTournament(tournamentName, nickName) {
         start_date_option: startDateOption,
         specific_start_date: specificStartDate
     };
-    console.log('data send: ', data)
     const csrfToken = getCSRFToken();
 
     fetch('/api/create_tournament/', {
@@ -91,7 +88,6 @@ function createTournament(tournamentName, nickName) {
         return response.json();
     })
     .then(data => {
-        console.log('Success for tournament:', data);
         if (data.success) {
             registerForTournament(data.tournament_id, nickName);
             const modalElement = document.getElementById('createTournamentModal');
@@ -120,9 +116,6 @@ function registerUserToTournament(tournamentId) {
         }
     })
         .then(response => response.json())
-        .then(data => {
-            console.log('Inscription Success:', data);
-        })
         .catch((error) => {
             console.error('Inscription Error:', error);
         });
@@ -139,7 +132,6 @@ function loadAvailableTournaments() {
     })
         .then(response => response.json())
         .then(tournaments => {
-            console.log("tournois dispo? :", tournaments)
             availableTournaments = tournaments;
             displayTournaments(tournaments);
         })
@@ -215,7 +207,6 @@ function displayTournaments(tournaments) {
 }
 
 function displayTournamentDetails(tournamentData) {
-    console.log("les details du tournoi sont: ", tournamentData);
     document.getElementById('tournamentName').textContent = tournamentData.name;
 
     const tournamentSection = document.getElementById('tournamentBracket-section');
@@ -276,7 +267,6 @@ function displayTournamentDetails(tournamentData) {
 
 
 function displayTournamentDetailsWaitingPage(tournamentData) {
-    console.log("les details du tournoi sont: ", tournamentData)
     document.getElementById('tournamentNameWaitingPage').textContent = tournamentData.name;
 
     const tournamentSection = document.getElementById('waitingRoomTournament-section');
@@ -374,8 +364,6 @@ function createFinalElement(matchId, finalPlayers) {
 
 async function registerForTournament(tournamentData, nickname) {
     try {
-        console.log('tournament data:', tournamentData);
-        console.log(`Tentative d'inscription au tournoi avec l'ID : ${tournamentData}`);
         const tournamentId = tournamentData;
         const csrfToken = getCSRFToken();
 
@@ -408,16 +396,12 @@ async function registerForTournament(tournamentData, nickname) {
                 fetchTournamentDetailsWaitingPage(data.tournament_id);
             }
         }
-
-        console.log(data);
     } catch (error) {
     }
 }
 
 
 function unregisterFromTournament(tournamentData) {
-    console.log('tournament data:', tournamentData)
-    console.log(`Tentative de desinscription au tournoi avec l'ID : ${tournamentData.id}`);
     const tournamentId = tournamentData;
     const csrfToken = getCSRFToken();
     
@@ -448,7 +432,6 @@ function fetchTournamentDetails(tournamentId) {
     })
         .then(response => response.json())
         .then(tournamentData => {
-            console.log("les details du tournoi sont: ", tournamentData)
             displayTournamentDetails(tournamentData);
         })
         .catch(error => {
@@ -465,7 +448,6 @@ function fetchTournamentDetailsWaitingPage(tournamentId) {
     })
         .then(response => response.json())
         .then(tournamentData => {
-            console.log("les details du tournoi sont: ", tournamentData)
             displayTournamentDetailsWaitingPage(tournamentData);
         })
         .catch(error => {

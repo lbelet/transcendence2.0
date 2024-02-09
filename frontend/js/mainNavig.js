@@ -86,7 +86,6 @@ function navigateTo(sectionId) {
         document.getElementById('notFound-section').classList.remove('hidden');
         window.history.pushState({ section: 'notFound' }, '', `/not-found`);
     }
-    console.log("navigateTo");
     if (sectionId === 'home') {
         startAnimation();
     } else {

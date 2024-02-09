@@ -45,7 +45,6 @@ function acceptFriendRequest(requestId) {
             return response.json();
         })
         .then(data => {
-            console.log(data.message);
             const requestElement = document.getElementById(`friend-request-${requestId}`);
             if (requestElement) {
                 requestElement.remove();
@@ -74,7 +73,6 @@ function declineFriendRequest(requestId) {
             return response.json();
         })
         .then(data => {
-            console.log(data.message);
             const requestElement = document.getElementById(`friend-request-${requestId}`);
             if (requestElement) {
                 requestElement.remove();

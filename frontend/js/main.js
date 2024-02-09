@@ -1,8 +1,6 @@
 window.onload = async function () {
-    console.log("onload....");
     loadTranslations(localStorage.getItem('language') || 'fr')
     getCSRF_Token().then(csrf_Token => {
-        console.log("CSRF Token:", csrf_Token);
     }).catch(error => {
         console.error('Error fetching CSRF token:', error);
     });
@@ -46,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('user-name-game').textContent = userName;
     }
     const avatar_url = localStorage.getItem('avatarURL')
-    console.log('avatarURL: ', avatar_url)
     if (avatar_url) {
         document.getElementById('user-avatar').src = avatar_url;    
     }
@@ -57,7 +54,6 @@ window.updateUserUI = function() {
     const avatarUrl = localStorage.getItem('avatarURL');
 
   if (userName) {
-    console.log(document.getElementById('user-name-game'));
         document.getElementById('user-name-game').textContent = userName;
     }
 

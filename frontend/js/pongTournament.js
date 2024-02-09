@@ -105,9 +105,7 @@ const ambientLight2 = new THREE.AmbientLight(0xffffff, 0.5);
 scene2.add(ambientLight2);
 
 document.addEventListener('keydown', (event) => {
-    console.log("event Tournament ok")
     if (typeof gameWebsocket !== 'undefined' && gameWebsocket.readyState === WebSocket.OPEN && window.location.pathname === '/pongTournament') {
-        console.log("touches tournoi ok")
         let action;
         if (event.key === "ArrowRight") {
             action = paddleUser2 == paddle12 ? 'move_left_paddle12' : 'move_right_paddle22';
@@ -123,7 +121,6 @@ document.addEventListener('keydown', (event) => {
 
 
 window.updateGameFromState_tournament = function (newGameState) {
-    console.log("Mise à jour de l'état des raquettes reçue:", newGameState);
     if (newGameState.paddle1) {
         paddle12.position.x = newGameState.paddle1.x;
     }
@@ -163,14 +160,12 @@ window.setPlayerRole_tournament = function (player1Name, player2Name) {
     window.scoreText12 = newScoreText2;
     if (playerRole2 == 1) {
         paddleUser2 = paddle12;
-        console.log("playerRole: ", playerRole2)
         camera2.position.set(0, 5, -28); 
         camera2.rotation.y = Math.PI;
         newScoreText2.rotation.y = Math.PI; 
         newScoreText2.position.set(15, 15, 0);
     } else if (playerRole2 == 2) {
         paddleUser2 = paddle22;
-        console.log("playerRole: ", playerRole2)
         camera2.position.set(0, 5, 28); 
         camera2.rotation.y = 0;
     }
