@@ -805,9 +805,9 @@ class GameConsumer(AsyncWebsocketConsumer):
             game.save()
             game.refresh_from_db()
         except User.DoesNotExist:
-            print(f"User with game_socket_id {self.winner_channel_name} not found")
+            print(f"User with game_socket_id {winner_channel_name} not found")
         except PongGame.DoesNotExist:
-            print(f"PongGame with id {self.game_id} not found")
+            print(f"PongGame with id {game_id} not found")
         except Exception as e:
             print(f"Erreur lors de l'enregistrement : {e}")
 
@@ -847,9 +847,9 @@ class GameConsumer(AsyncWebsocketConsumer):
 
             game.save()
         except User.DoesNotExist:
-            print(f"User with game_socket_id {self.winner_channel_name} not found")
+            print(f"User with game_socket_id {winner_channel_name} not found")
         except Player.DoesNotExist:
-            print(f"Player for User with game_socket_id {self.winner_channel_name} not found")
+            print(f"Player for User with game_socket_id {winner_channel_name} not found")
         except Match.DoesNotExist:
             print(f"Match with id {self.game_id} not found")
         except Exception as e:

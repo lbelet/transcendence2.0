@@ -452,7 +452,7 @@ function openGameWebSocketConnection() {
                 }
 
                 if (data.type === 'tournament_deleted') {
-					GameWebsocket.close()
+					gameWebsocket.close()
                     console.log('tournoi annule!!!!!!!!!')
                     // if (toastElement) {
                     //     console.log("il y a bien un toastElement")
