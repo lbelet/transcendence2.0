@@ -257,7 +257,7 @@ function displayTournamentDetails(tournamentData) {
     const username = localStorage.getItem('username');
     const isRegistered = tournamentData.participants.some(participant => participant.username === username);
     
-    const isFull = tournamentData.current_participants = 4;
+    const isFull = tournamentData.current_participants >= 4;
 
     registerButton.hidden = isRegistered || isFull;
     nicknameInput.hidden = isRegistered || isFull;
