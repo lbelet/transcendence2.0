@@ -137,6 +137,7 @@
 
                 <div id="emailTwoFactor-section" class="hidden">
                     <h2 data-key="mail_2fa_auth">Authentification à deux facteurs par email</h2>
+                    <div id="2FAErrorMessage" class="alert alert-danger" style="display: none;"></div>
                     <form id="EmailTwoFactorForm">
                         <div class="form-group">
                             <label for="twoFactorCode" data-key="2fa_code">2FA Code</label>
@@ -148,6 +149,7 @@
 
                 <div id="qrTwoFactor-section" class="hidden">
                     <h2 data-key="qr_2fa_auth">Authentification à deux facteurs par QR code</h2>
+                    <div id="2FAQRErrorMessage" class="alert alert-danger" style="display: none;"></div>
                     <p data-key="scan_qr_code">Scannez le code QR avec votre application d'authentification et saisissez
                         le code
                         ci-dessous. Par exemple, vous pouvez utiliser Google Authenticator.</p>

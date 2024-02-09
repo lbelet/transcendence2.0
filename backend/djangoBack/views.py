@@ -584,7 +584,7 @@ def verify_two_factor_code(request):
                 tokens['id'] = user.id
                 return JsonResponse(tokens, status=200)
             else:
-                return JsonResponse({'error': 'Invalid 2FA code'}, status=400)
+                return JsonResponse({'error': 'Invalid 2FA code'}, status=200)
         elif user.two_factor_method == 'qr':
             totp = pyotp.TOTP(user.totp_secret)
             if totp.verify(two_factor_code):
@@ -595,9 +595,9 @@ def verify_two_factor_code(request):
                 tokens['id'] = user.id
                 return JsonResponse(tokens, status=200)
             else:
-                return JsonResponse({'error': 'Invalid QR code'}, status=400)
+                return JsonResponse({'error': 'Invalid QR code'}, status=200)
 
-    return JsonResponse({'error': '2FA is not enabled for this user'}, status=400)
+    return JsonResponse({'error': '2FA is not enabled for this user'}, status=200)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

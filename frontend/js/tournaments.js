@@ -576,3 +576,23 @@ function displayErrorMessageJoinGame(message) {
         console.error('Error message element not found');
     }
 }
+
+function displayErrorMessage2FA(message) {
+    const errorMessageElement = document.getElementById('2FAErrorMessage');
+    if (errorMessageElement) {
+        errorMessageElement.textContent = message; // Set the text content to the message
+        errorMessageElement.style.display = 'block'; // Make sure it's visible
+    } else {
+        console.error('Error message element not found');
+    }
+}
+
+function displayErrorMessage2FAQR(message) {
+    const errorMessageElement = document.getElementById('2FAQRErrorMessage');
+    if (errorMessageElement) {
+        errorMessageElement.textContent = message; // Set the text content to the message
+        errorMessageElement.style.display = 'block'; // Make sure it's visible
+    } else {
+        console.error('Error message element not found');
+    }
+}

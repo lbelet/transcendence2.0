@@ -26,36 +26,39 @@ document.getElementById('EmailTwoFactorForm').addEventListener('submit', functio
             return response.json();
         })
         .then(data => {
-            console.log('2FA Verification successful:', data);
-            localStorage.setItem('access_token', data.access);
-            localStorage.setItem('refresh_token', data.refresh);
-            localStorage.setItem('language', data.language);
-            localStorage.setItem('avatarURL', data.avatar_url);
-            localStorage.setItem('userID', data.id);
+            if (data.error)
+                displayErrorMessage2FA(data.error)
+                else {
+                console.log('2FA Verification successful:', data);
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+                localStorage.setItem('language', data.language);
+                localStorage.setItem('avatarURL', data.avatar_url);
+                localStorage.setItem('userID', data.id);
 
-            setupTokenRefresh();
+                setupTokenRefresh();
 
-            // Après une connexion réussie
-            // const burgerMenu = document.getElementById('bMenu');
-            // burgerMenu.classList.remove('hidden');
+                // Après une connexion réussie
+                // const burgerMenu = document.getElementById('bMenu');
+                // burgerMenu.classList.remove('hidden');
 
-            // const searchingBar = document.getElementById('searchU');
-            // searchingBar.classList.remove('hidden');
+                // const searchingBar = document.getElementById('searchU');
+                // searchingBar.classList.remove('hidden');
 
-            // console.log("Burger menu should be visible now");
-            document.getElementById('hiddenNav').classList.remove('hidden');
-            loadTranslations(data.language)
-            .then( ret => {
-              navigateWithTokenCheck('game');
-              window.updateUserUI();
+                // console.log("Burger menu should be visible now");
+                document.getElementById('hiddenNav').classList.remove('hidden');
+                loadTranslations(data.language)
+                .then( ret => {
+                navigateWithTokenCheck('game');
+                window.updateUserUI();
 
-              // showWelcome();
-              openWebSocketConnection();
-            });
+                // showWelcome();
+                openWebSocketConnection();
+                });
+            }
         })
         .catch(error => {
-            console.error('2FA Verification error:', error);
-            alert('Invalid 2FA code. Please try again.');
+            displayErrorMessage2FA(data.error)
         });
 });
 
@@ -135,18 +138,22 @@ document.getElementById('qrTwoFactorForm').addEventListener('submit', function (
             return response.json();
         })
         .then(data => {
-            console.log('QR 2FA Verification successful:', data);
-            localStorage.setItem('access_token', data.access);
-            localStorage.setItem('refresh_token', data.refresh);
-            localStorage.setItem('language', data.language);
-            localStorage.setItem('avatarURL', data.avatar_url);
-            localStorage.setItem('userID', data.id);
-            // Après une connexion réussie
-            setupTokenRefresh();
-            window.updateUserUI();
-            navigateWithTokenCheck('game');
-            openWebSocketConnection();
-            document.getElementById('hiddenNav').classList.remove('hidden');
+            if (data.error)
+                displayErrorMessage2FAQR(data.error)
+            else {
+                console.log('QR 2FA Verification successful:', data);
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+                localStorage.setItem('language', data.language);
+                localStorage.setItem('avatarURL', data.avatar_url);
+                localStorage.setItem('userID', data.id);
+                // Après une connexion réussie
+                setupTokenRefresh();
+                window.updateUserUI();
+                navigateWithTokenCheck('game');
+                openWebSocketConnection();
+                document.getElementById('hiddenNav').classList.remove('hidden');
+            }
         })
         .catch(error => {
             // console.error('QR 2FA Verification error:', error);
