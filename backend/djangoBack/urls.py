@@ -72,6 +72,7 @@ urlpatterns = [
     path('game_info/<int:game_id>/', views.game_info, name='game-info'),
 
     path('get_csrf_token/', views.get_csrf_token, name='get-csrf-token'),
+    path('check_nickname_exists/<str:nickName>/', views.check_nickname_exists, name='check-nickname-exists'),
 
 
 

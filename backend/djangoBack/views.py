@@ -113,6 +113,20 @@ def verify_token(request):
     # Si le code atteint ce point, le token est valide
     return JsonResponse({"message": "Token valide"})
 
+@api_view(['GET'])
+@csrf_exempt
+def check_user_exists(request):
+    username = request.GET.get('username', None)
+    email = request.GET.get('email', None)
+
+    if username and User.objects.filter(username=username).exists():
+        return JsonResponse({'exists': True, 'type': 'username'})
+
+    if email and User.objects.filter(email=email).exists():
+        return JsonResponse({'exists': True, 'type': 'email'})
+
+    return JsonResponse({'exists': False})
+
 
 @api_view(['POST'])
 @csrf_protect
@@ -290,26 +304,31 @@ def register(request):
         # Une exception inattendue
         return JsonResponse({'error': 'An unexpected error occurred'}, status=500)
 
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def check_tournament_exists(request, tournament_name):
+#     logger.info(tournament_name)
+#     exists = Tournament.objects.filter(name=tournament_name).exists()
+#     return JsonResponse({'exists': exists})
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def check_tournament_exists(request, tournament_name):
-    logger.info(tournament_name)
-    exists = Tournament.objects.filter(name=tournament_name).exists()
+def check_nickname_exists(request, nickName):
+    # Log l'information du nickname recherché pour le debug ou le suivi
+    logger.info(nickName)
+
+    # Obtenez le modèle utilisateur
+    User = get_user_model()
+
+    # Vérifiez si le nickname existe déjà comme un nick_name dans Player ou comme un username dans User
+    nickname_exists = Player.objects.filter(nick_name=nickName).exists()
+    username_exists = User.objects.filter(username=nickName).exists()
+
+    # Combine les résultats des deux vérifications
+    exists = nickname_exists or username_exists
+
+    # Retournez le résultat de la vérification
     return JsonResponse({'exists': exists})
-
-@api_view(['GET'])
-@csrf_exempt
-def check_user_exists(request):
-    username = request.GET.get('username', None)
-    email = request.GET.get('email', None)
-
-    if username and User.objects.filter(username=username).exists():
-        return JsonResponse({'exists': True, 'type': 'username'})
-
-    if email and User.objects.filter(email=email).exists():
-        return JsonResponse({'exists': True, 'type': 'email'})
-
-    return JsonResponse({'exists': False})
 
 
 # @csrf_exempt

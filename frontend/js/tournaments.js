@@ -1,35 +1,64 @@
 document.getElementById('createTournamentForm').addEventListener('submit', function (event) {
-	event.preventDefault();
+    event.preventDefault();
 
-	const errorMessageElement = document.getElementById('tournamentCreationErrorMessage');
-	errorMessageElement.style.display = 'none';
+    const errorMessageElement = document.getElementById('tournamentCreationErrorMessage');
+    errorMessageElement.style.display = 'none';
 
-    const nickName = document.getElementById('tournamentNickname').value;
-	const tournamentName = document.getElementById('tournamentNameBis').value;
-	console.log('tournament name: ', tournamentName)
-	fetch(`/api/check_tournament_exists/${encodeURIComponent(tournamentName)}/`, {
-		headers: {
-			'accept': 'application/json',
-			'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-		},
-	})
-	.then(response => response.json())
-	.then(data => {
-		console.log("got data:", data)
-		if (data.exists) {
-			displayErrorMessage('A tournament with this name already exists.');
+    let nickName = document.getElementById('tournamentNickname').value;
+    const tournamentName = document.getElementById('tournamentNameBis').value;
 
-		} else {
-			// Proceed with tournament creation
-			createTournament(tournamentName, nickName);
-		}
-	})
-	.catch((error) => {
-		console.error('Error:', error);
-		displayErrorMessage('An unexpected error occurred while checking the tournament name.');
-	});
-});
+    if (!nickName) {
+        nickName = localStorage.getItem('username'); // Assurez-vous que username est correctement stocké dans localStorage
+    }
     
+    console.log('Tournament name: ', tournamentName);
+
+    // Première vérification : existence du nom du tournoi
+    fetch(`/api/check_tournament_exists/${encodeURIComponent(tournamentName)}/`, {
+        headers: {
+            'accept': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Problème réseau.');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.exists) {
+            throw new Error("Nom de tournoi non dispo");
+        } else {
+            // Deuxième vérification : existence du nickname
+            // Important : retournez cette promesse pour que le prochain .then() dans la chaîne soit appliqué à cette requête
+            return fetch(`/api/check_nickname_exists/${encodeURIComponent(nickName)}/`, {
+                headers: {
+                    'accept': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                },
+            });
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Problème réseau.');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.exists) {
+            throw new Error("Nickname déjà pris");
+        } else {
+            // Tout est ok, procéder à la création du tournoi
+            createTournament(tournamentName, nickName);
+        }
+    })
+    .catch((error) => {
+        displayErrorMessage(error.message);
+    });
+});
+
 function createTournament(tournamentName, nickName) {
     // const numberOfPlayers = document.querySelector('input[name="numberOfPlayers"]:checked').value;
 
