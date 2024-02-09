@@ -320,9 +320,16 @@ def check_nickname_exists(request, nickName):
     # Obtenez le modèle utilisateur
     User = get_user_model()
 
-    # Vérifiez si le nickname existe déjà comme un nick_name dans Player ou comme un username dans User
+    # Si le nickname est le même que le username de l'utilisateur faisant la requête, considérez qu'il n'existe pas de conflit
+    if nickName == request.user.username:
+        return JsonResponse({'exists': False})
+
+    # Vérifiez si le nickname existe déjà comme un nick_name dans Player
+    # Exclure l'utilisateur actuel de la vérification s'il s'agit de son propre username
     nickname_exists = Player.objects.filter(nick_name=nickName).exists()
-    username_exists = User.objects.filter(username=nickName).exists()
+
+    # Vérifiez si le nickname existe comme un username dans User, exclure l'utilisateur actuel
+    username_exists = User.objects.exclude(id=request.user.id).filter(username=nickName).exists()
 
     # Combine les résultats des deux vérifications
     exists = nickname_exists or username_exists
