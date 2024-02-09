@@ -167,10 +167,11 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
         console.log('data dans edit user: ', data)
         if (data.message)
             displayErrorMessageEditUser(data.message)
-        else
+        else{
             alert('Préférences mises à jour.');
             loadTranslations(data.language);
             localStorage.setItem('language', data.language)
+		}
     })
     .catch(error => {
         displayErrorMessageEditUser(data.message)
