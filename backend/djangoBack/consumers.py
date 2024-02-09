@@ -628,7 +628,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         winner_id = event.get('winner', None)  # Obtenez l'ID du gagnant, ou None si non présent
         await self.send(text_data=json.dumps({
             'type': 'game_over_tournament',
-            'winner_id': winner_id
+            'winner_id': winner_id,
+            'round': event.get('round', None)
         }))
 
 
@@ -686,17 +687,19 @@ class GameConsumer(AsyncWebsocketConsumer):
             )
         self.game_active = False
         print('is active ? ', self.game_active)
+        game_id = self.game_id
+        print("game id = ", game_id)
+        current_match = await sync_to_async(lambda: Match.objects.get(id=game_id))()
+        winner_user_id = await sync_to_async(lambda: Player.objects.get(id=winner_channel_name).user.id)()
         await self.channel_layer.group_send(
             f'tournament_{self.game_id}',
             {
                 'type': 'send_game_over_tournament',
-                'winner': winner_channel_name,
+                'winner': winner_user_id,
+                'round': current_match.round
             }
         )
 
-        game_id = self.game_id
-        print("game id = ", game_id)
-        current_match = await sync_to_async(lambda: Match.objects.get(id=game_id))()
         if current_match.round == 'Semifinal':
             print("c etait une demi-finale.....")
             await self.handle_final_match(self.game_id)
