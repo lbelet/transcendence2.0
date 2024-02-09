@@ -40,7 +40,6 @@ urlpatterns = [
     path('update_GameSocket_id/', views.update_GameSocket_id, name='update-GameSocket-id'),
     path('join_game_queue/', views.join_game_queue, name='join-game-queue'),
     path('update_language/', views.update_language, name='update-language'),
-    # path('update_email/', views.update_email, name='update-email'),
 
     path('create_tournament/', views.create_tournament, name='create-tournament'),
     path('check_tournament_exists/<str:tournament_name>/', views.check_tournament_exists, name='check_tournament_exists'),
@@ -54,7 +53,6 @@ urlpatterns = [
     path('update_nbre_games/', views.update_nbre_games, name='update-nbre-games'),
 
     path('set_player_ready/<int:tournament_id>/', views.set_player_ready, name='set-player-ready'),
-    # path('startTournament/<int:tournament_id>/', views.startTournament, name='startTournament'),
 
     path('get_game_players/<int:game_id>/', views.get_game_players, name='get-game-players'),
     path('get_game_players_tournament/<int:game_id>/', views.get_game_players_tournament, name='get-game-players-tournament'),

@@ -5,11 +5,11 @@ function loadUserGamesHistory() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
         },
-    }) // Assurez-vous que l'URL est correcte.
+    })
         .then(response => response.json())
         .then(data => {
             const accordionElement = document.getElementById('accordion-section');
-            accordionElement.innerHTML = ''; // Nettoyer l'élément avant d'ajouter de nouveaux éléments d'accordéon.
+            accordionElement.innerHTML = '';
             data.forEach((user, index) => {
                 const userItem = `
                     <div class="accordion-item">
@@ -41,21 +41,16 @@ function playPong() {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
             'X-CSRFToken': csrfToken
         },
-        body: JSON.stringify({})  // Si vous avez des données à envoyer, sinon vous pouvez omettre cette ligne
+        body: JSON.stringify({})
     })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json();  // ou .text() si vous attendez du texte
+            return response.json();
         })
         .then(data => {
             console.log('Success:', data);
-            // openGameWebSocketConnection();
-
-            // navigateWithTokenCheck('pong');
-            // openGameWebSocketConnection()
-
         })
         .catch(error => {
         });
@@ -70,28 +65,23 @@ function playPong_tournament() {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
             'X-CSRFToken': csrfToken
         },
-        body: JSON.stringify({})  // Si vous avez des données à envoyer, sinon vous pouvez omettre cette ligne
+        body: JSON.stringify({})
     })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json();  // ou .text() si vous attendez du texte
+            return response.json();
         })
         .then(data => {
             console.log('Success:', data);
-            // openGameWebSocketConnection();
-
-            // navigateWithTokenCheck('pong');
-            // // openGameWebSocketConnection()
-
         })
         .catch(error => {
         });
 }
 
 function quitPong3D() {
-    const gameId = localStorage.getItem('currentGameId');  // Récupérer l'ID de la partie
+    const gameId = localStorage.getItem('currentGameId');
     const csrfToken = getCSRFToken();
 
     fetch('/api/api_outGame/', {
@@ -101,16 +91,15 @@ function quitPong3D() {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
             'X-CSRFToken': csrfToken
         },
-        body: JSON.stringify({ game_id: gameId })  // Envoyer l'ID de la partie dans le corps de la requête
+        body: JSON.stringify({ game_id: gameId })
     })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json(); // ou .text() si vous attendez du texte
+            return response.json();
         })
         .then(data => {
-            // console.log('Success:', data);
             localStorage.removeItem('currentGameId');
             localStorage.removeItem('playerRole');
             localStorage.removeItem('')
@@ -121,7 +110,7 @@ function quitPong3D() {
 }
 
 function quitPong3D_tournament() {
-    const gameId = localStorage.getItem('currentGameId');  // Récupérer l'ID de la partie
+    const gameId = localStorage.getItem('currentGameId');
     const csrfToken = getCSRFToken();
 
     fetch('/api/api_outGame_tournament/', {
@@ -131,16 +120,15 @@ function quitPong3D_tournament() {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
             'X-CSRFToken': csrfToken
         },
-        body: JSON.stringify({ game_id: gameId })  // Envoyer l'ID de la partie dans le corps de la requête
+        body: JSON.stringify({ game_id: gameId })
     })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json(); // ou .text() si vous attendez du texte
+            return response.json();
         })
         .then(data => {
-            // console.log('Success:', data);
             localStorage.removeItem('currentGameId');
             localStorage.removeItem('playerRole');
             localStorage.removeItem('')
@@ -150,26 +138,15 @@ function quitPong3D_tournament() {
         });
 }
 
-// document.getElementById('joinGameButton').addEventListener('click', joinGameQueue);
-// function updatePlayerRole(newRole) {
-//     localStorage.setItem('playerRole', newRole);
-//     document.dispatchEvent(new CustomEvent('playerRoleChanged', { detail: newRole }));
-// }
-
-
 async function joinGameQueue() {
     try {
-        // Attendre l'ouverture de la connexion WebSocket et la réception du game_socket_id
         const gameSocketId = await openGameWebSocketConnection();
-        // console.log("gameSocketID: ", gameSocketId);
 
         localStorage.setItem('gameSocket_ID', gameSocketId)
-        // const gameSocketId = localStorage.getItem('gameSocket_ID');
-        // console.log("gameSocketID: ", localStorage.getItem('gameSocket_ID'));
+
         await updateGameSocketId(gameSocketId);
         const csrfToken = getCSRFToken();
 
-        // Envoyer la requête POST pourz rejoindre la file d'attente
         const response = await fetch('/api/join_game_queue/', {
             method: 'POST',
             headers: {
@@ -181,7 +158,6 @@ async function joinGameQueue() {
         });
 
         const data = await response.json();
-        // console.log('Réponse du serveur:', data);
         if (!response.ok) {
             throw new Error(data.error || 'Erreur pour rejoindre la file');
         }
@@ -191,11 +167,9 @@ async function joinGameQueue() {
             localStorage.setItem('in1v1', "yes")
             localStorage.setItem('currentGameId', data.game_id);
             sendGameIdToWebSocket(data.game_id);
-            localStorage.setItem('playerRole', data.player_role);  // Stocker le rôle du joueur
-            // updatePlayerRole(data.player_role);  // Mettre à jour le rôle du joueur
+            localStorage.setItem('playerRole', data.player_role);
             if (data.message.includes('Partie en cours')) {
                 console.log("!!!!!partie en cours ok")
-                // startPongGame(data.game_id);
             }
             if (data.message.includes('waitingRoomAccess')) {
                 localStorage.setItem('inGame', true)
@@ -222,7 +196,6 @@ async function updateGameSocketId(Gamesocket_Id) {
     })
         .then(response => response.json())
         .then(result => {
-            // console.log('Mise à jour du game_socket_id réussie:', result);
         })
         .catch(error => {
         });

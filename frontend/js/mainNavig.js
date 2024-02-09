@@ -183,15 +183,3 @@ function closeFriendstModal() {
         backdrop.remove();
     }
 }
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     const currentPage = window.location.pathname;
-//     console.log('La page actuelle est :', currentPage);
-//     if (localStorage.getItem('access_token')) {
-//         document.getElementById('hiddenNav').classList.remove('hidden');
-//     }
-//     if (currentPage === '/welcome') {
-//         const username = localStorage.getItem('username');
-//         document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
-//     }
-// });

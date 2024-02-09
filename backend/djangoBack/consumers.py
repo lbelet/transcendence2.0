@@ -727,11 +727,9 @@ class GameConsumer(AsyncWebsocketConsumer):
                 'score': {'player1': 0, 'player2': 0}
             }
         else:
-            # Ajoutez ici la logique pour compléter ou mettre à jour l'état si nécessaire
             pass
 
     async def send_tournament_update(self, event):
-        # Envoie le message à tous les clients WebSocket connectés
         print("websocket send tournament update")
         await self.send(text_data=json.dumps({
                     "type": "tournament_update",
@@ -739,8 +737,6 @@ class GameConsumer(AsyncWebsocketConsumer):
                 }))
 
     async def send_tournament_deleted(self, event):
-        # Vous pouvez personnaliser le message ici si nécessaire
-        # Envoyez le message personnalisé au client WebSocket
         await self.send(text_data=json.dumps({
             'type': 'tournament_deleted'
         }))

@@ -46,7 +46,6 @@ logger = logging.getLogger(__name__)
 @api_view(['GET'])
 @csrf_exempt
 def health_check(request):
-    # Logique pour vérifier la santé de l'application
     return JsonResponse({"status": "healthy"})
 
 @api_view(['GET'])
@@ -63,7 +62,7 @@ def user_games_history(request):
         games_data = [{
             "opponent": game.player_two.username if game.player_one == user else game.player_one.username,
             "result": "win" if game.winner == user else "lose",
-            "date": game.date.strftime('%Y-%m-%d %H:%M:%S') if game.date else 'Date not available'  # Formatage de la date
+            "date": game.date.strftime('%Y-%m-%d %H:%M:%S') if game.date else 'Date not available'
         } for game in games]
         users_data.append({"username": user.username, "games": games_data})
     return JsonResponse(users_data, safe=False)
@@ -110,7 +109,6 @@ def get_game_players_tournament(request, game_id):
 @csrf_protect
 @permission_classes([IsAuthenticated])
 def verify_token(request):
-    # Si le code atteint ce point, le token est valide
     return JsonResponse({"message": "Token valide"})
 
 @api_view(['GET'])
@@ -132,28 +130,18 @@ def check_user_exists(request):
 @csrf_protect
 @permission_classes([IsAuthenticated])
 def join_game_queue(request):
-    # Récupérer l'utilisateur actuel
     current_user = request.user
     game_waiting = PongGame.objects.filter(status='waiting').first()
     if game_waiting:
         if game_waiting.player_one == current_user:
-        # Envoyer une réponse d'erreur si l'utilisateur essaie de jouer contre lui-même
             return JsonResponse({'error': 'Vous ne pouvez pas jouer contre vous-même'}, status=200)
 
-    # current_user = request.user
     current_user.status = User.IN_GAME
     current_user.save()
 
     game_socket_id = request.data.get('game_socket_id')
 
-    # Chercher une partie en attente
-    # game_waiting = PongGame.objects.filter(status='waiting').first()
-
     if game_waiting:
-        # if game_waiting.player_one == current_user:
-        # # Envoyer une réponse d'erreur si l'utilisateur essaie de jouer contre lui-même
-        #     return JsonResponse({'error': 'Vous ne pouvez pas jouer contre vous-même'}, status=200)
-        # S'il y a déjà une partie en attente, ajouter l'utilisateur actuel comme joueur deux
         game_waiting.player_two = current_user
         game_waiting.player_two_socket_id = game_socket_id
         game_waiting.status = 'playing'
@@ -161,7 +149,6 @@ def join_game_queue(request):
 
         return JsonResponse({'message': 'Partie en cours', 'game_id': game_waiting.id, 'status': 'playing', 'player_role': 2})
     else:
-        # S'il n'y a pas de partie en attente, créer une nouvelle partie
         new_game = PongGame.objects.create(
             player_one=current_user,
             player_one_socket_id=game_socket_id,
@@ -175,31 +162,9 @@ def join_game_queue(request):
 @csrf_protect
 @permission_classes([IsAuthenticated])
 def join_tournament_queue(request):
-    # Récupérer l'utilisateur actuel
     current_user = request.user
     current_user.status = User.IN_GAME
     current_user.save()
-
-    # game_socket_id = request.data.get('game_socket_id')
-
-    # Chercher une partie en attente
-    # game_waiting = PongGame.objects.filter(status='waiting').first()
-
-    # if game_waiting:
-    #     # S'il y a déjà une partie en attente, ajouter l'utilisateur actuel comme joueur deux
-    #     game_waiting.player_two = current_user
-    #     game_waiting.player_two_socket_id = game_socket_id
-    #     game_waiting.status = 'playing'
-    #     game_waiting.save()
-
-    #     return JsonResponse({'message': 'Partie en cours', 'game_id': game_waiting.id, 'status': 'playing', 'player_role': 2})
-    # else:
-    #     # S'il n'y a pas de partie en attente, créer une nouvelle partie
-    #     new_game = PongGame.objects.create(
-    #         player_one=current_user,
-    #         player_one_socket_id=game_socket_id,
-    #         status='waiting'
-    #     )
 
     return JsonResponse({'message': 'tournament_in'})
 
@@ -211,12 +176,10 @@ def update_nbre_games(request):
     user = request.user
 
     try:
-        # Incrémenter le nombre de jeux
         user.nbre_games += 1
         user.save()
         return JsonResponse({'status': 'success', 'message': 'Nombre de jeux mis à jour avec succès.', 'nbre_games': user.nbre_games})
     except Exception as e:
-        # En cas d'erreur, retourner une réponse JSON avec les détails de l'erreur
         return JsonResponse({'status': 'error', 'message': 'Erreur lors de la mise à jour du nombre de jeux.'}, status=500)
 
 
@@ -253,10 +216,8 @@ def update_GameSocket_id(request):
 def get_user_avatar(request):
     user = request.user
     if user.avatar:
-        # Assurez-vous que l'URL est toujours construite avec HTTPS
         avatar_url = 'https://' + request.get_host() + user.avatar.url
     else:
-        # URL de l'avatar par défaut, également en HTTPS
         avatar_url = 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png'
     return JsonResponse({'avatarUrl': avatar_url})
 
@@ -276,7 +237,6 @@ def register(request):
     if not all([username, first_name, last_name, email, password]):
         return JsonResponse({'error': 'All fields are required'}, status=409)
 
-    # Vérifier si le nom d'utilisateur existe déjà
     if (User.objects.filter(username=username).exists()) or (User.objects.filter(email=email)) :
         return JsonResponse({'error': 'Username or email already exists'}, status=409)
 
@@ -298,103 +258,28 @@ def register(request):
     except IntegrityError:
         return JsonResponse({'error': 'A database error occurred. User could not be created.'}, status=400)
     except ValidationError as e:
-        # Gérer ici les erreurs de validation spécifiques si nécessaire
         return JsonResponse({'error': str(e.messages)}, status=409)
     except Exception as e:
-        # Une exception inattendue
         return JsonResponse({'error': 'An unexpected error occurred'}, status=500)
-
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def check_tournament_exists(request, tournament_name):
-#     logger.info(tournament_name)
-#     exists = Tournament.objects.filter(name=tournament_name).exists()
-#     return JsonResponse({'exists': exists})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def check_nickname_exists(request, nickName):
-    # Log l'information du nickname recherché pour le debug ou le suivi
     logger.info(nickName)
 
-    # Obtenez le modèle utilisateur
     User = get_user_model()
 
-    # Si le nickname est le même que le username de l'utilisateur faisant la requête, considérez qu'il n'existe pas de conflit
     if nickName == request.user.username:
         return JsonResponse({'exists': False})
 
-    # Vérifiez si le nickname existe déjà comme un nick_name dans Player
-    # Exclure l'utilisateur actuel de la vérification s'il s'agit de son propre username
     nickname_exists = Player.objects.filter(nick_name=nickName).exists()
 
-    # Vérifiez si le nickname existe comme un username dans User, exclure l'utilisateur actuel
     username_exists = User.objects.exclude(id=request.user.id).filter(username=nickName).exists()
 
-    # Combine les résultats des deux vérifications
     exists = nickname_exists or username_exists
 
-    # Retournez le résultat de la vérification
     return JsonResponse({'exists': exists})
 
-
-# @csrf_exempt
-# def api_login(request):
-#     if request.method != 'POST':
-#         return JsonResponse({'error': 'Only POST method is accepted'}, status=405)
-
-#     data = json.loads(request.body)
-#     username = data.get('username')
-#     password = data.get('password')
-
-#     if not username or not password:
-#         return JsonResponse({'error': 'Username and password are required'}, status=409)
-
-#     user = authenticate(username=username, password=password)
-#     if user:
-#         user.status = User.ONLINE
-#         user.save()
-#         tokens = get_tokens_for_user(user)
-#         tokens.update({
-#             'language': user.language,
-#             'id': user.id,
-#             'avatar_url': 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png',
-#             'login_successful': True  # Ajouter le champ login_successful ici
-#         })
-
-#         if user.is_two_factor_enabled:
-#             if user.two_factor_method == 'email':
-#                 tokens.update({
-#                     'language': user.language,
-#                     'id': user.id,
-#                     'avatar_url': 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png',
-#                     'login_successful': True,
-#                     '2fa_required': True,
-#                     '2fa_method': 'email'
-#                 })
-#                 # Implémentez votre fonction send_two_factor_email ici
-#                 return JsonResponse(tokens, status=200)
-#             elif user.two_factor_method == 'qr':
-#                 totp_secret = pyotp.random_base32()
-#                 user.totp_secret = totp_secret
-#                 user.save()
-
-#                 qr_code_img = generate_qr_code(user)
-#                 tokens.update({
-#                     'language': user.language,
-#                     'id': user.id,
-#                     'avatar_url': 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png',
-#                     'login_successful': True,
-#                     '2fa_required': True,
-#                     '2fa_method': 'qr',
-#                     'qr_code_img': qr_code_img
-#                 })
-#                 return JsonResponse(tokens, status=200)
-
-#         return JsonResponse(tokens, status=200)
-
-#     # Modifier ici pour utiliser un message neutre et retirer le statut 400
-#     return JsonResponse({'login_successful': False, 'message': 'Nom d’utilisateur ou mot de passe incorrect. Veuillez réessayer.'}, status=200)
 
 @csrf_protect
 def api_login(request):
@@ -422,7 +307,6 @@ def api_login(request):
                 return JsonResponse({'2fa_required': True, '2fa_method': 'qr', 'qr_code_img': qr_code_img})
 
         tokens = get_tokens_for_user(user)
-        # Ajouter la langue de l'utilisateur à la réponse
         tokens['language'] = user.language
         tokens['login_successful'] = True
         tokens['avatar_url'] = 'https://' + request.get_host() + user.avatar.url if user.avatar else 'https://' + request.get_host() + settings.MEDIA_URL + 'avatars/default.png',
@@ -431,59 +315,10 @@ def api_login(request):
 
     return JsonResponse({'login_successful': False, 'message': 'Nom d utilisateur ou mot de passe incorrect. Veuillez réessayer.'}, status=200)
 
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def update_user(request):
-#     # Utilisez request.data pour les champs de données et request.FILES pour les fichiers
-#     two_factor_method = request.data.get('twoFactorMethod')
-#     language = request.data.get('language', 'fr')
-#     email = request.data.get('email')
-#     username = request.data.get('username')
-#     firstname = request.data.get('firstname')
-#     old_password = request.data.get('oldPassword')
-#     new_password = request.data.get('newPassword')
-#     avatar = request.FILES.get('avatar')
-
-#     user = request.user
-
-#     if email:
-#         user.email = email
-#     if username:
-#         user.username = username
-#     if firstname:
-#         user.first_name = firstname
-
-#     if old_password and new_password:
-#         if not user.check_password(old_password):
-#             return JsonResponse({'error': 'L’ancien mot de passe est incorrect'}, status=400)
-#         user.set_password(new_password)
-#         user.save()
-#         update_session_auth_hash(request, user)  # Mise à jour de la session d'authentification
-#         # Pas besoin de retourner immédiatement, continuez si d'autres mises à jour sont nécessaires
-
-#     if avatar:
-#         file_path = f'avatars/{username}/{avatar.name}'
-#         saved_path = default_storage.save(file_path, ContentFile(avatar.read()))
-#         user.avatar = saved_path
-#         user.save()
-
-#     print("two_factor: ", two_factor_method)
-#     if two_factor_method != 'none':
-#         user.is_two_factor_enabled = True
-#         user.two_factor_method = two_factor_method
-#     else:
-#         user.is_two_factor_enabled = False
-#     user.language = language
-#     # Activez ou désactivez la méthode 2FA selon la valeur de two_factor_method
-#     # (ajustez votre logique ici en fonction des besoins spécifiques de votre application)
-#     user.save()
-
-#     return JsonResponse({'success': 'Profil mis à jour avec succès'}, status=200)
 @api_view(['POST'])
 @csrf_protect
 @permission_classes([IsAuthenticated])
 def update_user(request):
-    # data = json.loads(request.body)
     two_factor_method = request.data.get('twoFactorMethod')
     language = request.data.get('language', 'fr')
     email = request.data.get('email')

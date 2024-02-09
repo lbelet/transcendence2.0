@@ -1,4 +1,3 @@
-
 function addFriend(receiverUsername) {
     const errorMessageElement = document.getElementById('friendRequestErrorMessage');
 	errorMessageElement.style.display = 'none';

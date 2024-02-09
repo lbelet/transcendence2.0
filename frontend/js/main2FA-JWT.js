@@ -1,4 +1,3 @@
-
 document.getElementById('EmailTwoFactorForm').addEventListener('submit', function (event) {
     event.preventDefault();
     const twoFactorCode = document.getElementById('twoFactorCode').value;

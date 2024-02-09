@@ -13,20 +13,13 @@ function startAnimation() {
     canvas = document.getElementById('canvas1');
     if (!canvas) return;
     ctx = canvas.getContext('2d');
-    // canvas.width = window.innerWidth;
-    // canvas.height = window.innerHeight;
 
-    // particlesArray = [];
-    // mappedImage = [];
-
-	// Set initial canvas size and adjust on window resize
 	resizeCanvas();
 	window.addEventListener('resize', resizeCanvas);
 
     myImage.addEventListener('load', setupAnimation);
-    if (myImage.complete) setupAnimation(); // If image already loaded
-	// window.addEventListener('resize', resizeCanvas);
-    // resizeCanvas(); // Call once initially to set correct canvas size
+    if (myImage.complete) setupAnimation();
+
 }
 
 function resizeCanvas() {
@@ -35,11 +28,9 @@ function resizeCanvas() {
         animationFrameId = null;
     }
 
-    // Determine the new size while maintaining the aspect ratio
     let newWidth = window.innerWidth;
     let newHeight = window.innerWidth / aspectRatio;
 
-    // Adjust height if it's greater than window height
     if (newHeight > window.innerHeight) {
         newHeight = window.innerHeight;
         newWidth = newHeight * aspectRatio;
@@ -54,14 +45,11 @@ function resizeCanvas() {
 	console.log(16 / 9);
 
 
-
-    // Center the canvas within the window
     canvas.style.position = 'absolute';
     canvas.style.left = '50%';
     canvas.style.top = '50%';
     canvas.style.transform = 'translate(-50%, -50%)';
 
-	// Ensure particles are repositioned at the bottom
     particlesArray.forEach(particle => particle.resetPosition());
 
     if (myImage.complete) {
@@ -72,11 +60,8 @@ function resizeCanvas() {
 function setupAnimation() {
 	particlesArray = [];
 	mappedImage = [];
-	// Draw the image onto the canvas
 	ctx.drawImage(myImage, 0, 0, canvas.width, canvas.height);
-	// Get the image data from the canvas
 	const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-	// Clear the canvas for the animation
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 	for( let y = 0; y < canvas.height; y += detail) {
@@ -87,9 +72,7 @@ function setupAnimation() {
 			const blue = pixels.data[(y * 4 * pixels.width) + (x * 4 + 2)]
 			const color = 'rgb('+red +','+green+','+blue+')';
 			const brightness = calculateRelativeBrightness(red, green, blue)/100;
-			// const cell = [
-			// 	cellBrightness = brightness,
-			// ];
+			
 			row.push(brightness);
 			}
 			mappedImage.push(row);
@@ -105,12 +88,10 @@ class Particle {
 		this.speed = 0;
 		this.velocity = Math.random() * 0.2;
 		this.size = Math.random() * 2 + 0.5;
-		// this.position1 = Math.floor(this.y);
-		// this.position2 = Math.floor(this.x);
+
 	}
 	resetPosition() {
 		this.x = Math.random() * canvas.width;
-		// this.y = Math.random() * canvas.height;
 		this.y = canvas.height;
 	}
 
@@ -118,7 +99,6 @@ class Particle {
 		let yIndex = Math.floor(this.y / detail);
 		let xIndex = Math.floor(this.x / detail);
 
-		// Make sure the indices are within the array bounds
 		if (yIndex >= mappedImage.length) {
 		yIndex = mappedImage.length - 1;
 		}
@@ -126,14 +106,11 @@ class Particle {
 		xIndex = mappedImage[0].length - 1;
 		}
 
-		// Use the indices to access the speed from the mapped image
 		this.speed = mappedImage[yIndex][xIndex];
 		let movement = (2.5 - this.speed) + this.velocity;
 
-		// Move the particle up by adjusting its y coordinate
 		this.y -= movement;
 
-		// Reset the particle to the bottom of the canvas if it moves beyond the top
 		if (this.y <= 0) {
 		this.y = canvas.height;
 		this.x = Math.random() * canvas.width;
@@ -155,16 +132,15 @@ function init() {
 
 function stopAnimation() {
 	if (animationFrameId) {
-		cancelAnimationFrame(animationFrameId); //reset aniamtion frame id
+		cancelAnimationFrame(animationFrameId);
 		animationFrameId = null;
 	}
 	if (canvas) {
-		canvas.width = canvas.width; // Clear canvas
+		canvas.width = canvas.width;
 		ctx = null;
 	}
 	particlesArray = [];
 	mappedImage = [];
-	// Remove resize event listener
 	window.removeEventListener('resize', resizeCanvas);
 }
 
@@ -173,37 +149,27 @@ const fadeOutSpeed = 0.5;
 
 function animate() {
 
-	if(!ctx) //check if ctx is null, and if so, stop animation
+	if(!ctx)
 		return;
-	// Clear the canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-	// Reduce the image opacity
 	imageOpacity -= fadeOutSpeed;
 	imageOpacity = Math.max(imageOpacity, 0);
 
-	// Save the context's current state
 	ctx.save();
 
-	// Set the globalAlpha for the image
 	ctx.globalAlpha = imageOpacity;
-	// Draw the image with the current opacity
 	ctx.drawImage(myImage, 0, 0, canvas.width, canvas.height);
 
-	// Restore the context to remove the globalAlpha effect for the particles
 	ctx.restore();
 
-	// Draw particles with their own alpha values
 	for (let i = 0; i < particlesArray.length; i++) {
 	particlesArray[i].update();
-	// Particle opacity can be adjusted if needed here
 	ctx.globalAlpha = particlesArray[i].speed * 0.3;
 	particlesArray[i].draw();
 	}
 
-	// Continue the animation loop
 	requestAnimationFrame(animate);
-	// animationFrameId = requestAnimationFrame(animate);
 }
 
 function calculateRelativeBrightness(red, green, blue) {
@@ -213,17 +179,3 @@ function calculateRelativeBrightness(red, green, blue) {
 		(blue * blue ) * 0.114
 	);
 }
-
-// });
-
-
-// myImage.addEventListener('load', function() {
-// 	const canvas = document.getElementById('canvas1');
-// 	const ctx = canvas.getContext('2d');
-// 	canvas.width = window.innerWidth;
-// 	canvas.height = window.innerHeight;
-
-	// let particlesArray = [];
-	// const numberOfParticles = 20000;
-	// const detail = 1;
-
