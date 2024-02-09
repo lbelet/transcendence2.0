@@ -229,32 +229,15 @@ form input:focus {
   border: 1px solid #6c757d;
 }
 
-/* .accordion-button.collapsed {
-  background-color: transparent !important;
-  border: 1px solid #6c757d !important;
-  color: #c7cfd5 !important;
-  border-radius: 8px !important;
-  padding: 8px !important;
-  margin-bottom: 5px !important;
-  height: 50px;
-  width: 100%;
-} */
-
-/* #loginForm label,
-#registerForm label {
-  color: #cacaca;
-  font-size: 16px;
-} */
 
 #registerForm label {
-  color: #6c757d; /* White color for the text */
-  /* Add any other styling you need for your labels here */
+  color: #6c757d; 
 }
 
 #registerForm .form-text {
-  color: #c7cfd5; /* White color for the text */
+  color: #c7cfd5; 
   position: relative;
-  top: -5px; /* Moves the element up by 10px */
+  top: -5px; 
 }
 
 #registerForm .form-text.text-muted {
@@ -288,7 +271,7 @@ h5 {
 .tournament-row h3 {
   color: #c7cfd5;
   padding: 5px;
-  border: 1px solid #6c757d; /* Bordure autour des titres de chaque colonne */
+  border: 1px solid #6c757d; 
 }
 
 .tournamentResultat {
@@ -296,47 +279,47 @@ h5 {
   border-radius: 8px;
   color: #c7cfd5;
   padding: 5px;
-  border: 1px solid #6c757d; /* Bordure autour des titres de chaque colonne */
+  border: 1px solid #6c757d; 
 }
 
 .semi-finals h3 {
   text-align: center;
-  background-color: transparent; /* Couleur de fond pour les demi-finales */
+  background-color: transparent; 
   border-radius: 8px;
   border: 1px solid #6c757d;
 }
 
 .final h3 {
   border-radius: 8px;
-  background-color: transparent; /* Couleur de fond pour la finale */
+  background-color: transparent; 
   text-align: center;
   border: 1px solid #6c757d;
 }
 
 .winner h3 {
   border-radius: 8px;
-  background-color: transparent; /* Couleur de fond pour le vainqueur */
+  background-color: transparent; 
   text-align: center;
   border: 1px solid green;
 }
 
 .matches-container {
   border-radius: 8px;
-  background-color: transparent; /* Couleur de fond pour chaque match */
-  border: 1px solid #6c757d; /* Bordure autour de la zone des matchs */
+  background-color: transparent; 
+  border: 1px solid #6c757d; 
   padding: 10px;
   margin-bottom: 15px;
 }
 
 .container {
-  flex-grow: 1; /* Le container prend tout l'espace disponible */
-  overflow-y: auto; /* Permettre le défilement dans le container si nécessaire */
+  flex-grow: 1; 
+  overflow-y: auto;
 }
 
 .match {
   text-align: center;
-  background-color: transparent; /* Couleur de fond pour chaque match */
-  border: 1px solid #4c5256; /* Bordure pour chaque match */
+  background-color: transparent;
+  border: 1px solid #4c5256; 
   margin-bottom: 15px;
   padding: 10px;
   border-radius: 5px;
@@ -344,20 +327,19 @@ h5 {
 
 .match .player {
   text-align: center;
-  padding: 5px; /* Espacement autour du texte du joueur */
+  padding: 5px;
   color: #c7cfd5;
 }
 
 .match .player:last-child {
-  border-bottom: none; /* Pas de bordure pour le dernier joueur */
+  border-bottom: none;
 }
 
 .match .vs {
   color: green;
   text-align: center;
-  border-bottom: 1px solid #4c5256; /* Bordure entre les joueurs */
-  border-top: 1px solid #4c5256; /* Bordure entre les joueurs */
-
+  border-bottom: 1px solid #4c5256; 
+  border-top: 1px solid #4c5256; 
   margin: 10px 0;
 }
 
@@ -367,36 +349,20 @@ h5 {
 
 .winner {
   text-align: center;
-  padding: 5px; /* Espacement autour du texte du joueur */
+  padding: 5px; 
   color: #c7cfd5;
 }
 
 #available-tournaments {
-  max-height: 300px; /* ou la hauteur que vous souhaitez */
-  overflow-y: auto; /* active l'ascenseur vertical si nécessaire */
+  max-height: 300px; 
+  overflow-y: auto; 
   display: flex;
   flex-direction: column;
-  gap: 10px; /* ajoute un espace entre les boutons */
+  gap: 10px; 
 }
 
 .sort-indicator {
   margin-left: 5px;
   user-select: none;
 }
-
-
-/* .tournament-btn {
-  width: 100%;
-  text-align: left;
-  margin-bottom: 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: white; /* Définir la couleur du texte en blanc
-  background-color: #001d3c;
-  border-color: #007bff;
-} */
-
-
-
 

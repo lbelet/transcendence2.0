@@ -16,7 +16,6 @@
     <nav class="navbar navbar-expand-lg border-bottom border-body" data-bs-theme="dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#" data-key="trans">Transcendence</a>
-            <!-- Bouton pour les appareils mobiles -->
             <div class="hidden" id="hiddenNav">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
                     aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,14 +64,12 @@
         </div>
     </nav>
 
-    <!-- Canvas for particle animation -->
-    <!-- <canvas id="canvas1"></canvas> -->
+    <canvas id="canvas1"></canvas>
 
     <div class="container d-flex align-items-center justify-content-center" style="overflow-y: auto;">
         <div class="row">
             <div class="col">
                 <div id="home-section" class="hidden">
-                    <!-- <canvas id="canvas1"></canvas> -->
                     <div class="position-absolute top-75 start-50 translate-middle">
                         <button class="btn btn-outline-secondary" onclick="showLoginForm()">Login</button>
                         <button class="btn btn-outline-secondary spaced-buttons" onclick="showRegisterForm()"
@@ -174,7 +171,6 @@
                     <img id="user-avatar" src="" alt="Avatar" style="width: 50px; height:auto;">
                     <button class="btn btn-outline-secondary" onclick="loadUserGamesHistory()"
                         data-key="game_history">Historique des parties</button>
-                    <!-- <button class="btn btn-outline-secondary" onclick="playPong()">practice playing Pong</button> -->
                     <button id="rejoindreGame" class="btn btn-outline-secondary" onclick="joinGameQueue()"
                         data-key="1v1_pong">Rejoindre la partie 1v1</button>
                     <button class="btn btn-outline-secondary" onclick="goTournament()"
@@ -231,7 +227,6 @@
 
                 <div id="pong-section" class="text-center hidden">
                     <h2>Pong 3D</h2>
-                    <!-- <button class="btn btn-outline-secondary" onclick="quitPong3D()">Quitter</button> -->
                     <canvas id="pong-canvas"></canvas>
                 </div>
 
@@ -251,7 +246,6 @@
 
                 <div id="pongTournament-section" class="text-center hidden">
                     <h2>Pong 3D</h2>
-                    <!-- <button class="btn btn-outline-secondary" onclick="quitPong3D_tournament()">Quitter</button> -->
                     <canvas id="pongTournament-canvas"></canvas>
                 </div>
 
@@ -259,12 +253,6 @@
                     <h2 data-key="pong_tournament">Tournois Pong</h2>
                     <button class="btn btn-outline-secondary" onclick="openTournamentModal()"
                         data-key="create_tournament">Créer un tournoi</button>
-                    <!-- <div>
-                        <h1>Tournois dispos</h1>
-                    </div>
-                    <button class="btn btn-outline-secondary" onclick="loadAvailableTournaments()">charger les tournois
-                        dispos</button>
-                    <div id="available-tournaments"></div> -->
                     <div class="container mt-10">
                         <h1 data-key="available_tournament">Tournois disponibles</h1>
 
@@ -294,8 +282,6 @@
 
                 </div>
 
-                <!-- <div id="tournamentBracket-section" class="hidden"></div> -->
-
                 <div id="tournamentBracket-section" class="container hidden">
                     <div>
                         <h2 class="text-center mb-0" data-key="tournament_name">Nom du tournoi</h2>
@@ -322,7 +308,6 @@
 
 
 
-                <!-- Modal de Résultats de Recherche -->
                 <div class="modal fade text-center" id="searchResultsModal" tabindex="-1"
                     aria-labelledby="searchResultsLabel" aria-hidden="true" data-bs-theme="dark">
                     <div class="modal-dialog modal-dialog-centered">
@@ -344,7 +329,6 @@
                     </div>
                 </div>
 
-                <!-- Modal de Modification de Profil -->
                 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserLabel"
                     aria-hidden="true" data-bs-theme="dark">
                     <div class="modal-dialog modal-dialog-centered">
@@ -359,17 +343,11 @@
                                 <div id="UserEditErrorMessage" class="alert alert-danger" style="display: none;"></div>
                                 <form id="editUserForm" enctype="multipart/form-data">
                                     <div class="form-group">
-                                        <!-- <label for="currentUsername">Username actuel:</label> -->
-                                        <!-- <span id="currentUsername">Username</span> -->
                                         <label for="newUsername" data-key="new_username">Entrez le nouveau nom
                                             d'utilisateur</label>
                                         <input type="username" class="form-control" id="newUsername">
-                                        <!-- <label for="currentFirstName">firstname actuel:</label> -->
-                                        <!-- <span id="currentFirstName">firstname</span> -->
                                         <label for="newFirstname" data-key="new_firstname">Entrez le nouveau prénom:</label>
                                         <input type="firstname" class="form-control" id="newFirstname">
-                                        <!-- <label for="currentEmail">Email Actuel:</label> -->
-                                        <!-- <span id="currentEmail">email@example.com</span> -->
                                         <label for="newEmail" data-key="new_mail">Entrez le Nouvel email</label>
                                         <input type="email" class="form-control" id="newEmail">
                                         <label for="currentPassword" data-key="current_password">Entrez le mot de passe actuel</label>
@@ -404,7 +382,6 @@
                     </div>
                 </div>
 
-                <!-- Modal de Création de Tournoi -->
                 <div class="modal fade text-center" id="createTournamentModal" tabindex="-1"
                     aria-labelledby="createTournamentLabel" aria-hidden="true" data-bs-theme="dark">
                     <div class="modal-dialog modal-dialog-centered">
@@ -442,7 +419,6 @@
                     </div>
                 </div>
 
-                <!-- Modal Liste des Amis -->
                 <div class="modal fade text-center" id="friendsModal" tabindex="-1" aria-labelledby="friendsModalLabel"
                     aria-hidden="true" data-bs-theme="dark">
                     <div class="modal-dialog modal-dialog-centered">
@@ -477,8 +453,6 @@
             </div>
         </div>
     </div>
-
-    <!-- <script> const csrfToken = "{{ csrf_token }}"; </script> -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script>

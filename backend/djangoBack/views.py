@@ -491,7 +491,7 @@ def update_user(request):
 
     user = request.user
     user.two_factor_method = two_factor_method
-    user.language = language  # Update the user's language preference
+    user.language = language 
     if email:
         if email and User.objects.filter(email=email).exclude(id=user.id).exists():
             return JsonResponse({'message': 'Cet email est déjà utilisé par un autre utilisateur.'}, status=200)
@@ -512,8 +512,7 @@ def update_user(request):
             return JsonResponse({'message': 'Erreur dans le formulaire. Veuillez réessayer.'}, status=200)
         user.set_password(new_password)
         user.save()
-        update_session_auth_hash(request, user)  # Mise à jour de la session d'authentification
-        # Pas besoin de retourner immédiatement, continuez si d'autres mises à jour sont nécessaires
+        update_session_auth_hash(request, user)  
 
     if avatar:
         file_path = f'avatars/{username}/{avatar.name}'
@@ -528,56 +527,19 @@ def update_user(request):
         user.save()
 
         qr_code_img = generate_qr_code(user)
-        # return JsonResponse({'success': 'Profile updated successfully', 'qr_code_data': qr_code_img}, status=200)
 
     elif two_factor_method == 'email':
         user.is_two_factor_enabled = True
         user.save()
 
-        # send_two_factor_email(user.email, user)
-        # return JsonResponse({'success': 'Profile updated successfully'}, status=200)
 
     else:
         user.is_two_factor_enabled = False
         user.save()
-        # return JsonResponse({'success': 'Two-factor authentication disabled'}, status=200)
 
     return JsonResponse({'success': 'Profil mis à jour avec succès', 'language': language}, status=200)
 
 
-
-# @csrf_exempt
-# def verify_two_factor_code(request):
-#     if request.method != 'POST':
-#         return JsonResponse({'error': 'Only POST method is accepted'}, status=405)
-
-#     data = json.loads(request.body)
-#     print("data recu dans verify: ", data)
-#     username = data.get('username')
-#     two_factor_code = data.get('two_factor_code')
-
-#     try:
-#         user = User.objects.get(username=username)
-#     except User.DoesNotExist:
-#         return JsonResponse({'error': 'Invalid username'}, status=400)
-
-#     if user.is_two_factor_enabled:
-#         if user.two_factor_method == 'email':
-#             stored_code = retrieve_stored_2fa_code(user)
-#             if two_factor_code == stored_code:
-#                 tokens = get_tokens_for_user(user)
-#                 return JsonResponse(tokens, status=200)
-#             else:
-#                 return JsonResponse({'error': 'Invalid 2FA code'}, status=400)
-#         elif user.two_factor_method == 'qr':
-#             totp = pyotp.TOTP(user.totp_secret)
-#             if totp.verify(two_factor_code):
-#                 tokens = get_tokens_for_user(user)
-#                 return JsonResponse(tokens, status=200)
-#             else:
-#                 return JsonResponse({'error': 'Invalid QR code'}, status=400)
-
-#     return JsonResponse({'error': '2FA is not enabled for this user'}, status=400)
 @csrf_protect
 def verify_two_factor_code(request):
     if request.method != 'POST':
@@ -623,11 +585,10 @@ def verify_two_factor_code(request):
 def search_users(request):
     query = request.GET.get('username', '')
     User = get_user_model()
-    users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)  # Exclure l'utilisateur courant
+    users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)  
 
     users_data = []
     for user in users:
-        # Vérifier l'état de la demande d'ami
         friend_request_sent = FriendRequest.objects.filter(sender=request.user, receiver=user, is_accepted=False).exists()
         friend_request_received = FriendRequest.objects.filter(sender=user, receiver=request.user, is_accepted=False).exists()
         is_friend = request.user.friends.filter(id=user.id).exists()
@@ -646,7 +607,7 @@ def search_users(request):
             'avatarUrl': ('https://' + request.get_host() + user.avatar.url) if user.avatar else None,
             'nbreGames': user.nbre_games,
             'victories': user.won_game,
-            'friendStatus': friend_status,  # Ajouter l'état de la demande d'ami ici
+            'friendStatus': friend_status,
         }
         users_data.append(user_data)
 
@@ -671,7 +632,6 @@ def send_friend_request(request):
         friend_request = FriendRequest.objects.create(
             sender=request.user, receiver=receiver)
 
-        # Assurez-vous que cette fonction est implémentée correctement
         send_friend_request_notification(
             receiver.id, friend_request.id, request.user.username)
 
@@ -688,7 +648,6 @@ def get_pending_friend_requests(request):
     requests_data = [{
         'id': fr.id,
         'sender': fr.sender.username,
-        # Ajoutez d'autres informations si nécessaire
     } for fr in pending_requests]
 
     return JsonResponse(requests_data, safe=False)
@@ -704,7 +663,6 @@ def accept_friend_request(request, request_id):
         friend_request.is_accepted = True
         friend_request.save()
 
-        # Ajouter les amis dans la table User
         request.user.friends.add(friend_request.sender)
         friend_request.sender.friends.add(request.user)
 
@@ -760,7 +718,6 @@ def get_friends(request):
         'status': friend.status,
         'nbreGames': friend.nbre_games,
         'victories': friend.won_game,
-        # Assurez-vous que cela reflète ce que vous souhaitez envoyer
         'recent_games': games_data
     } for friend in friends]
 
@@ -777,7 +734,6 @@ def api_logout(request):
     user.game_socket_id = "NONE"
     user.save()
 
-    # Vérifier et supprimer une partie de Pong en attente si nécessaire
     game_to_delete = PongGame.objects.filter(
         status='waiting',
         player_one=user,
@@ -810,16 +766,14 @@ def api_outGame(request):
     user.game_socket_id = "NONE"
     user.save()
 
-    # Récupérer l'ID de la partie de la requête
     game_id = request.data.get('game_id')
     group_name = f'pong_game_{game_id}'
 
-    # Envoyer un message au groupe pour arrêter la partie
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         group_name,
         {
-            'type': 'end_game',  # Vous devrez gérer ce type dans GameConsumer
+            'type': 'end_game',  
             'game_id': game_id
         }
     )
@@ -834,16 +788,14 @@ def api_outGame_tournament(request):
     user.game_socket_id = "NONE"
     user.save()
 
-    # Récupérer l'ID de la partie de la requête
     game_id = request.data.get('game_id')
     group_name = f'tournament_{game_id}'
 
-    # Envoyer un message au groupe pour arrêter la partie
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         group_name,
         {
-            'type': 'end_game_tournament',  # Vous devrez gérer ce type dans GameConsumer
+            'type': 'end_game_tournament',
             'game_id': game_id
         }
     )
@@ -869,9 +821,7 @@ def send_friend_request_notification(receiver_user_id, request_id, sender_userna
                 })
             })
     except User.DoesNotExist:
-        pass  # L'utilisateur destinataire n'existe pas ou n'est pas connecté
-
-    # from django.http import JsonResponse
+        pass 
 
 
 @api_view(['POST'])
@@ -902,30 +852,26 @@ def check_tournament_exists(request, tournament_name):
 @csrf_protect
 @permission_classes([IsAuthenticated])
 def create_tournament(request):
-    # Récupérer les données de la requête
     name = request.data.get('name')
     number_of_players = int(request.data.get('number_of_players'))
     start_date_option = request.data.get('start_date_option')
     specific_start_date = request.data.get('specific_start_date')
 
-    # Valider les données
     if not all([name, number_of_players, start_date_option]):
         return JsonResponse({'error': 'Missing required fields'}, status=400)
 
-    # Gérer l'option de la date de début
     start_date = None
     if start_date_option == 'specificTime' and specific_start_date:
         start_date = specific_start_date
 
     try:
-        with transaction.atomic():  # S'assurer que toutes les opérations sont atomiques
+        with transaction.atomic():
             tournament = Tournament.objects.create(
                 name=name,
                 number_of_players=number_of_players,
                 start_date=start_date
             )
             if number_of_players == 4:
-                # Créer les demi-finales et la finale
                 for i in range(1, 3):
                     Match.objects.create(
                         tournament=tournament, round="Semifinal")
@@ -937,52 +883,9 @@ def create_tournament(request):
             else:
                 return JsonResponse({'error': 'An error occurred while creating the tournament'}, status=500)
 
-    # except IntegrityError as e:
-    #         if 'tournament_name_key' in str(e):
-    #             return JsonResponse({'error': 'A tournament with this name already exists'}, status=400)
-    #         else:
-    #             return JsonResponse({'error': 'An error occurred while creating the tournament'}, status=500)
-
     except Exception as e:
-        # Log the error for further investigation
         logger.error('Error creating tournament', exc_info=True)
         return JsonResponse({'error': str(e)}, status=500)
-
-    #         # Créer les matches initiaux pour le tournoi selon le nombre de joueurs
-    #         if number_of_players == 4:
-    #             # Créer les demi-finales et la finale
-    #             for i in range(1, 3):
-    #                 Match.objects.create(
-    #                     tournament=tournament, round="Semifinal")
-    #             Match.objects.create(tournament=tournament, round="Final")
-    #         # elif number_of_players == 8:
-    #         #     # Créer les quarts de finale, les demi-finales et la finale
-    #         #     for i in range(1, 5):
-    #         #         Match.objects.create(
-    #         #             tournament=tournament, round="Quart de finale")
-    #         #     for i in range(1, 3):
-    #         #         Match.objects.create(
-    #         #             tournament=tournament, round="Demi-finale")
-    #         #     Match.objects.create(tournament=tournament, round="Finale")
-    #         # elif number_of_players == 16:
-    #         #     # Créer les huitièmes de finale, les quarts de finale, les demi-finales et la finale
-    #         #     for i in range(1, 9):
-    #         #         Match.objects.create(
-    #         #             tournament=tournament, round="Huitième de finale")
-    #         #     for i in range(1, 5):
-    #         #         Match.objects.create(
-    #         #             tournament=tournament, round="Quart de finale")
-    #         #     for i in range(1, 3):
-    #         #         Match.objects.create(
-    #         #             tournament=tournament, round="Demi-finale")
-    #         #     Match.objects.create(tournament=tournament, round="Finale")
-
-    #         return JsonResponse({'success': 'Tournament created successfully', 'tournament_id': tournament.id}, status=201)
-
-    # except Exception as e:
-    #     logger.error('Error creating tournament', exc_info=True)
-    #     return JsonResponse({'error': str(e)}, status=500)
-    #     # return JsonResponse({'error': str(e)}, status=500)
 
 
 @api_view(['POST'])
@@ -992,20 +895,19 @@ def register_to_tournament(request, tournament_id):
     
     nickname = request.data.get('nickname', '').strip()
     if not nickname:
-        nickname = request.user.username  # Utiliser le username si le nickname est vide
+        nickname = request.user.username 
 
     try:
         tournament = Tournament.objects.get(id=tournament_id)
         tournament = Tournament.objects.get(id=tournament_id)
         player, created = Player.objects.get_or_create(user=request.user, defaults={'nick_name': nickname})
-        if not created and nickname:  # Si le joueur existait déjà mais un nickname est fourni
+        if not created and nickname:
             player.nick_name = nickname
             player.save()
 
         current_user = request.user
         current_user.status = User.IN_GAME
         current_user.save()
-        # Vérifier si le tournoi a atteint son nombre maximum de joueurs
         if tournament.participants.count() > tournament.number_of_players:
             return JsonResponse({'error': 'Le tournoi est complet'}, status=400)
 
@@ -1014,19 +916,7 @@ def register_to_tournament(request, tournament_id):
         tournament.participants_count = tournament.participants.count()
         tournament.save()
 
-        # channel_layer = get_channel_layer()
-        # async_to_sync(channel_layer.group_send)(
-        #     "tournament_updates",
-        #     {
-        #         "type": "tournament_update",
-        #         "message": {
-        #             "name": tournament.name,
-        #             "tournament_id": tournament.id,
-        #             "username": request.user.username,
-        #             "current_participants": tournament.participants.count(),
-        #         },
-        #     }
-        # )
+     
         print("nbre participant = ", tournament.participants_count)
 
         if tournament.participants_count > tournament.number_of_players:
@@ -1034,19 +924,6 @@ def register_to_tournament(request, tournament_id):
 
         else:
             print("on est dans le else pour :", f'pong_tournament_{tournament_id}')
-            # channel_layer = get_channel_layer()
-            # async_to_sync(channel_layer.group_send)(
-            #     f'pong_tournament_{tournament_id}',
-            #     {
-            #         "type": "send_tournament_update",
-            #         "message": {
-            #             # "name": tournament.name,
-            #             "tournament.id": tournament.id,
-            #             # "username": request.user.username,
-            #             # "current_participants": tournament.participants.count(),
-            #         },
-            #     }
-            # )
 
         return JsonResponse({'message': 'Inscription réussie', 'tournament_id': tournament.id, 'tournamentName': tournament.name, 'username': request.user.username, 'current_participants': tournament.participants.count()}, status=200)
     except Tournament.DoesNotExist:
@@ -1061,7 +938,6 @@ def unregister_from_tournament(request, tournament_id):
         tournament = Tournament.objects.get(id=tournament_id)
         player = Player.objects.get(user=request.user)
 
-        # Vérifier si le tournoi a atteint son nombre maximum de joueurs
         if tournament.participants.count() >= tournament.number_of_players:
             return JsonResponse({'error': 'Le tournoi est complet'}, status=400)
 
@@ -1104,7 +980,6 @@ def available_tournaments(request):
                 {
                     'id': player.id,
                     'username': player.user.username,
-                    # Ajoutez d'autres détails du joueur si nécessaire
                 }
                 for player in tournament.participants.all()
             ],
@@ -1138,7 +1013,6 @@ def tournament_details(request, tournament_id):
                 {
                     'id': player.id,
                     'username': player.nick_name,
-                    # Ajoutez d'autres détails du joueur si nécessaire
                 }
                 for player in tournament.participants.all()
             ],
@@ -1169,16 +1043,13 @@ def set_player_ready(request, tournament_id):
         participation.is_ready = True
         participation.save()
 
-        # Vérifier si tous les joueurs du tournoi sont prêts
         all_ready = all(participant.is_ready for participant in TournamentParticipation.objects.filter(tournament=tournament))
 
         if all_ready:
             print("all Ready")
-            # Tous les joueurs sont prêts, remplir les matches et démarrer le tournoi
             fill_tournament_matches(tournament)
             tournament.is_active = False
             tournament.save()
-            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! idee de genie
             return JsonResponse({'message': 'all ready'}, status=200)
 
 
@@ -1196,11 +1067,9 @@ def set_player_ready(request, tournament_id):
 def delete_tournament(request, tournament_id):
     try:
         print("Inside delete_tournament")
-        # Obtenez le tournoi correspondant
         tournament = Tournament.objects.get(id=tournament_id)
         send_delete_tournament(tournament_id)
 
-        # Supprimez le tournoi
         tournament.delete()
 
         return JsonResponse({'message': 'Tournament deleted'}, status=200)
@@ -1208,93 +1077,21 @@ def delete_tournament(request, tournament_id):
         return JsonResponse({'message': 'Tournoi non trouvé'}, status=200)
 
 def send_delete_tournament(tournament_id):
-    # Obtenez une référence à la couche de canaux
     channel_layer = get_channel_layer()
 
-    # Définissez le groupe WebSocket spécifique au tournoi
     group_name = f'pong_tournament_{tournament_id}'
 
-    # Créez un message pour envoyer
     message_data = {
         'type': 'send_tournament_deleted',
     }
 
-    # Utilisez async_to_sync pour envoyer le message de manière asynchrone
     async_to_sync(channel_layer.group_send)(group_name, message_data)
 
-# def fill_tournament_matches(tournament):
-#     print("Remplissage des matches pour le tournoi:", tournament.name)
-
-#     # Récupérer les participations des joueurs qui sont prêts
-#     ready_participations = TournamentParticipation.objects.filter(
-#         tournament=tournament,
-#         is_ready=True
-#     ).order_by('id')
-
-#     ready_players = [participation.player for participation in ready_participations]
-
-#     # Récupérer les matches du tournoi
-#     matches = list(tournament.matches.order_by('id'))
-
-#     print("nbre de joueurs prets: ", len(ready_players))
-#     print("nbre de matches a remplir: ", len(matches))
-#     # Vérifier s'il y a suffisamment de joueurs prêts pour remplir les matches
-#     # if len(ready_players) < len(matches) * 2:
-#     #     print("Pas assez de joueurs prêts pour remplir les matches")
-#     #     return
-
-#     # Attribuer les joueurs aux matches
-#     player_iterator = iter(ready_players)
-#     for match in matches:
-#         try:
-#             match.player_one = next(player_iterator)
-#             match.player_two = next(player_iterator)
-#             match.save()
-
-#             group_name = f"tournament_{match.id}"
-#             print("groupNAME in views: ", group_name)
-#             channel_layer = get_channel_layer()
-
-#             # Ajouter les ID de socket des joueurs à ce groupe
-#             if match.player_one.user.game_socket_id:
-#                 async_to_sync(channel_layer.group_add)(group_name, match.player_one.user.game_socket_id)
-#                 print("player1, match: ", match.player_one.user.get_username(), match.id)
-#             if match.player_two.user.game_socket_id:
-#                 async_to_sync(channel_layer.group_add)(group_name, match.player_two.user.game_socket_id)
-#                 print("player2, match: ",match.player_two.user.get_username(), match.id)
-
-#             if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
-#                     # Envoyer les rôles des joueurs
-#                 async_to_sync(channel_layer.group_send)(
-#                     group_name,
-#                     {
-#                         "type": "send_players_roles",
-#                         "game_id": match.id,
-#                         "player_one_username": match.player_one.user.username,
-#                         "player_two_username": match.player_two.user.username
-#                     }
-#                 )
-
-#             if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
-#                 print("send gameStart to: ", group_name)
-#                 async_to_sync(channel_layer.group_send)(
-#                     group_name,
-#                 {
-#                     "type": "game_start_tournament",
-#                     "game_id": match.id
-#                 }
-#             )
-
-#         except StopIteration:
-#             break
-
-#     print("Matches du tournoi remplis avec succès")
 
 
 def fill_tournament_matches(tournament):
     print("Remplissage des matches pour le tournoi:", tournament.name)
 
-    # Récupérer les participations des joueurs qui sont prêts
     ready_participations = TournamentParticipation.objects.filter(
         tournament=tournament,
         is_ready=True
@@ -1306,7 +1103,6 @@ def fill_tournament_matches(tournament):
     print("nbre de joueurs prets: ", len(ready_players))
     print("nbre de matches a remplir: ", len(matches))
 
-    # Déterminez si les matches sont des demi-finales ou une finale
     if len(ready_players) == 4:
         round_type = 'Semifinal'
     elif len(ready_players) == 2:
@@ -1323,12 +1119,10 @@ def fill_tournament_matches(tournament):
                 match.player_one = next(player_iterator)
                 match.player_two = next(player_iterator)
                 match.save()
-                # ... [Le reste de votre logique de traitement des matches] ...
                 group_name = f"tournament_{match.id}"
                 print("groupNAME in views: ", group_name)
                 channel_layer = get_channel_layer()
 
-                # Ajouter les ID de socket des joueurs à ce groupe
                 if match.player_one.user.game_socket_id:
                     async_to_sync(channel_layer.group_add)(group_name, match.player_one.user.game_socket_id)
                     print("player1, match: ", match.player_one.user.get_username(), match.id)
@@ -1337,7 +1131,6 @@ def fill_tournament_matches(tournament):
                     print("player2, match: ",match.player_two.user.get_username(), match.id)
 
                 if match.player_one.user.game_socket_id and match.player_two.user.game_socket_id:
-                        # Envoyer les rôles des joueurs
                     async_to_sync(channel_layer.group_send)(
                         group_name,
                         {
@@ -1362,40 +1155,3 @@ def fill_tournament_matches(tournament):
                 break
 
     print("Matches du tournoi remplis avec succès")
-
-
-
-    # Marquez le tournoi comme commencé
-    # tournament.is_active = True
-    # tournament.save()
-
-
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def startTournament(request, tournament_id):
-#     try:
-#         tournament = Tournament.objects.get(id=tournament_id)
-
-#         # Vérifier si tous les joueurs sont prêts
-#         if not all(participant.is_ready for participant in tournament.participants.all()):
-#             return JsonResponse({'error': 'Tous les joueurs ne sont pas prêts'}, status=400)
-
-#         # Récupérer tous les participants prêts dans l'ordre de leur inscription
-#         ready_players = tournament.participants.filter(is_ready=True).order_by('id')
-
-#         # Remplir les matches avec les joueurs
-#         for match in tournament.matches.filter(player_one__isnull=True, player_two__isnull=True):
-#             if ready_players.exists():
-#                 match.player_one = ready_players.first()
-#                 ready_players = ready_players[1:]
-#             if ready_players.exists():
-#                 match.player_two = ready_players.first()
-#                 ready_players = ready_players[1:]
-#             match.save()
-
-#         return JsonResponse({'message': 'Le tournoi a commencé avec succès'}, status=200)
-#     except Tournament.DoesNotExist:
-#         return JsonResponse({'error': 'Tournoi non trouvé'}, status=404)
-
-
-
