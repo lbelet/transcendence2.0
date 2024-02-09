@@ -79,6 +79,15 @@ div {
   border: 10px solid rgb(251, 255, 0);
 }
 
+.toast .toast-header, .toast-body {
+  border-radius: 8px;
+  background-color: transparent; /* Couleur de fond pour chaque match /
+  border: 1px solid #6c757d; / Bordure autour de la zone des matchs */
+  padding: 10px;
+  margin-bottom: 15px;
+  color: #c7cfd5;
+}
+
 .modal {
   display: none;
 }
