@@ -3,7 +3,6 @@ window.onload = async function () {
     loadTranslations(localStorage.getItem('language'))
     getCSRF_Token().then(csrf_Token => {
         console.log("CSRF Token:", csrf_Token);
-        // Utilisez le jeton CSRF comme nécessaire ici
     }).catch(error => {
         console.error('Error fetching CSRF token:', error);
     });
@@ -19,7 +18,6 @@ window.onload = async function () {
         } catch (error) {
             console.error("Error during token refresh:", error);
             document.getElementById('hiddenNav').classList.add('hidden');
-            // Gérer l'erreur de rafraîchissement du token, si nécessaire
         }
     }
     const path = window.location.pathname.substring(1);
@@ -68,10 +66,8 @@ window.updateUserUI = function() {
     }
 }
 
-// Appeler au chargement de la page
 document.addEventListener('DOMContentLoaded', updateUserUI);
 
-// Vous pouvez également appeler updateUserUI() après des actions utilisateur comme la connexion ou la mise à jour du profil
 window.addEventListener('beforeunload', function (e) {
     if (localStorage.getItem('inGame') === 'true') {
         e.preventDefault();
@@ -79,23 +75,12 @@ window.addEventListener('beforeunload', function (e) {
     }
 });
 
-// document.addEventListener('DOMContentLoaded', function() {
-//     const joinGameButton = document.getElementById("rejoindreGame");
-//     const yesOrNo = localStorage.getItem('in1v1');
-//     console.log('yesOrNo = ', yesOrNo)
-
-//     if (yesOrNo == "yes") {
-//         joinGameButton.disabled = true;
-//     } else {
-//         joinGameButton.disabled = false;
-//     }
-// });
 
 document.addEventListener('DOMContentLoaded', function() {
     const joinGameButton = document.getElementById("rejoindreGame");
-    updateButtonState(); // Appel initial pour configurer l'état du bouton
+    updateButtonState(); 
 
-    document.addEventListener('in1v1Changed', updateButtonState); // Écoute de l'événement personnalisé
+    document.addEventListener('in1v1Changed', updateButtonState);
 
     function updateButtonState() {
         const in1v1 = localStorage.getItem('in1v1');

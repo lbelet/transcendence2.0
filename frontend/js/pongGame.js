@@ -4,26 +4,17 @@ import * as THREE from 'three';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
-// import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-// import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-// import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-// import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
-let globalFont; // Déclaration d'une variable globale pour la police
 
+let globalFont; 
 const loader = new FontLoader();
 
 const scene = new THREE.Scene();
 
 
-// Charger une police (remplacer par le chemin de votre police)
 loader.load('node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json', function (font) {
-    globalFont = font; // Stocker la police chargée dans la variable globale
+    globalFont = font; 
     const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    // const textGeometry1 = new TextGeometry('Score: 0', {
-    //     font: font,
-    //     size: 1,
-    //     height: 0.1
-    // });
+  
     const textGeometry = new TextGeometry('player1: 0 | player2: 0', {
         font: font,
         size: 2,
@@ -31,22 +22,18 @@ loader.load('node_modules/three/examples/fonts/droid/droid_serif_regular.typefac
     });
 
     const scoreText1 = new THREE.Mesh(textGeometry, textMaterial);
-    scoreText1.position.set(-15, 15, 0); // Modifier selon votre scène
+    scoreText1.position.set(-15, 15, 0);
     scene.add(scoreText1);
     window.scoreText1 = scoreText1;
 });
 
 const paddleMaterial1 = new THREE.MeshStandardMaterial({
     color: 0xffa500,
-    // emissive: 0xff8c00,
-    // emissiveIntensity: 0.5,
     wireframe: false
 });
 
 const paddleMaterial2 = new THREE.MeshStandardMaterial({
     color: 0x000000,
-    // emissive: 0xff8c00,
-    // emissiveIntensity: 0.5,
     wireframe: false
 });
 
@@ -67,7 +54,6 @@ scene.add(paddle2);
 const ballGeometry = new THREE.SphereGeometry(1, 32, 32);
 const ballMaterial = new THREE.MeshStandardMaterial({
     color: 0x000000,
-    // emissiveIntensity: 0
 });
 const ball = new THREE.Mesh(ballGeometry, ballMaterial);
 window.ball = ball;
@@ -80,7 +66,6 @@ const planeMaterial = new THREE.MeshBasicMaterial({
     color: 0xFFFFFF,
     side: THREE.DoubleSide,
     wireframe: false,
-    // emissive: 0x2222ff,
     transparent: true,
     opacity: 0.8
 });
@@ -94,10 +79,8 @@ const wallGeometry = new THREE.BoxGeometry(0.2, 1, 30);
 const wallMaterial = new THREE.MeshBasicMaterial({
     color: 0x2222ff,
     wireframe: true,
-    // emissive: 0x2222ff,
     transparent: false,
     opacity: 0.5,
-    // emissiveIntensity: 2
 });
 const wall1 = new THREE.Mesh(wallGeometry, wallMaterial);
 wall1.position.set(10, 0, 0);
@@ -124,45 +107,11 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
 var directionalLight = new THREE.DirectionalLight(0xffffff, 10);
-directionalLight.position.set(20, 20, 20); // position the light
+directionalLight.position.set(20, 20, 20); 
 scene.add(directionalLight);
 
-// var lightHelper = new THREE.DirectionalLightHelper(directionalLight, 5); // The second argument is the size of the helper
-// scene.add(lightHelper);
-// lightHelper.update(); // Call this after changing the light's properties
-
-
-// // Composer pour le post-traitement
-// const composer = new EffectComposer(renderer);
-// composer.addPass(new RenderPass(scene, camera));
-
-// // Configurer l'Unreal Bloom Pass
-// const bloomPass = new UnrealBloomPass(
-//     new THREE.Vector2(window.innerWidth, window.innerHeight),
-//     1.5,  // Intensité de la lumière
-//     0.4,  // Rayon de la lumière
-//     0.85  // Seuil de luminosité
-// );
-// composer.addPass(bloomPass);
-
-// // Création de l'OutlinePass
-// const outlinePass = new OutlinePass(
-//     new THREE.Vector2(800, 600),
-//     scene,
-//     camera
-// );
-// outlinePass.edgeStrength = 5;
-// outlinePass.edgeGlow = 1.0;
-// outlinePass.edgeThickness = 3;
-// outlinePass.visibleEdgeColor.set('#00ff00');
-// // outlinePass.hiddenEdgeColor.set('#ff0000');
-// outlinePass.selectedObjects = [paddle1, paddle2, wall1, wall2, ball];
-// composer.addPass(outlinePass);
-
-// if (window.location.pathname === '/pong') {
 document.addEventListener('keydown', (event) => {
     console.log("event match ok")
-    // Votre logique existante pour gérer les touches du clavier
     if (typeof gameWebsocket !== 'undefined' && gameWebsocket.readyState === WebSocket.OPEN && window.location.pathname === '/pong') {
         let action;
         console.log("touches match ok")
@@ -204,44 +153,38 @@ window.setPlayerRole = function (player1Name, player2Name) {
         window.scoreText1.geometry.dispose();
     }
 
-    // const playerOneName = localStorage.getItem('player_one')
-    // const playerTwoName = localStorage.getItem('player_Two')
     const newText = `${player1Name}: 0 | ${player2Name}: 0`;
     const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
-    // Créer une nouvelle géométrie de texte
     const newGeometry = new TextGeometry(newText, {
-        font: globalFont, // Assurez-vous que 'font' est accessible ici
+        font: globalFont, 
         size: 2,
         height: 0.2
     });
 
-    // Créer un nouveau Mesh et l'ajouter à la scène
     const newScoreText = new THREE.Mesh(newGeometry, textMaterial);
     newScoreText.position.set(-15, 15, 0);
     scene.add(newScoreText);
 
-    // Mettre à jour la référence globale
     window.scoreText1 = newScoreText;
 
     if (playerRole == 1) {
         paddleUser = paddle1;
         console.log("playerRole: ", playerRole)
-        camera.position.set(0, 5, -28); // Position inversée de la caméra pour le joueur 2
+        camera.position.set(0, 5, -28); 
         camera.rotation.y = Math.PI;
-        newScoreText.rotation.y = Math.PI; // Rotation de 180 degrés sur l'axe Y
+        newScoreText.rotation.y = Math.PI; 
         newScoreText.position.set(15, 15, 0);
 
     } else if (playerRole == 2) {
         paddleUser = paddle2;
         console.log("playerRole: ", playerRole)
-        camera.position.set(0, 5, 28); // Position inversée de la caméra pour le joueur 2
+        camera.position.set(0, 5, 28); 
         camera.rotation.y = 0;
     }
 }
 
 window.updateScores = function(player1Score, player2Score, player1Name, player2Name) {
-    // Supprimer l'ancien Mesh de la scène
     const playerRole = localStorage.getItem('playerRole');
 
     if (window.scoreText1) {
@@ -249,27 +192,20 @@ window.updateScores = function(player1Score, player2Score, player1Name, player2N
         window.scoreText1.geometry.dispose();
     }
 
-    // const playerOneName = localStorage.getItem('player_one')
-    // const playerTwoName = localStorage.getItem('player_Two')
-
     console.log("playerOne: ", player1Name)
 
     const newText = `${player1Name}: ${player1Score} | ${player2Name}: ${player2Score}`;
     const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
-    // Créer une nouvelle géométrie de texte
     const newGeometry = new TextGeometry(newText, {
-        font: globalFont, // Assurez-vous que 'font' est accessible ici
+        font: globalFont,
         size: 2,
         height: 0.2
     });
 
-    // Créer un nouveau Mesh et l'ajouter à la scène
     const newScoreText = new THREE.Mesh(newGeometry, textMaterial);
-    // newScoreText.position.set(-15, 15, 0);
     scene.add(newScoreText);
 
-    // Mettre à jour la référence globale
     window.scoreText1 = newScoreText;
 
     if(playerRole == 1)
@@ -282,14 +218,11 @@ window.updateScores = function(player1Score, player2Score, player1Name, player2N
 window.addEventListener('resize', onWindowResize, false);
 
 function onWindowResize() {
-    // Rapport d'aspect fixe
     const aspectRatio = 800 / 600;
 
-    // Calculer la largeur et la hauteur en conservant le rapport d'aspect
     let width = window.innerWidth * 0.45;
     let height = width / aspectRatio;
 
-    // Ajuster si la hauteur calculée est trop grande pour la fenêtre
     if (height > window.innerHeight * 0.45) {
         height = window.innerHeight * 0.45;
         width = height * aspectRatio;
@@ -305,7 +238,6 @@ onWindowResize();
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
-    // composer.render();
 }
 
 animate();

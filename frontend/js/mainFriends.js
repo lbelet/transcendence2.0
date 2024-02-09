@@ -15,16 +15,14 @@ function addFriend(receiverUsername) {
             receiver_username: receiverUsername
         })
     })
-    .then(response => response.json())  // Toujours parser le JSON
+    .then(response => response.json()) 
     .then(data => {
         if (!data.success) {
             let errorMessage = `${data.message} ${receiverUsername}`;
-            displayErrorMessageFriendRequest(errorMessage);  // Utiliser le message d'erreur du serveur
+            displayErrorMessageFriendRequest(errorMessage);  
         }
-        // console.log(data.message);  // Afficher le message de succès
     })
     .catch(error => {
-        alert(`Erreur lors du traitement de la demande: ${error.message}`);
     });
 }
 
@@ -39,7 +37,7 @@ function acceptFriendRequest(requestId) {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrfToken
         },
-        body: JSON.stringify({}) // Corps vide mais formaté en JSON
+        body: JSON.stringify({}) 
     })
         .then(response => {
             if (!response.ok) {
@@ -55,7 +53,6 @@ function acceptFriendRequest(requestId) {
             }
         })
         .catch(error => {
-            alert('Erreur lors de l\'acceptation de la demande d\'ami:');
         });
 }
 
@@ -69,7 +66,7 @@ function declineFriendRequest(requestId) {
             'Content-Type': 'application/json',
             'X-CSRFToken': csrfToken
         },
-        body: JSON.stringify({}) // Corps vide mais formaté en JSON
+        body: JSON.stringify({})
     })
         .then(response => {
             if (!response.ok) {
@@ -85,13 +82,12 @@ function declineFriendRequest(requestId) {
             }
         })
         .catch(error => {
-            alert('Erreur lors du refus de la demande d\'ami');
         });
 }
 
 function showFriendsModal() {
     document.getElementById('friendsModal').style.display = 'block';
-    loadFriendsList(); // Fonction pour charger la liste des amis
+    loadFriendsList();
 }
 
 function closeFriendsModal() {
@@ -117,32 +113,29 @@ function loadFriendsList() {
     })
     .then(friends => {
         const friendsListContainer = document.getElementById('friends-list-container');
-        friendsListContainer.innerHTML = ''; // Effacer la liste actuelle
+        friendsListContainer.innerHTML = '';
 
         friends.forEach(friend => {
-            // Création du conteneur pour chaque ami
             const friendElement = document.createElement('div');
             friendElement.className = 'friend-item';
 
-            // Ajout du nom de l'ami avec popover
             const friendName = document.createElement('p');
             friendName.textContent = friend.username;
             friendName.setAttribute('data-bs-toggle', 'popover');
             friendName.setAttribute('title', friend.username);
             friendName.setAttribute('data-bs-html', 'true');
             let lastGamesHtml = '<ul>';
-            friend.recent_games.slice(0, 5).forEach(game => { // Assurez-vous que `recent_games` est trié par date, du plus récent au plus ancien
+            friend.recent_games.slice(0, 5).forEach(game => { 
                 lastGamesHtml += `<li>${game.date}: ${game.opponent_username} - ${game.user_score}:${game.opponent_score}</li>`;
             });
             lastGamesHtml += '</ul>';
-            // Mettre à jour data-bs-content avec la liste des 5 derniers jeux
             friendName.setAttribute('data-bs-content', `Nombre de jeux: ${friend.nbreGames}<br>Victoires: ${friend.victories}<br>${lastGamesHtml}`);            friendElement.appendChild(friendName);
 
             if (friend.avatarUrl) {
                 const friendAvatar = document.createElement('img');
                 friendAvatar.src = friend.avatarUrl;
                 friendAvatar.alt = `Avatar de ${friend.username}`;
-                friendAvatar.style.width = '50px'; // Ajustez la taille selon vos besoins
+                friendAvatar.style.width = '50px'; 
                 friendElement.appendChild(friendAvatar);
             }
 
@@ -153,15 +146,11 @@ function loadFriendsList() {
             }
             friendElement.appendChild(friendStatus);
 
-            // Ajouter le conteneur de l'ami au conteneur principal
             friendsListContainer.appendChild(friendElement);
         });
 
-        // Initialisez les popovers après la création de tous les éléments d'amis
         initializePopovers();
     })
     .catch(error => {
-        console.error('Erreur lors de la récupération de la liste des amis:', error);
-        alert('Erreur lors de la récupération de la liste des amis');
     });
 }

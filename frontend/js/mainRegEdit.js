@@ -2,20 +2,18 @@ document.getElementById('avatar1').addEventListener('change', function (event) {
     var file = event.target.files[0];
     if (file) {
         var validTypes = ['image/jpeg', 'image/png'];
-        var maxSize = 1048576; // 1MB in bytes
+        var maxSize = 1048576; 
 
-        // Check if the file type is valid
         if (!validTypes.includes(file.type)) {
-            alert('Avatar1 : Seuls les fichiers JPEG et PNG sont autorisés et 1Mo max.');
-            event.target.value = ''; // Clear the file input
-            return; // Exit the function
+            alert('Avatar : Seuls les fichiers JPEG et PNG sont autorisés et 1Mo max.');
+            event.target.value = ''; 
+            return; 
         }
 
-        // Check if the file size exceeds the maximum size
         if (file.size > maxSize) {
-            alert('Avatar1 : La taille du fichier doit être inférieure à 1 Mo.');
-            event.target.value = ''; // Clear the file input
-            return; // Exit the function
+            alert('Avatar : La taille du fichier doit être inférieure à 1 Mo.');
+            event.target.value = '';
+            return; 
         }
     }
 });
@@ -24,20 +22,18 @@ document.getElementById('avatar2').addEventListener('change', function (event) {
     var file = event.target.files[0];
     if (file) {
         var validTypes = ['image/jpeg', 'image/png'];
-        var maxSize = 1048576; // 1MB in bytes
+        var maxSize = 1048576;
 
-        // Check if the file type is valid
         if (!validTypes.includes(file.type)) {
-            alert('Avatar2 : Seuls les fichiers JPEG et PNG sont autorisés et 1Mo max.');
-            event.target.value = ''; // Clear the file input
-            return; // Exit the function
+            alert('Avatar : Seuls les fichiers JPEG et PNG sont autorisés et 1Mo max.');
+            event.target.value = ''; 
+            return; 
         }
 
-        // Check if the file size exceeds the maximum size
         if (file.size > maxSize) {
-            alert('Avatar2 : La taille du fichier doit être inférieure à 1 Mo.');
-            event.target.value = ''; // Clear the file input
-            return; // Exit the function
+            alert('Avatar : La taille du fichier doit être inférieure à 1 Mo.');
+            event.target.value = ''; 
+            return;
         }
     }
 });
@@ -51,13 +47,11 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
 
-    // Première vérification : existence de l'utilisateur
     fetch(`/api/check_user_exists/?username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}`)
         .then(response => response.json())
         .then(data => {
             if (data.exists) {
                 let message;
-                // Ajuster le message d'erreur en fonction du type retourné
                 switch (data.type) {
                     case 'username':
                         message = 'Un utilisateur avec ce nom d’utilisateur existe déjà.';
@@ -70,7 +64,6 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
                 }
                 displayErrorMessageUser(message);
             } else {
-                // Utilisateur n'existe pas, procéder à l'enregistrement
                 let formData = new FormData();
                 formData.append('username', username);
                 formData.append('first_name', document.getElementById('firstname').value);
@@ -101,11 +94,9 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
                     })
                     .then(data => {
                         console.log('Registered successfully:', data);
-                        navigateTo('login'); // Assurez-vous que cette fonction navigue correctement
+                        navigateTo('login');
                     })
                     .catch(error => {
-                        // Gérer l'erreur spécifique de l'enregistrement
-                        alert(error.error || 'Erreur inattendue lors de l’enregistrement. Veuillez réessayer.');
                     });
                 } else {
                     alert('Les mots de passe ne correspondent pas !');
@@ -113,9 +104,6 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
             }
         })
         .catch(error => {
-            // Gérer les erreurs de la vérification de l'existence de l'utilisateur
-            console.error('Error during user existence check:', error);
-            alert('Erreur lors de la vérification de l’existence de l’utilisateur.');
         });
 });
 
@@ -130,7 +118,6 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
     const errorMessageElement = document.getElementById('UserEditErrorMessage');
     errorMessageElement.style.display = 'none';
 
-    // Ajouter les données du formulaire à l'objet FormData
     formData.append('twoFactorMethod', document.getElementById('twoFactorMethod').value);
     formData.append('language', document.getElementById('language').value);
     formData.append('email', document.getElementById('newEmail').value);
@@ -139,8 +126,7 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
     formData.append('oldPassword', document.getElementById('currentPassword').value);
     formData.append('newPassword', document.getElementById('newPassword').value);
 
-    // Ajouter l'avatar s'il est présent
-    const avatarFile = document.getElementById('avatar2').files[0]; // Assurez-vous que l'ID correspond à votre champ de fichier d'avatar
+    const avatarFile = document.getElementById('avatar2').files[0];
     if (avatarFile) {
         formData.append('avatar', avatarFile);
     }
@@ -149,18 +135,15 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
     fetch('/api/user/update', {
         method: 'POST',
         headers: {
-            // Ne définissez pas Content-Type pour multipart/form-data; le navigateur le fera automatiquement, incluant le boundary.
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
             'X-CSRFToken': csrfToken,
-            // 'Content-Type': 'application/json'
         },
-        body: formData // Utilisez l'objet FormData comme corps de la requête
+        body: formData
     })
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
-        // Si la réponse est OK, traitez-la normalement
         return response.json();
     })
     .then(data => {
@@ -168,10 +151,9 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
         if (data.message)
             displayErrorMessageEditUser(data.message)
         else{
-            alert('Préférences mises à jour.');
             loadTranslations(data.language);
             localStorage.setItem('language', data.language)
-		}
+        }
     })
     .catch(error => {
         displayErrorMessageEditUser(data.message)
@@ -179,7 +161,6 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
 });
 
 
-// Define the applyTranslations function
 function applyTranslations(translations) {
     document.querySelectorAll('[data-key]').forEach(elem => {
         const key = elem.getAttribute('data-key');
@@ -190,13 +171,11 @@ function applyTranslations(translations) {
   return true;
 }
 
-// Define the loadTranslations function
 async function loadTranslations(language) {
     try {
         console.log("la langue est : ", language)
         const response = await fetch(`locales/${language}.json`);
         const translations = await response.json();
-        // updateUserLanguage(language);
         return applyTranslations(translations);
     } catch (error) {
         return console.error('Error loading translations:', error);
@@ -206,7 +185,7 @@ async function loadTranslations(language) {
 function updateUserLanguage(language) {
     const csrfToken = getCSRFToken();
 
-    fetch('/api/update_language/', {  // Assurez-vous que l'URL est correcte
+    fetch('/api/update_language/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -227,34 +206,7 @@ function updateUserLanguage(language) {
             console.log(`Language updated to: ${language}`);
             loadTranslations(language);
             localStorage.setItem('language', language)
-            // Optionnel : recharger la page ou mettre à jour l'interface utilisateur pour refléter le changement de langue
         })
         .catch(error => {
-            alert('Error updating language preference');
         });
 }
-
-// function updateEmail() {
-//     const newEmail = document.getElementById('newEmail').value;
-//     // Ajoutez ici le code pour envoyer cette nouvelle adresse e-mail à votre serveur
-//     console.log("Mise à jour de l'email avec:", newEmail);
-
-//     // Vous pouvez utiliser AJAX, fetch API, ou une autre méthode
-//     // Exemple avec fetch:
-//     fetch('/api/update_email', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-//         },
-//         body: JSON.stringify({ email: newEmail })
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         console.log("Réponse du serveur:", data);
-//         // Mise à jour de l'affichage ou traitement des erreurs
-//     })
-//     .catch(error => {
-//         console.error('Erreur lors de la mise à jour de l\'email:', error);
-//     });
-// }

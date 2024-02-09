@@ -1,37 +1,10 @@
-// function showWelcome() {
-//     const username = localStorage.getItem('username');
-//     document.getElementById('user-name-welcome').textContent = username || 'Utilisateur';
-//     fetch(`/api/get_user_avatar/`, {
-//         method: 'GET',
-//         headers: {
-//             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-//         }
-//     })
-//         .then(response => {
-//             if (!response.ok) {
-//                 throw new Error('Network response was not ok');
-//             }
-//             return response.json();
-//         })
-//         .then(data => {
-//             const avatarUrl = data.avatarUrl;
-//             document.getElementById('user-avatar').src = avatarUrl;
-//         })
-//         .catch(error => {
-//             alert('Error fetching avatar');
-//             document.getElementById('user-avatar').src = '/media/avatars/default.png';
-//         });
 
-//     navigateWithTokenCheck('game');
-//     showPendingFriendRequests();
-// }
 function initializePopovers() {
     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     var popovers = popoverTriggerList.map(function (popoverTriggerEl) {
         return new bootstrap.Popover(popoverTriggerEl);
     });
 
-    // Fermer les popovers lors du clic en dehors
     document.addEventListener('click', function (event) {
         popovers.forEach(function (popover) {
             if (!popover._element.contains(event.target)) {
@@ -86,7 +59,6 @@ function searchUser() {
                 var addFriendButton = document.createElement('button');
                 addFriendButton.className = 'btn btn-outline-secondary mx-2';
                 
-                // Ajuster le texte et l'état du bouton en fonction du friendStatus
                 switch(user.friendStatus) {
                     case "envoyée":
                         addFriendButton.textContent = 'Demande envoyée';
@@ -94,7 +66,6 @@ function searchUser() {
                         break;
                     case "reçue":
                         addFriendButton.textContent = 'Répondre à la demande';
-                        // Optionnel: implémenter une logique pour répondre à la demande d'ami
                         break;
                     case "ami":
                         addFriendButton.textContent = 'Ami';
@@ -103,11 +74,9 @@ function searchUser() {
                     default:
                         addFriendButton.textContent = 'Ajouter en ami';
                         addFriendButton.onclick = function () {
-                            // Changez le texte et désactivez le bouton ici
                             addFriendButton.textContent = 'Demande envoyée';
                             addFriendButton.disabled = true;
                 
-                            // Appelez la fonction pour envoyer la demande d'ami
                             addFriend(user.username);
                         };
                 }
@@ -116,13 +85,11 @@ function searchUser() {
                 resultsContainer.appendChild(userContainer);
             });
             
-            initializePopovers();  // Assurez-vous que cette fonction est correctement implémentée
+            initializePopovers(); 
         }
-        openSearchResultsModal();  // Assurez-vous que cette fonction est correctement implémentée
+        openSearchResultsModal(); 
     })
     .catch(error => {
-        console.error('Erreur lors de la recherche de l\'utilisateur:', error);
-        alert('Erreur lors de la recherche de l\'utilisateur');
     });
 }
 
@@ -135,7 +102,7 @@ function addFriendButtonState(button, friendStatus) {
             break;
         case "reçue":
             button.textContent = 'Répondre à la demande';
-            button.disabled = false;  // Vous pouvez choisir de gérer cela différemment
+            button.disabled = false; 
             break;
         case "ami":
             button.textContent = 'Ami';
@@ -188,6 +155,5 @@ function showPendingFriendRequests() {
             });
         })
         .catch(error => {
-            alert('Erreur lors de la récupération des demandes d\'ami');
         });
 }

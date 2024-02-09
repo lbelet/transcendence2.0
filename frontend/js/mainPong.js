@@ -58,7 +58,6 @@ function playPong() {
 
         })
         .catch(error => {
-            alert('Error');
         });
 }
 
@@ -88,7 +87,6 @@ function playPong_tournament() {
 
         })
         .catch(error => {
-            alert('Error');
         });
 }
 
@@ -119,7 +117,6 @@ function quitPong3D() {
             navigateWithTokenCheck('game');
         })
         .catch(error => {
-            alert('Error');
         });
 }
 
@@ -150,7 +147,6 @@ function quitPong3D_tournament() {
             navigateWithTokenCheck('game');
         })
         .catch(error => {
-            alert('Error');
         });
 }
 
@@ -229,7 +225,6 @@ async function updateGameSocketId(Gamesocket_Id) {
             // console.log('Mise à jour du game_socket_id réussie:', result);
         })
         .catch(error => {
-            alert('Erreur lors de la mise à jour du game_socket_id');
         });
 }
 
@@ -248,8 +243,8 @@ async function loadGameResults(gameId) {
 			document.getElementById('results-winner').textContent = results.winner
             document.getElementById('results-scores').textContent = `${results.score[0]} : ${results.score[1]}`
         })
-        .catch(error => (
-            alert('Erreur lors du chargement des resultats')
-        ))
+        .catch(error => {
+            
+        })
 }
 
