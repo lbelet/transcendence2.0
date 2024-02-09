@@ -169,7 +169,8 @@ document.getElementById('editUserModal').addEventListener('submit', function (ev
             displayErrorMessageEditUser(data.message)
         else
             alert('Préférences mises à jour.');
-        // Vous pouvez traiter les données de réponse en cas de succès ici
+            loadTranslations(data.language);
+            localStorage.setItem('language', data.language)
     })
     .catch(error => {
         displayErrorMessageEditUser(data.message)
@@ -191,6 +192,7 @@ function applyTranslations(translations) {
 // Define the loadTranslations function
 async function loadTranslations(language) {
     try {
+        console.log("la langue est : ", language)
         const response = await fetch(`locales/${language}.json`);
         const translations = await response.json();
         // updateUserLanguage(language);

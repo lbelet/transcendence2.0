@@ -468,6 +468,7 @@ def update_user(request):
     avatar = request.FILES.get('avatar')
 
     print("le vieux mot de passe est: ", old_password)
+    print("la langue dans le back est: ", language)
 
     user = request.user
     user.two_factor_method = two_factor_method
@@ -522,7 +523,7 @@ def update_user(request):
         user.save()
         # return JsonResponse({'success': 'Two-factor authentication disabled'}, status=200)
 
-    return JsonResponse({'success': 'Profil mis à jour avec succès'}, status=200)
+    return JsonResponse({'success': 'Profil mis à jour avec succès', 'language': language}, status=200)
 
 
 
