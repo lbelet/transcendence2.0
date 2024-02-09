@@ -493,15 +493,47 @@ function displayErrorMessageUser(message) {
     }
 }
 
-function displayErrorMessageLogin(message) {
+// function displayErrorMessageLogin(message) {
+//     const errorMessageElement = document.getElementById('UserLoginErrorMessage');
+//     if (errorMessageElement) {
+//         errorMessageElement.textContent = message; // Set the text content to the localized message
+//         errorMessageElement.style.display = 'block'; // Make sure it's visible
+//     } else {
+//         console.error('Error message element not found');
+//     }
+// }
+
+async function displayErrorMessageLogin() {
     const errorMessageElement = document.getElementById('UserLoginErrorMessage');
     if (errorMessageElement) {
         errorMessageElement.textContent = message; 
         errorMessageElement.style.display = 'block';
     } else {
-        console.error('Error message element not found');
+        return;
+    }
+
+    const messageKey = errorMessageElement.getAttribute('data-key');
+    var lang = localStorage.getItem('language');
+
+    try {
+        const response = await fetch('./locales/alerts.json');
+        const messages = await response.json();
+
+        // Check if the message exists for the given key and language
+        if (messages[messageKey] && messages[messageKey][lang]) {
+            var message = messages[messageKey][lang];
+            // Display the localized message
+            errorMessageElement.textContent = message;
+            errorMessageElement.style.display = 'block';
+        } else {
+            console.error("Message not found for key: " + messageKey + " and language: " + lang);
+        }
+    } catch (error) {
+        console.error('Error fetching messages:', error);
     }
 }
+
+
 
 function displayErrorMessageFriendRequest(message) {
     const errorMessageElement = document.getElementById('friendRequestErrorMessage');
@@ -513,20 +545,50 @@ function displayErrorMessageFriendRequest(message) {
     }
 }
 
-function displayErrorMessageEditUser(message) {
+// function displayErrorMessageEditUser(message) {
+//     const errorMessageElement = document.getElementById('UserEditErrorMessage');
+//     if (errorMessageElement) {
+//         errorMessageElement.textContent = message; // Set the text content to the message
+//         errorMessageElement.style.display = 'block'; // Make sure it's visible
+//     } else {
+//         console.error('Error message element not found');
+//     }
+// }
+
+// Modified function to asynchronously fetch and display localized error messages
+async function displayErrorMessageEditUser() {
     const errorMessageElement = document.getElementById('UserEditErrorMessage');
     if (errorMessageElement) {
         errorMessageElement.textContent = message;
         errorMessageElement.style.display = 'block';
     } else {
-        console.error('Error message element not found');
+        return;
+    }
+
+    const messageKey = errorMessageElement.getAttribute('data-key');
+    var lang = localStorage.getItem('language');
+
+    try {
+        const response = await fetch('./locales/alerts.json');
+        const messages = await response.json();
+
+        if (messages[messageKey] && messages[messageKey][lang]) {
+            var message = messages[messageKey][lang];
+            errorMessageElement.textContent = message;
+            errorMessageElement.style.display = 'block';
+        } else {
+            console.error("Message not found for key: " + messageKey + " and language: " + lang);
+        }
+    } catch (error) {
+        console.error('Error fetching messages:', error);
     }
 }
+
 
 function displayErrorMessageJoinGame(message) {
     const errorMessageElement = document.getElementById('JoinGameErrorMessage');
     if (errorMessageElement) {
-        errorMessageElement.textContent = message; 
+        errorMessageElement.textContent = message;
         errorMessageElement.style.display = 'block';
     } else {
         console.error('Error message element not found');
@@ -537,7 +599,7 @@ function displayErrorMessage2FA(message) {
     const errorMessageElement = document.getElementById('2FAErrorMessage');
     if (errorMessageElement) {
         errorMessageElement.textContent = message;
-        errorMessageElement.style.display = 'block'; 
+        errorMessageElement.style.display = 'block';
     } else {
         console.error('Error message element not found');
     }

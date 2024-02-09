@@ -1,6 +1,20 @@
 {
     "login": {
-        "fr": "mauvais login",
-        "en": "bad login"
+        "fr": "Mauvais login",
+        "en": "Bad login",
+        "de": "Falscher Login",
+        "be": "Няправільны ўваход"
+    },
+    "incorrect_credentials": {
+        "fr": "Nom d'utilisateur ou mot de passe incorrect. Veuillez réessayer.",
+        "en": "Incorrect username or password. Please try again.",
+        "de": "Falscher Benutzername oder Passwort. Bitte versuchen Sie es erneut.",
+        "be": "Няправільнае імя карыстальніка або пароль. Калі ласка, паспрабуйце яшчэ раз."
+    },
+    "edituser_formular_error": {
+        "fr": "Erreur formulaire",
+        "en": "Formular error",
+        "de": "Formularfehler",
+        "be": "Памылка ў форме"
     }
 }

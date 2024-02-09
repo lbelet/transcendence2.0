@@ -60,7 +60,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                         });
                 }
                 else{
-                    displayErrorMessageLogin(data.message)
+                    displayErrorMessageLogin()
                 }
             }
         })
